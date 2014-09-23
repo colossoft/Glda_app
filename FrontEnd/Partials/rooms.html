@@ -1,0 +1,37 @@
+<div class="container-fluid roomsModule">
+	<div class="row">
+		<div class="col-md-3"></div>
+		<div class="col-md-6">
+	        <tabset justified="true">
+	        	<tab heading="Termek">
+	        		<ul class="list-group">
+	        			<li class="list-group-item" ng-repeat="room in rooms">
+	        				{{room.Name}}
+	        				<span class="glyphicon glyphicon-remove pull-right" ng-click="deleteRoom($index)"></span>
+	        			</li>
+	        		</ul>
+	        	</tab>
+	        	<tab heading="Terem hozzáadása">
+	        		<ng-form name="createRoomForm" novalidate>
+	                    <div class="row" ng-class="{'has-error': createRoomForm.roomName.$invalid && createRoomForm.roomName.$dirty, 'has-success': createRoomForm.roomName.$valid && createRoomForm.roomName.$dirty}">
+							<div class="col-sm-3">
+								<label class="control-label">Terem neve:</label>
+							</div>
+							<div class="col-sm-9">
+								<input type="text" class="form-control" name="roomName" ng-model="room.roomName" required />
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-sm-12">
+								<button type="button" class="btn btn-success pull-right" ng-disabled="createRoomForm.$invalid" ng-click="saveRoom()">
+									<span class="glyphicon glyphicon-floppy-save"></span> Hozzáadás
+								</button>
+							</div>
+						</div>
+	        		</ng-form>
+	        	</tab>
+	        </tabset>
+		</div>
+		<div class="col-md-3"></div>
+	</div>
+</div>

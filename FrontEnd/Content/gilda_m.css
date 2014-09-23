@@ -1,0 +1,243 @@
+body {
+    padding-top: 80px;
+}
+
+[ng\:cloak],[ng-cloak],.ng-cloak{
+	display:none !important
+}
+
+.nav, .pagination, .carousel, .panel-title a {
+	cursor: pointer;
+}
+
+/******** CSS téma korrekciók **********/
+/*.panel-body {
+    border: 1px solid #ccc;
+}*/
+
+.panel-danger > .panel-heading {
+    color: #fff;
+}
+
+.input-group-btn button {
+    padding-bottom: 5px;
+}
+
+.row {
+    margin-bottom: 15px;
+}
+
+.row:last-child {
+    margin-bottom: 0;
+}
+
+.control-label {
+    padding-top: 5px;
+}
+
+.navbar {
+    line-height: 1;
+}
+
+.navbar-nav > li:hover {
+    background: #EEEEEE;
+}
+
+
+/******** Login modul **********/
+.loginModule .tab-content {
+    padding-top: 20px;
+}
+
+/******** Gilda logó a főoldalon **********/
+.gildaLoginLogo {
+	width: 50%;
+	display: block;
+	margin: 0 auto;
+	margin-top: -50px;
+	margin-bottom: 20px;
+}
+
+
+/******** Terem label a nav-on **********/
+.navbar-text .label {
+    font-size: 1.2em;
+    line-height: 1.5;
+}
+
+/******** User dropdown **********/
+.navbar-login
+{
+    width: 305px;
+    padding: 10px;
+    padding-bottom: 0px;
+}
+
+.navbar-login-session
+{
+    padding: 10px;
+    padding-bottom: 0px;
+    padding-top: 0px;
+}
+
+.icon-size
+{
+    font-size: 87px;
+}
+
+
+/******** Események listája alert **********/
+.eventsAlert {
+    max-width: 350px;
+    margin-bottom: 5px;
+}
+
+
+/********* Események listája táblázat **********/
+.tableEvents > thead > tr,
+.tableEventDetails > thead > tr,
+.tableTrainers > thead > tr {
+    background: #cc3433;
+    color: #fff;
+}
+
+.tableEvents.table-hover > tbody > tr:hover > td {
+  background-color: #ff4443;
+  color: #fff;
+  cursor: pointer;
+}
+
+.tableEvents > thead > tr > th,
+.tableEvents > tbody > tr > td, 
+.tableEventDetails > thead > tr > th,
+.tableEventDetails > tbody > tr > td {
+    vertical-align: middle;
+}
+
+.tableEvents > thead > tr > th:last-child {
+    width: 1%;
+}
+
+.tableEvents > tbody > tr > td:last-child {
+    font-size: 1.2em;
+}
+
+.tableEvents > tbody > tr > td:last-child {
+    color: #ff4443;
+}
+
+.tableEvents > thead > tr > th:nth-child(1), 
+.tableEvents > thead > tr > th:nth-child(2),
+.tableEvents > thead > tr > th:nth-child(5), 
+.tableEvents > thead > tr > th:nth-child(6),
+.tableEvents > thead > tr > th:nth-child(7),
+.tableEventDetails > thead > tr > th:first-child {
+    width: 8%;
+    text-align: center;
+}
+
+
+/********* Események részletei modul **********/
+.eventDetailModule .label {
+    font-size: 1.0em;
+    display: inline-block;
+}
+
+
+/********* Edzők modul **********/
+.trainersModule .tab-content {
+    padding-top: 20px;
+}
+
+.tableTrainers > thead > tr > th:last-child {
+    width: 1%;
+}
+
+.tableTrainers > tbody > tr > td > span {
+    cursor: pointer;
+    color: #dc0100;
+    font-size: 1.2em;
+}
+
+
+/********* Termek modul **********/
+.roomsModule .tab-content {
+    padding-top: 20px;
+}
+
+.roomsModule ul.list-group li span {
+    margin: 4px 0 0 0;
+    color: #dc0100;
+    cursor: pointer;
+}
+
+
+/********* Edzés típusok modul **********/
+.trainingsModule .tab-content {
+    padding-top: 20px;
+}
+
+.trainingsModule ul.list-group li span {
+    margin: 4px 0 0 0;
+    color: #dc0100;
+    cursor: pointer;
+}
+
+
+/********* Hírek modul **********/
+.newsModule {
+    padding-bottom: 20px;
+}
+
+.newsModule .tab-content {
+    padding-top: 20px;
+}
+
+.newsModule .panel-heading {
+    font-size: 1.1em;
+}
+
+.newsModule .panel-footer {
+    font-size: 0.9em;
+    padding: 5px 15px;
+    text-align: right;
+}
+
+.newsModule accordion .panel-heading {
+    padding: 0;
+}
+
+.newsModule accordion .panel-title a {
+    cursor: pointer;
+    display: block;
+    padding: 10px 15px;
+}
+
+
+/********* Akciók modul **********/
+.specialOffersModule {
+    padding-bottom: 20px;
+}
+
+.specialOffersModule .tab-content {
+    padding-top: 20px;
+}
+
+.specialOffersModule .panel-heading {
+    font-size: 1.1em;
+}
+
+.specialOffersModule .panel-footer {
+    font-size: 0.9em;
+    padding: 5px 15px;
+}
+
+.specialOffersModule accordion .panel-heading {
+    padding: 0;
+}
+
+.specialOffersModule accordion .panel-title a {
+    cursor: pointer;
+    display: block;
+    padding: 10px 15px;
+}

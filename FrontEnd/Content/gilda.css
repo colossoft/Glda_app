@@ -1,0 +1,211 @@
+﻿body {
+    padding-top: 70px;
+    background: #fefefe;
+}
+
+[ng\:cloak],[ng-cloak],.ng-cloak{
+	display:none !important
+}
+
+.modulTitle {
+	margin: 0 0 15px 0;
+	border-bottom: 1px solid #ccc;
+	padding-bottom: 5px;
+}
+
+/********* Navbar **********/
+.gildaNavLogo {
+	height: 40px;
+	margin: 5px 0 5px 5px;
+}
+
+.userSpan {
+	color: #fff;
+	font-size: 1.1em;
+	border-left: 1px solid #fff;
+	padding: 10px;
+	margin-left: 10px;
+}
+
+.navbar {
+	background: #cc3433;
+}
+
+.navbar .navbar-header .label {
+	font-size: 1.2em;
+	margin-left: 5px;
+}
+
+.navbar ul {
+	background: #ff2c2b;
+}
+
+.logoutBtn {
+	border-left: 10px solid #cc3433;
+}
+
+.logoutBtn a {
+	font-size: 0.9em;
+}
+
+.navbar ul li a {
+	color: #fff !important;
+}
+
+.navbar ul li:hover, 
+.navbar ul li:active {
+	background: #ba0100;
+}
+
+.dropdown-menu li a:hover, 
+.dropdown-menu li a:active,
+.dropdown-menu li a:focus {
+	background: #ba0100;
+}
+
+.navbar-default .navbar-nav > .open > a, 
+.navbar-default .navbar-nav > .open > a:hover, 
+.navbar-default .navbar-nav > .open > a:focus,
+.navbar-default .navbar-nav > .open > a:active {
+	background: #ba0100;	
+}
+
+.dropdown:hover .dropdown-menu {
+    display: block;
+ }
+
+/********* Login felület **********/
+.loginTab {
+	margin-bottom: 20px;
+}
+
+.gildaLoginLogo {
+	width: 50%;
+	display: block;
+	margin: 0 auto;
+	margin-top: -50px;
+	margin-bottom: 20px;
+}
+
+
+/********* Események listája modul **********/
+.eventsModule .form-group {
+	margin-right: 10px;
+}
+
+.eventsModule .alert {
+	line-height: 1;
+	margin: 0 0 0 15px;
+}
+
+
+/********* Események listája táblázat **********/
+.tableEvents > thead > tr,
+.tableEventDetails > thead > tr,
+.tableTrainers > thead > tr {
+	background: #cc3433;
+	color: #fff;
+}
+
+.tableEvents.table-hover > tbody > tr:hover > td {
+  background-color: #ff4443;
+  color: #fff;
+  cursor: pointer;
+}
+
+.tableEvents > thead > tr > th,
+.tableEvents > tbody > tr > td, 
+.tableEventDetails > thead > tr > th,
+.tableEventDetails > tbody > tr > td {
+	vertical-align: middle;
+}
+
+.tableEvents > thead > tr > th:last-child {
+	width: 1%;
+}
+
+.tableEvents > tbody > tr > td:last-child {
+	color: #ff4443;
+}
+
+.tableEvents > thead > tr > th:nth-child(1), 
+.tableEvents > thead > tr > th:nth-child(2),
+.tableEvents > thead > tr > th:nth-child(5), 
+.tableEvents > thead > tr > th:nth-child(6),
+.tableEvents > thead > tr > th:nth-child(7),
+.tableEventDetails > thead > tr > th:first-child {
+	width: 8%;
+	text-align: center;
+}
+
+
+/********* Események részletei modul **********/
+.eventDetailModule h4 {
+	margin: 0;
+	padding-bottom: 5px;
+}
+
+.eventDetailModule .row {
+	padding: 5px;
+}
+
+.eventDetailModule .label {
+	font-size: 1.2em;
+}
+
+/********* Esemény hozzáadása modul **********/
+.createEventModule .row {
+	margin-bottom: 10px;
+}
+
+
+/********* Edzés típusok modul **********/
+.trainingsTab {
+	margin-bottom: 20px;
+}
+
+.trainingsModule ul.list-group li span {
+	margin: 2px 0 0 0;
+	color: #dc0100;
+	cursor: pointer;
+}
+
+.trainingsModule .row {
+	margin-bottom: 20px;
+}
+
+
+/********* Termek modul **********/
+.roomsTab {
+	margin-bottom: 20px;
+}
+
+.roomsModule ul.list-group li span {
+	margin: 2px 0 0 0;
+	color: #dc0100;
+	cursor: pointer;
+}
+
+.roomsModule .row {
+	margin-bottom: 20px;
+}
+
+
+/********* Edzők modul **********/
+.trainersTab {
+	margin-bottom: 20px;
+}
+
+.trainersModule .row {
+	margin-bottom: 20px;
+}
+
+.tableTrainers > thead > tr > th:last-child {
+	width: 1%;
+}
+
+.tableTrainers > tbody > tr > td > span {
+	cursor: pointer;
+	color: #dc0100;
+	font-size: 1.2em;
+}

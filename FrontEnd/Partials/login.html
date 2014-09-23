@@ -1,0 +1,69 @@
+﻿<div class="container loginModule">
+    <div class="row">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-6">
+
+            <img src="Images/gilda_web_logo.png" class="gildaLoginLogo" alt="Gilda Logo" />
+
+            <div class="well">
+                <tabset justified="true">
+                    <tab heading="Belépés">
+                        <ng-form name="loginForm" novalidate>
+                            <div ng-show="loginAlertShow">
+                                <alert type="danger" close="closeLoginAlertShow()">
+                                    <strong>Sikertelen bejelentkezés!</strong> Hibás e-mail vagy jelszó!
+                                </alert>
+                            </div>
+                            <div class="form-group" ng-class="{'has-error': loginForm.email.$invalid && loginForm.email.$dirty, 'has-success': loginForm.email.$valid && loginForm.email.$dirty}">
+                                <label class="control-label" for="email">E-mail:</label>
+                                <input type="email" class="form-control" name="email" ng-model="user.email" required />
+                            </div>
+                            <div class="form-group" ng-class="{'has-error': loginForm.password.$invalid && loginForm.password.$dirty, 'has-success': loginForm.password.$valid && loginForm.password.$dirty}">
+                                <label class="control-label" for="password">Jelszó:</label>
+                                <input type="password" class="form-control" name="password" ng-model="user.password" required />
+                            </div>
+                            <!-- <div class="form-group" ng-class="{'has-error': loginForm.location.$invalid && loginForm.location.$dirty, 'has-success': loginForm.location.$valid && loginForm.location.$dirty}">
+                                <label class="control-label">Helyszín:</label>
+                                <select class="form-control" ng-model="user.selectedLocation" name="location" ng-required="true" ng-options="location as location.Name for location in gildaLocations">
+                                    <option value="">--- Válasszon helyszínt! ---</option>
+                                </select>
+                            </div> -->
+                            <div class="form-group" style="margin-top:40px">
+                                <button type="button" ng-click="login(user)" ng-disabled="loginForm.$invalid" class="btn btn-primary btn-block">Belépés</button>
+                            </div>
+                        </ng-form>
+                    </tab>
+                    <tab heading="Partner regisztráció">
+                        <ng-form name="regForm" novalidate>
+                            <div class="form-group" ng-class="{'has-error': regForm.lastName.$invalid && regForm.lastName.$dirty, 'has-success': regForm.lastName.$valid && regForm.lastName.$dirty}">
+                                <label class="control-label" for="lastName">Vezetéknév:</label>
+                                <input type="text" class="form-control" name="lastName" ng-model="regUser.lastName" required />
+                            </div>
+                            <div class="form-group" ng-class="{'has-error': regForm.firstName.$invalid && regForm.firstName.$dirty, 'has-success': regForm.firstName.$valid && regForm.firstName.$dirty}">
+                                <label class="control-label" for="firstName">Keresztnév:</label>
+                                <input type="text" class="form-control" name="firstName" ng-model="regUser.firstName" required />
+                            </div>
+                            <div class="form-group" ng-class="{'has-error': regForm.regEmail.$invalid && regForm.regEmail.$dirty, 'has-success': regForm.regEmail.$valid && regForm.regEmail.$dirty}">
+                                <label class="control-label" for="regEmail">E-mail:</label>
+                                <input type="email" class="form-control" name="regEmail" ng-model="regUser.email" required />
+                            </div>
+                            <div class="form-group" ng-class="{'has-error': regForm.regPassword.$invalid && regForm.regPassword.$dirty, 'has-success': regForm.regPassword.$valid && regForm.regPassword.$dirty}">
+                                <label class="control-label" for="regPassword">Jelszó:</label>
+                                <input type="password" class="form-control" name="regPassword" ng-model="regUser.password" required />
+                            </div>
+                            <div class="form-group" ng-class="{'has-error': regForm.regConfirmPassword.$invalid && regForm.regConfirmPassword.$dirty || regUser.password != regUser.confirmPassword, 'has-success': regForm.regConfirmPassword.$valid && regForm.regConfirmPassword.$dirty && regUser.password == regUser.confirmPassword}">
+                                <label class="control-label" for="regConfirmPassword">Jelszó megerősítése:</label>
+                                <input type="password" class="form-control" name="regConfirmPassword" ng-model="regUser.confirmPassword" required />
+                            </div>
+                            <div class="form-group" style="margin-top:40px">
+                                <button type="button" ng-click="register(regUser)" ng-disabled="regForm.$invalid" class="btn btn-primary btn-block">Regisztráció</button>
+                            </div>
+                        </ng-form>
+                    </tab>
+                </tabset>
+            </div>
+
+        </div>
+        <div class="col-sm-3"></div>
+    </div>
+</div>

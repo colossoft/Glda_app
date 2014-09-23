@@ -1,0 +1,75 @@
+<div class="container-fluid specialOffersModule">
+	<div class="row">
+		<div class="col-md-3"></div>
+		<div class="col-md-6">
+			<tabset justified="true">
+				<tab heading="Akciók">
+					<div class="panel panel-danger" ng-repeat="so in specialOffers">
+						<div class="panel-heading">{{so.Title}}</div>
+						<div class="panel-body">
+							{{so.Text}}
+						</div>
+						<div class="panel-footer clearfix">
+							<div class="pull-left">Érvényesség:</div>
+							<div class="pull-right">{{so.StartDate}} - {{so.EndDate}}</div>
+						</div>
+					</div>
+				</tab>
+				<tab heading="Új akció hozzáadása" ng-hide="userStatus == 1">
+					<div class="row">
+						<div class="col-lg-2"></div>
+						<div class="col-lg-3">
+							<label class="control-label">Érvényesség kezdete:</label>
+						</div>
+						<div class="col-lg-5">
+								<div class="input-group">
+									<input type="text" class="form-control" datepicker-popup="yyyy-MM-dd" ng-model="createSpecialOffers.StartDate" is-open="datePickerOpened[0]" datepicker-options="datePickerOptions" datepicker-append-to-body="true" close-text="Bezárás" clear-text="Törlés" current-text="Mai nap" placeholder="Válassz dátumot &raquo;&raquo;" ng-required="true" />
+									<div class="input-group-btn">
+										<button type="button" class="btn btn-default" ng-click="openDatePicker($event, 0)"><i class="glyphicon glyphicon-calendar"></i></button>
+									</div>
+								</div>
+						</div>
+						<div class="col-lg-2"></div>
+					</div>
+					
+					<div class="row">
+						<div class="col-lg-2"></div>
+						<div class="col-lg-3">
+							<label class="control-label">Érvényesség vége:</label>
+						</div>
+						<div class="col-lg-5">
+								<div class="input-group">
+									<input type="text" class="form-control" datepicker-popup="yyyy-MM-dd" ng-model="createSpecialOffers.EndDate" is-open="datePickerOpened[1]" datepicker-options="datePickerOptions" datepicker-append-to-body="true" close-text="Bezárás" clear-text="Törlés" current-text="Mai nap" placeholder="Válassz dátumot &raquo;&raquo;" ng-required="true" />
+									<div class="input-group-btn">
+										<button type="button" class="btn btn-default" ng-click="openDatePicker($event, 1)"><i class="glyphicon glyphicon-calendar"></i></button>
+									</div>
+								</div>
+						</div>
+						<div class="col-lg-2"></div>
+					</div>
+					<accordion close-others="false">
+						<accordion-group ng-repeat="l in languages" is-open="accordionStatuses[$index].open">
+							<accordion-heading>
+            					{{l.Name}} nyelv <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': accordionStatuses[$index].open, 'glyphicon-chevron-right': !accordionStatuses[$index].open}"></i>
+        					</accordion-heading>
+        					<ng-form name="createSpecialOffersForm" novalidate>
+        						<div class="form-group">
+        							<label class="control-label" for="title">Cím:</label>
+        							<input type="text" class="form-control" name="title" ng-model="createSpecialOffers.Offers[$index].Title">
+        						</div>
+        						<div class="form-group">
+        							<label class="control-label" for="text">Szöveg:</label>
+        							<textarea class="form-control" rows="5" ng-model="createSpecialOffers.Offers[$index].Text"></textarea>
+        						</div>
+        					</ng-form>
+						</accordion-group>
+					</accordion>
+					<button type="button" class="btn btn-success pull-right" ng-click="saveSpecialOffer()">
+						<span class="glyphicon glyphicon-floppy-save"></span> Akció mentése
+					</button>
+				</tab>
+			</tabset>
+		</div>
+		<div class="col-md-3"></div>
+	</div>
+</div>
