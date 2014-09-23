@@ -39,57 +39,57 @@
 	}];
 });
 
-gildaApp.constant('baseUrl', 'http://localhost:8080/gilda_php/v1');
+gildaApp.constant('baseUrl', 'http://localhost:8080/Glda_app/BackEnd/v1');
 //gildaApp.constant('baseUrl', 'http://gildamax.atyin.url.ph/v1');
 
 gildaApp.config(function($routeProvider) {
     $routeProvider.when('/login', {
-        templateUrl: '/GildaMaxWeb/Partials/login.html', 
+        templateUrl: '/Glda_app/FrontEnd/Partials/login.html', 
         controller: 'loginCtrl'
     });
 	
 	$routeProvider.when('/home', {
-        templateUrl: '/GildaMaxWeb/Partials/home.html', 
+        templateUrl: '/Glda_app/FrontEnd/Partials/home.html', 
         controller: 'homeCtrl'
     });
 
     $routeProvider.when('/events/list', {
-        templateUrl: '/GildaMaxWeb/Partials/eventsList.html', 
+        templateUrl: '/Glda_app/FrontEnd/Partials/eventsList.html', 
         controller: 'eventsListCtrl'
     });
 
     $routeProvider.when('/events/create', {
-        templateUrl: '/GildaMaxWeb/Partials/createEvent.html', 
+        templateUrl: '/Glda_app/FrontEnd/Partials/createEvent.html', 
         controller: 'createEventCtrl'
     });
 
     $routeProvider.when('/events/:id', {
-        templateUrl: '/GildaMaxWeb/Partials/eventDetails.html', 
+        templateUrl: '/Glda_app/FrontEnd/Partials/eventDetails.html', 
         controller: 'eventDetailCtrl'
     });
 
     $routeProvider.when('/trainings', {
-        templateUrl: '/GildaMaxWeb/Partials/trainings.html', 
+        templateUrl: '/Glda_app/FrontEnd/Partials/trainings.html', 
         controller: 'trainingsCtrl'
     });
 
     $routeProvider.when('/trainers', {
-        templateUrl: '/GildaMaxWeb/Partials/trainers.html', 
+        templateUrl: '/Glda_app/FrontEnd/Partials/trainers.html', 
         controller: 'trainersCtrl'
     });
 
     $routeProvider.when('/rooms', {
-        templateUrl: '/GildaMaxWeb/Partials/rooms.html', 
+        templateUrl: '/Glda_app/FrontEnd/Partials/rooms.html', 
         controller: 'roomsCtrl'
     });
 
     $routeProvider.when('/news', {
-        templateUrl: '/GildaMaxWeb/Partials/news.html', 
+        templateUrl: '/Glda_app/FrontEnd/Partials/news.html', 
         controller: 'newsCtrl'
     });
 
     $routeProvider.when('/specialOffers', {
-        templateUrl: '/GildaMaxWeb/Partials/specialOffers.html', 
+        templateUrl: '/Glda_app/FrontEnd/Partials/specialOffers.html', 
         controller: 'specialOffersCtrl'
     });
 
