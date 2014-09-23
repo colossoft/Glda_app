@@ -315,6 +315,91 @@ $app->get('/events/:room_id', 'authenticate', function($room_id) {
 });
 
 /**
+ * Listing events by room_id and day
+ * method GET
+ * url /events/:room_id
+ */
+$app->get('/events/:room_id/:day', 'authenticate', function($room_id, $day) {
+    global $user_id;
+    
+    $response = array();
+    $db = new DbHandler();
+
+    // fetch events
+    $result = $db->getEventsByRoomIdAndDay($room_id, $user_id, $day);
+
+    if(count($result) == 0 || $result != NULL) {
+        $response["error"] = false;
+        $response["events"] = $result;
+        echoResponse(200, $response);
+
+    } else {
+        $response["error"] = true;
+        $response["message"] = "The requested resource doesn't exists";
+        echoResponse(404, $response);
+    }
+});
+
+/**
+ * Listing event and reservations of the event by event_id
+ * method GET
+ * url /events/:room_id
+ */
+$app->get('/event/:eventId', 'authenticate', function($eventId) {
+    global $user_id;
+    
+    $response = array();
+    $db = new DbHandler();
+
+    // fetch events
+    $result = $db->GetReservationOfEventByEventId($eventId, $user_id);
+
+    if(count($result) == 0 || $result != NULL) {
+        $response["error"] = false;
+        $response["events"] = $result;
+        echoResponse(200, $response);
+
+    } else {
+        $response["error"] = true;
+        $response["message"] = "The requested resource doesn't exists";
+        echoResponse(404, $response);
+    }
+});
+
+$app->post('/event/', 'authenticate', function() use($app) {
+    global $user_id;
+
+    // Check for required params
+    verifyRequiredParams(array('roomId', 'date', 'startTime', 'endTime', 'trainerId', 'trainingId', 'spots'));
+    
+    // reading post params
+    $roomId = $app->request()->post('roomId');
+    $date = $app->request()->post('date');
+    $startTime = $app->request()->post('startTime');
+    $endTime = $app->request()->post('endTime');
+    $trainerId = $app->request()->post('trainerId');
+    $trainingId = $app->request()->post('trainingId');
+    $spots = $app->request()->post('spots');
+    
+    $response = array();
+    $db = new DbHandler();
+
+    // fetch events
+    $result = $db->CreateEvent($roomId, $date, $startTime, $endTime, $trainerId, $trainingId, $spots);
+
+    if(!$result['errorList']) {
+        $response["error"] = false;
+        $response["message"] = "Sikeres eseménylétrhozás!";
+        echoResponse(201, $response);
+    }
+    else {
+        $response["error"] = true;
+        $response["message"] = $result['errorList'];
+        echoResponse(409, $response);
+    }
+});
+
+/**
  * Make reservation
  * url: /reservation
  * method: POST
@@ -335,14 +420,6 @@ $app->post('/reservation', 'authenticate', function() use($app) {
     $res = $db->createReservation($event_id, $user_id);
     
     if($res['status'] == RESERVATION_CREATED_SUCCESSFULLY) {
-//        if(sendMailToUser($first_name, $last_name, $email, $password)) {
-//            $response["mail_error"] = false;
-//        }
-//        else {
-//            $response["mail_error"] = true;
-//            $response["mail_error_message"] = $mail_error_info;
-//        }
-//	
         $response["error"] = false;
         $response["message"] = "Sikeres foglalás!";
 		$response["free_spots"] = $res['free_spots'];
@@ -390,6 +467,44 @@ $app->delete('/reservation/:event_id', 'authenticate', function($event_id) use($
         $response["message"] = "A foglalás törlése sikertelen! Kérjük próbáld újra!";
         $response["free_spots"] = $result['free_spots'];
         echoResponse(405, $response);
+    }
+});
+
+$app->get('/trainings', 'authenticate', function() {
+    $response = array();
+    $db = new DbHandler();
+
+    // fetch rooms
+    $result = $db->GetAllTrainings();
+
+    if($result != NULL) {
+        $response["error"] = false;
+        $response["trainings"] = $result;
+        echoResponse(200, $response);
+
+    } else {
+        $response["error"] = true;
+        $response["message"] = "The requested resource doesn't exists";
+        echoResponse(404, $response);
+    }
+});
+
+$app->get('/trainers', 'authenticate', function() {
+    $response = array();
+    $db = new DbHandler();
+
+    // fetch rooms
+    $result = $db->GetAllTrainers();
+
+    if($result != NULL) {
+        $response["error"] = false;
+        $response["trainings"] = $result;
+        echoResponse(200, $response);
+
+    } else {
+        $response["error"] = true;
+        $response["message"] = "The requested resource doesn't exists";
+        echoResponse(404, $response);
     }
 });
 

@@ -103,7 +103,13 @@ class DbHandler {
             }
         }
         else {
-            $stmt->close();
+            try{
+                $stmt->close();
+            }
+            catch(Exception $exc) {
+                error_log($exc->getMessage());
+                return false;
+            }
             
             // User not existed with the email
             return FALSE;
@@ -147,7 +153,7 @@ class DbHandler {
             $stmt->bind_result($user['first_name'], 
                                $user['last_name'], 
                                $user['email'], 
-                               $user['api_key'], 
+                               $user['api_key'],
                                $user['status']);
             
             $stmt->fetch();
@@ -290,6 +296,25 @@ class DbHandler {
         
         return $rooms;
     }
+
+    /**
+    * Check existing room by id
+    */
+    public function CheckRoomId($roomId) {
+        $queryString = "SELECT * FROM gilda_rooms WHERE id=?";
+        $stmt = $this->conn->prepare($queryString);
+        $stmt->bind_param("i", $roomId);
+        
+        $stmt->execute();
+
+        $stmt->store_result();
+        
+        $num_rows = $stmt->num_rows;
+        
+        $stmt->close();
+        
+        return $num_rows > 0;
+    }
     
     /* ----------------------- 'gilda_events' table method  ----------------------- */
     
@@ -299,19 +324,18 @@ class DbHandler {
      * @param int $user_id id of the user
      */
     public function getEventsByRoomId($room_id, $user_id) {
-        $queryString = "SELECT ev.id, ev.date, ev.start_time, ev.end_time,
-                               tr.name AS trainer, 
-                               tri.name AS training, 
-					ev.spots - (SELECT COUNT(*) FROM gilda_reservations WHERE event_id=ev.id) AS free_spots, 
-                                        CASE
-                                            WHEN (SELECT COUNT(*) FROM gilda_reservations WHERE event_id=ev.id AND user_id=?) > 0
-                                            THEN 1
-                                            ELSE 0
-                                        END AS is_reserved 
+        $queryString = "SELECT ev.id, ev.date, ev.start_time, ev.end_time, 
+                                tr.name AS trainer, tri.name AS training, ev.spots,
+					    ev.spots - (SELECT COUNT(*) FROM gilda_reservations WHERE event_id=ev.id) AS free_spots, 
+                        CASE
+                            WHEN (SELECT COUNT(*) FROM gilda_reservations WHERE event_id=ev.id AND user_id=?) > 0
+                            THEN 1
+                            ELSE 0
+                        END AS is_reserved 
                         FROM gilda_events AS ev 
                         LEFT JOIN gilda_trainer AS tr ON ev.trainer = tr.id
                         LEFT JOIN gilda_training AS tri ON ev.training = tri.id
-                        WHERE room_id=? AND date>NOW() ORDER BY date, start_time";
+                        WHERE room_id=? AND date>=NOW() AND date<=(NOW() + INTERVAL 2 WEEK) ORDER BY date, start_time";
         $stmt = $this->conn->prepare($queryString);
         $stmt->bind_param("ii", $user_id, $room_id);
         
@@ -319,7 +343,7 @@ class DbHandler {
         
         $events = array();
         
-        $stmt->bind_result($id, $date, $start_time, $end_time, $trainer, $training, $free_spots, $is_reserved);
+        $stmt->bind_result($id, $date, $start_time, $end_time, $trainer, $training, $spots, $free_spots, $is_reserved);
         
         while($stmt->fetch()) {
             $tmp = array("id" => $id, 
@@ -328,6 +352,53 @@ class DbHandler {
                          "end_time" => $end_time, 
                          "trainer" => $trainer, 
                          "training" => $training,
+                         "spots" => $spots,
+                         "free_spots" => $free_spots, 
+                         "is_reserved" => $is_reserved);
+            
+            array_push($events, $tmp);
+        }
+        
+        $stmt->close();
+        
+        return $events;
+    }
+
+    /**
+     * Fetching events by room_id and day
+     * @param int $room_id id of the room
+     * @param int $user_id id of the user
+     */
+    public function getEventsByRoomIdAndDay($room_id, $user_id, $day) {
+        $queryString = "SELECT ev.id, ev.date, ev.start_time, ev.end_time, 
+                                tr.name AS trainer, tri.name AS training, ev.spots,
+                        ev.spots - (SELECT COUNT(*) FROM gilda_reservations WHERE event_id=ev.id) AS free_spots, 
+                        CASE
+                            WHEN (SELECT COUNT(*) FROM gilda_reservations WHERE event_id=ev.id AND user_id=?) > 0
+                            THEN 1
+                            ELSE 0
+                        END AS is_reserved 
+                        FROM gilda_events AS ev 
+                        LEFT JOIN gilda_trainer AS tr ON ev.trainer = tr.id
+                        LEFT JOIN gilda_training AS tri ON ev.training = tri.id
+                        WHERE room_id=? AND date>=? ORDER BY date, start_time";
+        $stmt = $this->conn->prepare($queryString);
+        $stmt->bind_param("iis", $user_id, $room_id, $day);
+        
+        $stmt->execute();
+        
+        $events = array();
+        
+        $stmt->bind_result($id, $date, $start_time, $end_time, $trainer, $training, $spots, $free_spots, $is_reserved);
+        
+        while($stmt->fetch()) {
+            $tmp = array("id" => $id, 
+                         "date" => $date, 
+                         "start_time" => $start_time, 
+                         "end_time" => $end_time, 
+                         "trainer" => $trainer, 
+                         "training" => $training,
+                         "spots" => $spots,
                          "free_spots" => $free_spots, 
                          "is_reserved" => $is_reserved);
             
@@ -357,6 +428,60 @@ class DbHandler {
         $stmt->close();
         
         return $free_spots;
+    }
+
+    /**
+    * Create a new event
+    */
+    public function CreateEvent($roomId, $date, $startTime, $endTime, $trainerId, $trainingId, $spots) {
+        $response = array();
+        $errorList = '';
+        $haveError = false;
+
+        //Check the roomId
+        if (!$this->CheckRoomId($roomId)) {
+            $errorList .= '\nRosszul adta meg a termet.';
+            $haveError = true;
+        }
+
+        //Check the trainerId
+        if (!$this->CheckTrainerId($trainerId)) {
+            $errorList .='\nRosszul adta meg az edzőt.';
+            $haveError = true;
+        }
+
+        //Check the training
+        if (!$this->CheckTrainingId($trainingId)) {
+            $errorList .= '\nRosszul adta meg az edzés típusát.';
+            $haveError = true;
+        }
+        if ($haveError) {
+            error_log($errorList);
+           return array('errorList' => $errorList);
+        }
+        
+        // insert query
+        $queryString = 
+            "INSERT INTO gilda_events(room_id, date, start_time, end_time, trainer, training, spots) 
+                         VALUES(?, ?, ?, ?, ?, ?, ?)";
+        $stmt = $this->conn->prepare($queryString);
+        $stmt->bind_param("isssiii", $roomId, $date, $startTime, $endTime, $trainerId, $trainingId, $spots);
+        
+        $result = $stmt->execute();
+        
+        $stmt->close();
+        
+        // Check for successful insertion
+        if($result) {
+            return array('errorList' => false);;
+        }
+        else {
+             $errorList .= '\nVáratlan hiba történt.';
+             error_log($errorList);
+            return array('errorList' => $errorList);
+        }
+        
+        return $response;
     }
     
     /* ----------------------- 'gilda_reservations' table method  ----------------------- */
@@ -415,7 +540,174 @@ class DbHandler {
 			return array('status' => false, 'free_spots' => $free_spots);
 		}
     }
-    
+
+     /**
+    * Fetching all reservation of evet by eventId
+    */
+    public function GetReservationOfEventByEventId($eventId, $user_id) {
+        $queryString = "SELECT ev.id, ev.date, ev.start_time, ev.end_time, 
+                                tr.name AS trainer, tri.name AS training, ev.spots,
+                        ev.spots - (SELECT COUNT(*) FROM gilda_reservations WHERE event_id=ev.id) AS free_spots, 
+                        CASE
+                            WHEN (SELECT COUNT(*) FROM gilda_reservations WHERE event_id=ev.id AND user_id=?) > 0
+                            THEN 1
+                            ELSE 0
+                        END AS is_reserved  
+                        FROM gilda_events AS ev 
+                        LEFT JOIN gilda_trainer AS tr ON ev.trainer = tr.id
+                        LEFT JOIN gilda_training AS tri ON ev.training = tri.id  
+                        WHERE ev.id=?";
+        $stmt = $this->conn->prepare($queryString);
+        $stmt->bind_param("ii", $user_id, $eventId);
+        
+        $stmt->execute();
+        
+        $events = array();
+        
+        $stmt->bind_result($id, $date, $start_time, $end_time, $trainer, $training, $spots, $free_spots, $is_reserved);
+        
+        while($stmt->fetch()) {
+            $tmp = array("id" => $id, 
+                         "date" => $date, 
+                         "start_time" => $start_time, 
+                         "end_time" => $end_time, 
+                         "trainer" => $trainer, 
+                         "training" => $training,
+                         "spots" => $spots,
+                         "free_spots" => $free_spots, 
+                         "is_reserved" => $is_reserved);
+            
+            array_push($events, $tmp);
+        }
+
+        $events = $this->GetReservationsOfEvent($eventId, $events);
+        
+        $stmt->close();
+        
+        return $events;
+    }
+
+    /**
+    * Fetching the reservations of event by eventId and put the $events array
+    */
+    public function GetReservationsOfEvent($eventId, $events) {
+        $queryString = "SELECT ev.date, CONCAT(us.first_name, ' ', us.last_name) AS name, us.email
+                        FROM gilda_events AS ev 
+                        LEFT JOIN gilda_reservations AS rv ON rv.event_id = ev.id
+                        LEFT JOIN gilda_user AS us ON rv.user_id = us.id
+                        WHERE ev.id = ?";
+        $stmt = $this->conn->prepare($queryString);
+        $stmt->bind_param("i", $eventId);
+        
+        $stmt->execute();
+        
+        $stmt->bind_result($date, $name, $email);
+        
+        while($stmt->fetch()) {
+            $tmp = array("date" => $date,
+                         "name" => $name,
+                         "email" => $email);
+            
+            array_push($events, $tmp);
+        }
+
+        $stmt->close();
+
+        return $events;
+    }
+
+    /* ----------------------- 'gilda_trainer' table method  ----------------------- */
+
+     /**
+    * Check existing trainer by id
+    */
+    public function CheckTrainerId($trainerId) {
+        $queryString = "SELECT * FROM gilda_trainer WHERE id=?";
+        $stmt = $this->conn->prepare($queryString);
+        $stmt->bind_param("i", $trainerId);
+        
+        $stmt->execute();
+        
+        $stmt->store_result();
+        
+        $num_rows = $stmt->num_rows;
+        
+        $stmt->close();
+        
+        return $num_rows > 0;
+    }
+
+    /**
+    * Fetching all trainers
+    */
+    public function GetAllTrainers() {
+        $queryString = "SELECT * FROM gilda_trainer";
+        $stmt = $this->conn->prepare($queryString);
+        
+        $stmt->execute();
+        
+        $trainers = array();
+        
+        $stmt->bind_result($id, $name, $email);
+        
+        while($stmt->fetch()) {
+            $tmp = array("id" => $id, 
+                         "name" => $name,
+                         "email" => $email);
+            
+            array_push($trainers, $tmp);
+        }
+        
+        $stmt->close();
+        
+        return $trainers;
+    }
+
+    /* ----------------------- 'gilda_training' table method  ----------------------- */
+
+     /**
+    * Check existing training by id
+    */
+    public function CheckTrainingId($trainingId) {
+        $queryString = "SELECT * FROM gilda_training WHERE id=?";
+        $stmt = $this->conn->prepare($queryString);
+        $stmt->bind_param("i", $trainingId);
+        
+        $stmt->execute();
+        
+        $stmt->store_result();
+        
+        $num_rows = $stmt->num_rows;
+        
+        $stmt->close();
+        
+        return $num_rows > 0;
+    }
+
+    /**
+    * Fetching all trainings
+    */
+    public function GetAllTrainings() {
+        $queryString = "SELECT * FROM gilda_training";
+        $stmt = $this->conn->prepare($queryString);
+        
+        $stmt->execute();
+        
+        $trainings = array();
+        
+        $stmt->bind_result($id, $name);
+        
+        while($stmt->fetch()) {
+            $tmp = array("id" => $id, 
+                         "name" => $name);
+            
+            array_push($trainings, $tmp);
+        }
+        
+        $stmt->close();
+        
+        return $trainings;
+    }
 }
 
 ?>

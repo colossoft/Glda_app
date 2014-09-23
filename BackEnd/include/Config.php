@@ -9,6 +9,7 @@ define('DB_USERNAME', 'root');
 define('DB_PASSWORD', '');
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'gilda');
+ini_set('error_log','/error.log');
 
 // SERVER
 /*define('DB_USERNAME', 'u472938757_atyin');
