@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 19, 2014 at 08:39 PM
+-- Generation Time: Sep 23, 2014 at 08:31 PM
 -- Server version: 5.6.20
 -- PHP Version: 5.5.15
 
@@ -28,10 +28,12 @@ SET time_zone = "+00:00";
 
 CREATE TABLE IF NOT EXISTS `gilda_devaluation` (
 `id` int(11) NOT NULL,
-  `name` varchar(250) NOT NULL,
+  `title` varchar(250) NOT NULL,
   `description` longtext NOT NULL,
   `start_date` date NOT NULL,
-  `end_date` date NOT NULL
+  `end_date` date NOT NULL,
+  `languageId` int(11) NOT NULL,
+  `devaluationId` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -49,7 +51,7 @@ CREATE TABLE IF NOT EXISTS `gilda_events` (
   `trainer` int(11) NOT NULL,
   `training` int(11) NOT NULL,
   `spots` int(3) NOT NULL
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=39 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=41 ;
 
 --
 -- Dumping data for table `gilda_events`
@@ -93,7 +95,29 @@ INSERT INTO `gilda_events` (`id`, `room_id`, `date`, `start_time`, `end_time`, `
 (35, 1, '2014-09-07', '10:00', '11:00', 2, 1, 15),
 (36, 1, '2014-09-07', '11:00', '12:00', 5, 7, 30),
 (37, 1, '2014-09-07', '17:00', '18:00', 16, 2, 18),
-(38, 1, '2014-09-07', '18:00', '19:00', 15, 1, 23);
+(38, 1, '2014-09-07', '18:00', '19:00', 15, 1, 23),
+(39, 1, '0000-00-00', '12:00', '13:00', 19, 2, 10),
+(40, 1, '2014-10-01', '12:00', '13:00', 20, 1, 30);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `gilda_language`
+--
+
+CREATE TABLE IF NOT EXISTS `gilda_language` (
+`id` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
+
+--
+-- Dumping data for table `gilda_language`
+--
+
+INSERT INTO `gilda_language` (`id`, `name`) VALUES
+(1, 'Magyar'),
+(2, 'Angol'),
+(3, 'Német');
 
 -- --------------------------------------------------------
 
@@ -129,7 +153,11 @@ INSERT INTO `gilda_locations` (`id`, `name`, `address`, `latitude`, `longitude`)
 
 CREATE TABLE IF NOT EXISTS `gilda_news` (
 `id` int(11) NOT NULL,
-  `pieceOfNews` longtext NOT NULL
+  `newsId` int(11) NOT NULL,
+  `title` varchar(100) NOT NULL,
+  `newsText` longtext NOT NULL,
+  `created_date` date NOT NULL,
+  `languageId` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -210,34 +238,35 @@ INSERT INTO `gilda_rooms` (`id`, `location_id`, `name`) VALUES
 
 CREATE TABLE IF NOT EXISTS `gilda_trainer` (
 `id` int(11) NOT NULL,
-  `name` varchar(100) NOT NULL
+  `name` varchar(100) NOT NULL,
+  `email` varchar(100) NOT NULL
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=21 ;
 
 --
 -- Dumping data for table `gilda_trainer`
 --
 
-INSERT INTO `gilda_trainer` (`id`, `name`) VALUES
-(1, 'Béres Réka'),
-(2, 'Dobos Fanny'),
-(3, 'Dósa Kriszti'),
-(4, 'Dugonics Eszter'),
-(5, 'Fazekas Kitti'),
-(6, 'Gárdus Bence'),
-(7, 'Gyurkovics Anikó'),
-(8, 'Klobusitzky Claudia'),
-(9, 'Kun Évi'),
-(10, 'Nyárádi Esztella'),
-(11, 'Rácz Alexa'),
-(12, 'Samu Kriszti'),
-(13, 'Vörös Kata'),
-(14, 'Vajda Ági'),
-(15, 'Szabó Brigi'),
-(16, 'Szabó Kitti'),
-(17, 'Valóczy Luca'),
-(18, 'Szalka Andi'),
-(19, 'Sifter Tímea'),
-(20, 'Sólyom Enikő');
+INSERT INTO `gilda_trainer` (`id`, `name`, `email`) VALUES
+(1, 'Béres Réka', ''),
+(2, 'Dobos Fanny', ''),
+(3, 'Dósa Kriszti', ''),
+(4, 'Dugonics Eszter', ''),
+(5, 'Fazekas Kitti', ''),
+(6, 'Gárdus Bence', ''),
+(7, 'Gyurkovics Anikó', ''),
+(8, 'Klobusitzky Claudia', ''),
+(9, 'Kun Évi', ''),
+(10, 'Nyárádi Esztella', ''),
+(11, 'Rácz Alexa', ''),
+(12, 'Samu Kriszti', ''),
+(13, 'Vörös Kata', ''),
+(14, 'Vajda Ági', ''),
+(15, 'Szabó Brigi', ''),
+(16, 'Szabó Kitti', ''),
+(17, 'Valóczy Luca', ''),
+(18, 'Szalka Andi', ''),
+(19, 'Sifter Tímea', ''),
+(20, 'Sólyom Enikő', '');
 
 -- --------------------------------------------------------
 
@@ -278,7 +307,7 @@ INSERT INTO `gilda_training` (`id`, `name`) VALUES
 CREATE TABLE IF NOT EXISTS `gilda_user` (
 `id` int(11) NOT NULL,
   `first_name` varchar(255) NOT NULL,
-  `last_name` int(255) NOT NULL,
+  `last_name` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
   `password_hash` text NOT NULL,
   `api_key` varchar(32) NOT NULL,
@@ -291,7 +320,7 @@ CREATE TABLE IF NOT EXISTS `gilda_user` (
 --
 
 INSERT INTO `gilda_user` (`id`, `first_name`, `last_name`, `email`, `password_hash`, `api_key`, `status`, `created_at`) VALUES
-(37, 'Valaki', 0, 'atyins@gmail.com', '$2a$10$f7b0c5ce20c2f69ba3f9buxIBXW1hMkARBQoTIWaGnxEUyNHo6tV6', '11a05dff2907cb7e8abc00847dea1c19', 1, '2014-09-03 15:33:17');
+(37, 'Valaki', '0', 'atyins@gmail.com', '$2a$10$f7b0c5ce20c2f69ba3f9buxIBXW1hMkARBQoTIWaGnxEUyNHo6tV6', '11a05dff2907cb7e8abc00847dea1c19', 3, '2014-09-03 15:33:17');
 
 --
 -- Indexes for dumped tables
@@ -307,6 +336,12 @@ ALTER TABLE `gilda_devaluation`
 -- Indexes for table `gilda_events`
 --
 ALTER TABLE `gilda_events`
+ ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `gilda_language`
+--
+ALTER TABLE `gilda_language`
  ADD PRIMARY KEY (`id`);
 
 --
@@ -364,7 +399,12 @@ MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 -- AUTO_INCREMENT for table `gilda_events`
 --
 ALTER TABLE `gilda_events`
-MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=39;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=41;
+--
+-- AUTO_INCREMENT for table `gilda_language`
+--
+ALTER TABLE `gilda_language`
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=4;
 --
 -- AUTO_INCREMENT for table `gilda_locations`
 --
