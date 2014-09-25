@@ -727,7 +727,6 @@ class DbHandler {
 
         foreach ($news as $key => $value) {
             $actualNewsId = $newNewsId + $key;
-            var_dump($value['LanguageId']);
             // insert query
             $queryString = 
                 "INSERT INTO gilda_news(newsId, title, newsText, created_date, languageId) 
