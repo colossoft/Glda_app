@@ -434,7 +434,6 @@ class DbHandler {
     * Create a new event
     */
     public function CreateEvent($roomId, $date, $startTime, $endTime, $trainerId, $trainingId, $spots) {
-        $response = array();
         $errorList = '';
         $haveError = false;
 
@@ -480,8 +479,6 @@ class DbHandler {
              error_log($errorList);
             return array('errorList' => $errorList);
         }
-        
-        return $response;
     }
     
     /* ----------------------- 'gilda_reservations' table method  ----------------------- */
@@ -707,6 +704,84 @@ class DbHandler {
         $stmt->close();
         
         return $trainings;
+    }
+
+    /* ----------------------- 'gilda_news' table method  ----------------------- */
+
+    public function CreateNews($created_date, $news) {
+        $errorList = '';
+        $haveError = false;
+
+        //Check the roomId
+        if (!$this->CheckNewsParameter($news)) {
+            $errorList .= '\nRosszul adta a híreket.';
+            $haveError = true;
+        }
+        if ($haveError) {
+           error_log($errorList);
+           return array('errorList' => $errorList);
+        }
+
+        $latestNewsId = $this->GetLatestNewsId();
+        $newNewsId = $latestNewsId + 1;
+
+        foreach ($news as $key => $value) {
+            $actualNewsId = $newNewsId + $key;
+            var_dump($value['LanguageId']);
+            // insert query
+            $queryString = 
+                "INSERT INTO gilda_news(newsId, title, newsText, created_date, languageId) 
+                             VALUES(?, ?, ?, ?, ?)";
+            $stmt = $this->conn->prepare($queryString);
+            $stmt->bind_param("isssi", $actualNewsId, $value['Title'], $value['Text'], $created_date, $value['LanguageId']);
+            
+            $result = $stmt->execute();
+            
+            $stmt->close();
+            
+            // Check for successful insertion
+            if($result) {
+                return array('errorList' => false);;
+            }
+            else {
+                 $errorList .= '\nVáratlan hiba történt.';
+                 error_log($errorList);
+                return array('errorList' => $errorList);
+            }
+        }
+    }
+
+    public function CheckNewsParameter($news) {
+        foreach ($news as $key => $value) {
+            if ($value['Title'] == NULL || $value['Title'] == '' || $value['Text'] == NULL || $value['Text'] == '') {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public function GetLatestNewsId() {
+        $queryString = "Select newsId From gilda_news Order By newsId Desc Limit 1 ";
+        $stmt = $this->conn->prepare($queryString);
+        
+        $stmt->execute();
+        
+        $stmt->bind_result($newsId);
+
+        $stmt->store_result();
+        
+        $num_rows = $stmt->num_rows;
+
+        if ($num_rows == 0) {
+           return 0;
+        }
+        
+        $stmt->fetch();
+        
+        $stmt->close();
+        
+        return $newsId;
     }
 }
 

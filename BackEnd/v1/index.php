@@ -366,6 +366,9 @@ $app->get('/event/:eventId', 'authenticate', function($eventId) {
     }
 });
 
+/*
+*Create event
+*/
 $app->post('/event/', 'authenticate', function() use($app) {
     global $user_id;
 
@@ -505,6 +508,37 @@ $app->get('/trainers', 'authenticate', function() {
         $response["error"] = true;
         $response["message"] = "The requested resource doesn't exists";
         echoResponse(404, $response);
+    }
+});
+
+/*
+*Create news
+*/
+$app->post('/createNews/', 'authenticate', function() use($app) {
+    global $user_id;
+
+    // Check for required params
+    verifyRequiredParams(array('created_date'));
+    
+    // reading post params
+    $created_date = $app->request()->post('created_date');
+    $news = $app->request()->post('news');
+    
+    $response = array();
+    $db = new DbHandler();
+
+    // fetch events
+    $result = $db->CreateNews($created_date, $news);
+
+    if(!$result['errorList']) {
+        $response["error"] = false;
+        $response["message"] = "Sikeres eseménylétrhozás!";
+        echoResponse(201, $response);
+    }
+    else {
+        $response["error"] = true;
+        $response["message"] = $result['errorList'];
+        echoResponse(409, $response);
     }
 });
 
