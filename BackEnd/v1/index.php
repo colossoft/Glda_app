@@ -8,6 +8,7 @@ require '../libs/PHPMailer/PHPMailerAutoload.php';
 \Slim\Slim::registerAutoloader();
 
 $app = new \Slim\Slim();
+//$app->add(new \Slim\Middleware\ContentTypes());
 //$app->response()->header('Content-Type', 'application/json;charset=utf-8');
 
 // Global variables
@@ -30,7 +31,7 @@ function verifyRequiredParams($required_fields) {
     }
     
     foreach ($required_fields as $field) {
-        if(!isset($request_params[$field]) || strlen(trim($request_params[$field])) <= 0) {
+        if(!isset($request_params[$field]) || empty($request_params[$field])) {
             $error = true;
             $error_fields .= $field . ', ';
         }
@@ -518,8 +519,8 @@ $app->post('/createNews/', 'authenticate', function() use($app) {
     global $user_id;
 
     // Check for required params
-    verifyRequiredParams(array('created_date'));
-    
+    verifyRequiredParams(array('created_date', 'news'));
+
     // reading post params
     $created_date = $app->request()->post('created_date');
     $news = $app->request()->post('news');
@@ -530,18 +531,19 @@ $app->post('/createNews/', 'authenticate', function() use($app) {
     // fetch events
     $result = $db->CreateNews($created_date, $news);
 
-    if(!$result['errorList']) {
+    if($result == '') {
         $response["error"] = false;
-        $response["message"] = "Sikeres eseménylétrhozás!";
+        $response["message"] = "Sikeres mentés!";
         echoResponse(201, $response);
     }
     else {
         $response["error"] = true;
-        $response["message"] = $result['errorList'];
+        $response["message"] = $result;
         echoResponse(409, $response);
     }
 });
 
 $app->run();
+// Teszt komment hogy megnézzük felülbassza-e?
 
 ?>

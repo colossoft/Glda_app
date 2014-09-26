@@ -709,46 +709,38 @@ class DbHandler {
     /* ----------------------- 'gilda_news' table method  ----------------------- */
 
     public function CreateNews($created_date, $news) {
-        $errorList = '';
-        $haveError = false;
+        $errorText = '';
 
-        //Check the roomId
+        //Check news params
         if (!$this->CheckNewsParameter($news)) {
-            $errorList .= '\nRosszul adta a híreket.';
-            $haveError = true;
-        }
-        if ($haveError) {
-           error_log($errorList);
-           return array('errorList' => $errorList);
+            $errorText= 'Nem töltött ki minden nyelvet megfelelően!';
+            return $errorText;
         }
 
         $latestNewsId = $this->GetLatestNewsId();
         $newNewsId = $latestNewsId + 1;
 
-        foreach ($news as $key => $value) {
-            // insert query
-            $queryString = 
+        $queryString = 
                 "INSERT INTO gilda_news(newsId, title, newsText, created_date, languageId) 
                              VALUES(?, ?, ?, ?, ?)";
-            $stmt = $this->conn->prepare($queryString);
+
+        $stmt = $this->conn->prepare($queryString);
+
+        foreach ($news as $key => $value) {
             $stmt->bind_param("isssi", $newNewsId, $value['Title'], $value['Text'], $created_date, $value['LanguageId']);
             
             $result = $stmt->execute();
             
-            $stmt->close();
-            
             // Check for successful insertion
-            if($result) {
-                continue;
-            }
-            else {
-                 $errorList .= '\nVáratlan hiba történt.';
-                 error_log($errorList);
-                return array('errorList' => $errorList);
+            if(!$result) {
+                $errorText = 'Váratlan hiba történt. Kérjük próbálja újra!';
+                break;
             }
         }
 
-        return array('errorList' => false);
+        $stmt->close();
+
+        return $errorText;
     }
 
     public function CheckNewsParameter($news) {
