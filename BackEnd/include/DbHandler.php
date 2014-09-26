@@ -726,13 +726,12 @@ class DbHandler {
         $newNewsId = $latestNewsId + 1;
 
         foreach ($news as $key => $value) {
-            $actualNewsId = $newNewsId + $key;
             // insert query
             $queryString = 
                 "INSERT INTO gilda_news(newsId, title, newsText, created_date, languageId) 
                              VALUES(?, ?, ?, ?, ?)";
             $stmt = $this->conn->prepare($queryString);
-            $stmt->bind_param("isssi", $actualNewsId, $value['Title'], $value['Text'], $created_date, $value['LanguageId']);
+            $stmt->bind_param("isssi", $newNewsId, $value['Title'], $value['Text'], $created_date, $value['LanguageId']);
             
             $result = $stmt->execute();
             
@@ -740,7 +739,7 @@ class DbHandler {
             
             // Check for successful insertion
             if($result) {
-                return array('errorList' => false);;
+                continue;
             }
             else {
                  $errorList .= '\nVáratlan hiba történt.';
@@ -748,6 +747,8 @@ class DbHandler {
                 return array('errorList' => $errorList);
             }
         }
+
+        return array('errorList' => false);
     }
 
     public function CheckNewsParameter($news) {
