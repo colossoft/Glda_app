@@ -1,4 +1,4 @@
-gildaApp.controller("newsCtrl", function($scope) {
+gildaApp.controller("newsCtrl", function($scope, $http, baseUrl) {
 
 	$scope.accordionStatuses = [{open:true}];
 
@@ -64,12 +64,15 @@ gildaApp.controller("newsCtrl", function($scope) {
 	$scope.saveNews = function() {
 		console.log($scope.createNews);
 
-		$scope.news.push({
-			Id: 5, 
-			NewsId: 5, 
-			Title: $scope.createNews.news[0].Title, 
-			Text: $scope.createNews.news[0].Text, 
-			Date: '2014-09-21'
-		});
+		// $scope.news.push({
+		// 	Id: 5, 
+		// 	NewsId: 5, 
+		// 	Title: $scope.createNews.news[0].Title, 
+		// 	Text: $scope.createNews.news[0].Text, 
+		// 	Date: '2014-09-21'
+		// });
+
+		$http.post(baseUrl + '/createNews', $scope.createNews)
+			.success()
 	}
 });
