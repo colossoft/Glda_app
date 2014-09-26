@@ -1,4 +1,5 @@
 ﻿var gildaApp = angular.module('gildaApp', ['ngRoute', 'ui.bootstrap'], function($httpProvider) {
+
 	// Use x-www-form-urlencoded Content-Type
 	$httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
 
