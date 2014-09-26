@@ -1,4 +1,4 @@
-gildaApp.controller("newsCtrl", function($scope, $http, baseUrl) {
+gildaApp.controller("newsCtrl", function($scope, $http, $filter, baseUrl) {
 
 	$scope.accordionStatuses = [{open:true}];
 
@@ -48,21 +48,47 @@ gildaApp.controller("newsCtrl", function($scope, $http, baseUrl) {
 		}	
 	];
 
-	$scope.createNews = {
-		Date: null, 
-		news: []
+	function initNews() {
+		$scope.createNews = {
+			created_date: null, 
+			news: []
+		}
+
+		angular.forEach($scope.languages, function(value) {
+			$scope.createNews.news.push({
+				LanguageId: value.Id, 
+				Title: '', 
+				Text: ''
+			});
+		});
 	}
 
-	angular.forEach($scope.languages, function(value) {
-		$scope.createNews.news.push({
-			LanguageId: value.Id, 
-			Title: '', 
-			Text: ''
-		});
-	});
-
+	initNews();
+	
 	$scope.saveNews = function() {
-		console.log($scope.createNews);
+		var hasEmpty = false;
+
+		angular.forEach($scope.createNews.news, function(value) {
+			if(value.Text === '' || value.Title === '') {
+				hasEmpty = true;
+			}
+		});
+
+		if(hasEmpty) {
+			alert('Nem töltött ki minden nyelvet megfelelően!');
+		} else {
+			$scope.createNews.created_date = $filter("date")(new Date(), 'yyyy-MM-dd');
+
+			console.log($scope.createNews);
+
+			$http.post(baseUrl + '/createNews', $scope.createNews)
+				.then(function(data) {
+					console.log(data.data);
+					alert(data.data.message);
+
+					initNews();
+				});
+		}
 
 		// $scope.news.push({
 		// 	Id: 5, 
@@ -71,8 +97,5 @@ gildaApp.controller("newsCtrl", function($scope, $http, baseUrl) {
 		// 	Text: $scope.createNews.news[0].Text, 
 		// 	Date: '2014-09-21'
 		// });
-
-		$http.post(baseUrl + '/createNews', $scope.createNews)
-			.success()
 	}
 });

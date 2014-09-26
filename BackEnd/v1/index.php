@@ -8,6 +8,7 @@ require '../libs/PHPMailer/PHPMailerAutoload.php';
 \Slim\Slim::registerAutoloader();
 
 $app = new \Slim\Slim();
+//$app->add(new \Slim\Middleware\ContentTypes());
 //$app->response()->header('Content-Type', 'application/json;charset=utf-8');
 
 // Global variables
@@ -30,7 +31,7 @@ function verifyRequiredParams($required_fields) {
     }
     
     foreach ($required_fields as $field) {
-        if(!isset($request_params[$field]) || strlen(trim($request_params[$field])) <= 0) {
+        if(!isset($request_params[$field]) || empty($request_params[$field])) {
             $error = true;
             $error_fields .= $field . ', ';
         }
@@ -366,6 +367,9 @@ $app->get('/event/:eventId', 'authenticate', function($eventId) {
     }
 });
 
+/*
+*Create event
+*/
 $app->post('/event/', 'authenticate', function() use($app) {
     global $user_id;
 
@@ -508,6 +512,38 @@ $app->get('/trainers', 'authenticate', function() {
     }
 });
 
+/*
+*Create news
+*/
+$app->post('/createNews/', 'authenticate', function() use($app) {
+    global $user_id;
+
+    // Check for required params
+    verifyRequiredParams(array('created_date', 'news'));
+
+    // reading post params
+    $created_date = $app->request()->post('created_date');
+    $news = $app->request()->post('news');
+    
+    $response = array();
+    $db = new DbHandler();
+
+    // fetch events
+    $result = $db->CreateNews($created_date, $news);
+
+    if($result == '') {
+        $response["error"] = false;
+        $response["message"] = "Sikeres mentés!";
+        echoResponse(201, $response);
+    }
+    else {
+        $response["error"] = true;
+        $response["message"] = $result;
+        echoResponse(409, $response);
+    }
+});
+
 $app->run();
+// Teszt komment hogy megnézzük felülbassza-e?
 
 ?>
