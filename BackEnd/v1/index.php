@@ -393,7 +393,7 @@ $app->post('/event/', 'authenticate', function() use($app) {
 
     if(!$result['errorList']) {
         $response["error"] = false;
-        $response["message"] = "Sikeres eseménylétrhozás!";
+        $response["message"] = "Sikeres eseménylétrehozás!";
         echoResponse(201, $response);
     }
     else {
@@ -502,7 +502,7 @@ $app->get('/trainers', 'authenticate', function() {
 
     if($result != NULL) {
         $response["error"] = false;
-        $response["trainings"] = $result;
+        $response["trainers"] = $result;
         echoResponse(200, $response);
 
     } else {
@@ -539,11 +539,42 @@ $app->post('/createNews/', 'authenticate', function() use($app) {
     else {
         $response["error"] = true;
         $response["message"] = $result;
-        echoResponse(409, $response);
+        echoResponse(500, $response);
+    }
+});
+
+/*
+*Create news
+*/
+$app->post('/createDevaluation/', 'authenticate', function() use($app) {
+    global $user_id;
+
+    // Check for required params
+    verifyRequiredParams(array('start_date', 'end_date', 'devaluation'));
+
+    // reading post params
+    $start_date = $app->request()->post('start_date');
+    $end_date = $app->request()->post('end_date');
+    $devaluation = $app->request()->post('devaluation');
+    
+    $response = array();
+    $db = new DbHandler();
+
+    // fetch events
+    $result = $db->CreateDevaluation($start_date, $end_date, $devaluation);
+
+    if($result == '') {
+        $response["error"] = false;
+        $response["message"] = "Sikeres mentés!";
+        echoResponse(201, $response);
+    }
+    else {
+        $response["error"] = true;
+        $response["message"] = $result;
+        echoResponse(500, $response);
     }
 });
 
 $app->run();
-// Teszt komment hogy megnézzük felülbassza-e?
 
 ?>

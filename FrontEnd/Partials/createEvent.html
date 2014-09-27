@@ -13,7 +13,7 @@
 								<label class="control-label">Terem:</label>
 							</div>
 							<div class="col-sm-8">
-								<select class="form-control" ng-model="eventRoom" name="eventRoom" ng-options="er as er.Name for er in eventRooms">
+								<select class="form-control" ng-model="eventRoom" name="eventRoom" ng-options="er.id as er.name for er in eventRooms">
 									<option value="">- Válassz termet -</option>
 								</select>
 							</div>
@@ -56,7 +56,7 @@
 								<label class="control-label">Edző neve:</label>
 							</div>
 							<div class="col-sm-8">
-								<input type="text" class="form-control" ng-model="selectedTrainer" name="trainer" typeahead="t as t.Name for t in trainers" typeahead-append-to-body="true" typeahead-editable="false" required>
+								<input type="text" class="form-control" ng-model="selectedTrainer" name="trainer" typeahead="t as t.name for t in trainers | filter:$viewValue" typeahead-append-to-body="true" typeahead-editable="false" required>
 							</div>
 						</div>
 
@@ -65,7 +65,7 @@
 								<label class="control-label">Edzés típusa:</label>
 							</div>
 							<div class="col-sm-8">
-								<input type="text" class="form-control" ng-model="selectedTraining" name="training" typeahead="t as t.Name for t in trainings" typeahead-append-to-body="true" typeahead-editable="false" required>
+								<input type="text" class="form-control" ng-model="selectedTraining" name="training" typeahead="t as t.name for t in trainings | filter:$viewValue" typeahead-append-to-body="true" typeahead-editable="false" required>
 							</div>
 						</div>
 

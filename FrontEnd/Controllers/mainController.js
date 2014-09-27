@@ -1,7 +1,7 @@
 gildaApp.controller("mainCtrl", function($scope, $location, $http, sessionService, loginService, locationService, eventListService) {
 
 	// Set authorization
-	$http.defaults.headers.post.Authorization = sessionService.get('userApiKey');
+	$http.defaults.headers.common.Authorization = sessionService.get('userApiKey');
 	
 	$scope.gildaLocations = [
         {

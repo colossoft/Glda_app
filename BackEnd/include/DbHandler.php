@@ -775,6 +775,76 @@ class DbHandler {
         
         return $newsId;
     }
+
+    /* ----------------------- 'gilda_devaluation' table method  ----------------------- */
+
+    public function CreateDevaluation($start_date, $end_date, $devaluation) {
+        $errorText = '';
+
+        //Check news params
+        if (!$this->CheckDevaluationParameter($devaluation)) {
+            $errorText= 'Nem töltött ki minden nyelvet megfelelően!';
+            return $errorText;
+        }
+
+        $latestDevaluationId = $this->GetLatestDevaluationId();
+        $newDevaluationId = $latestDevaluationId + 1;
+
+        $queryString = 
+                "INSERT INTO gilda_devaluation(devaluationId, title, text, start_date, end_date, languageId) 
+                             VALUES(?, ?, ?, ?, ?, ?)";
+
+        $stmt = $this->conn->prepare($queryString);
+
+        foreach ($devaluation as $key => $value) {
+            $stmt->bind_param("issssi", $newDevaluationId, $value['Title'], $value['Text'], $start_date, $end_date, $value['LanguageId']);
+            
+            $result = $stmt->execute();
+            
+            // Check for successful insertion
+            if(!$result) {
+                $errorText = 'Váratlan hiba történt. Kérjük próbálja újra!';
+                break;
+            }
+        }
+
+        $stmt->close();
+
+        return $errorText;
+    }
+
+    public function CheckDevaluationParameter($news) {
+        foreach ($news as $key => $value) {
+            if ($value['Title'] == NULL || $value['Title'] == '' || $value['Text'] == NULL || $value['Text'] == '') {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public function GetLatestDevaluationId() {
+        $queryString = "Select devaluationId From gilda_devaluation Order By devaluationId Desc Limit 1 ";
+        $stmt = $this->conn->prepare($queryString);
+        
+        $stmt->execute();
+        
+        $stmt->bind_result($devaluationId);
+
+        $stmt->store_result();
+        
+        $num_rows = $stmt->num_rows;
+
+        if ($num_rows == 0) {
+           return 0;
+        }
+        
+        $stmt->fetch();
+        
+        $stmt->close();
+        
+        return $devaluationId;
+    }
 }
 
 ?>
