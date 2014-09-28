@@ -166,6 +166,31 @@ class DbHandler {
             return NULL;
         }
     }
+
+    /**
+     * Return name of user by user_id
+     * @param String $email User email id
+     */
+    public function GetUserNameById($user_id) {
+        $queryString = "SELECT CONCAT(first_name, ' ', last_name)
+                            FROM gilda_user WHERE id = ?";
+        $stmt = $this->conn->prepare($queryString);
+        
+        $stmt->bind_param("i", $user_id);
+        
+        if($stmt->execute()) {
+            $stmt->bind_result($name);
+            
+            $stmt->fetch();
+            
+            $stmt->close();
+            
+            return $name;
+        }
+        else {
+            return NULL;
+        }
+    }
     
     /**
      * Fetching user api key
@@ -432,6 +457,33 @@ class DbHandler {
     }
 
     /**
+     * Fetching information of event
+     * @param int $event_id id of the event
+     */
+    public function GetInformationOfEventByEventId($event_id) {
+        $queryString = "SELECT tri.name AS Training, CONCAT(tr.last_name, ' ', tr.first_name) AS Trainer, 
+                        ev.start_time, ev.end_time 
+                        From gilda_events AS ev 
+                        Inner Join gilda_trainer AS tr ON tr.Id = ev.Trainer 
+                        Inner Join gilda_training AS tri ON tri.Id = ev.Training 
+                        Where ev.Id = ?";
+        $stmt = $this->conn->prepare($queryString);
+        $stmt->bind_param("i", $event_id);
+        
+        $stmt->execute();
+
+        $event = array();
+        
+        $stmt->bind_result($event['training'], $event['trainer'], $event['start_time'], $event['end_time']);
+        
+        $stmt->fetch();
+        
+        $stmt->close();
+        
+        return $event;
+    }
+
+    /**
     * Create a new event
     */
     public function CreateEvent($roomId, $date, $startTime, $endTime, $trainerId, $trainingId, $spots) {
@@ -502,6 +554,7 @@ class DbHandler {
             $stmt->close();
 
             if($result) {
+                $this->AddLog($event_id, $user_id, true);
 				return array('status' => RESERVATION_CREATED_SUCCESSFULLY, 'free_spots' => ($free_spots-1));
             }
             else {
@@ -532,6 +585,7 @@ class DbHandler {
         $stmt->close();
         
         if($num_affected_rows > 0) {
+            $this->AddLog($event_id, $user_id, false);
 			return array('status' => true, 'free_spots' => ($free_spots+1));
 		}
 		else {
@@ -559,6 +613,8 @@ class DbHandler {
         $stmt->bind_param("ii", $user_id, $eventId);
         
         $stmt->execute();
+
+        $result = array();
         
         $events = array();
         
@@ -578,11 +634,13 @@ class DbHandler {
             array_push($events, $tmp);
         }
 
-        $events = $this->GetReservationsOfEvent($eventId, $events);
+        array_push($result, $events);
+
+        $result = $this->GetReservationsOfEvent($eventId, $result);
         
         $stmt->close();
         
-        return $events;
+        return $result;
     }
 
     /**
@@ -754,7 +812,7 @@ class DbHandler {
     }
 
     public function GetLatestNewsId() {
-        $queryString = "Select newsId From gilda_news Order By newsId Desc Limit 1 ";
+        $queryString = "SELECT newsId From gilda_news Order By newsId Desc Limit 1 ";
         $stmt = $this->conn->prepare($queryString);
         
         $stmt->execute();
@@ -824,7 +882,7 @@ class DbHandler {
     }
 
     public function GetLatestDevaluationId() {
-        $queryString = "Select devaluationId From gilda_devaluation Order By devaluationId Desc Limit 1 ";
+        $queryString = "SELECT devaluationId From gilda_devaluation Order By devaluationId Desc Limit 1 ";
         $stmt = $this->conn->prepare($queryString);
         
         $stmt->execute();
@@ -845,6 +903,36 @@ class DbHandler {
         
         return $devaluationId;
     }
+
+     /* ----------------------- 'gilda_log' table method  ----------------------- */
+
+     public function AddLog($event_id, $user_id, $isCreated) {
+        
+        $name = $this->GetUserNameById($user_id);
+        $event = $this->GetInformationOfEventByEventId($event_id);
+        $created_date = date("Y-m-d");
+        $operation = '';
+
+        if ($isCreated) {
+            $operation .= 'Feliratkozott a(z) ' . $event['training'] . ' eseményre, amit ' . $event['trainer'] . ' tart '
+             . $event['start_time'] . ' -tól ' . $event['end_time'] . ' -ig';
+            var_dump($operation);
+
+        } else {
+            $operation .= 'Leiratkozott a(z) ' . $event['training'] . ' eseményről, amit ' . $event['trainer'] . ' tart '
+             . $event['start_time'] . ' -tól ' . $event['end_time'] . ' -ig';
+            var_dump($operation);
+        }
+
+        $queryString = 
+            "INSERT INTO gilda_log(name, created_date, operation) 
+                         VALUES(?, ?, ?)";
+
+        $stmt = $this->conn->prepare($queryString);
+        $stmt->bind_param('sss', $name, $created_date, $operation);
+        $stmt->execute();
+        $stmt->close();
+     }
 }
 
 ?>

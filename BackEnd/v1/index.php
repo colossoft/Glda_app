@@ -408,7 +408,7 @@ $app->post('/event/', 'authenticate', function() use($app) {
  * method: POST
  * params: $event_id
  */
-$app->post('/reservation', 'authenticate', function() use($app) {
+$app->post('/reservation/', 'authenticate', function() use($app) {
     global $user_id;
     
     // Check for required params
