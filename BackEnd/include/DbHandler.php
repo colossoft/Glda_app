@@ -544,7 +544,7 @@ class DbHandler {
     */
     public function GetReservationOfEventByEventId($eventId, $user_id) {
         $queryString = "SELECT ev.id, ev.date, ev.start_time, ev.end_time, 
-                                CONCAT(tr.last_name, ' ', tr.first_name) AS trainer, tri.name AS training, ev.spots,
+                        CONCAT(tr.last_name, ' ', tr.first_name) AS trainer, tri.name AS training, ev.spots,
                         ev.spots - (SELECT COUNT(*) FROM gilda_reservations WHERE event_id=ev.id) AS free_spots, 
                         CASE
                             WHEN (SELECT COUNT(*) FROM gilda_reservations WHERE event_id=ev.id AND user_id=?) > 0
