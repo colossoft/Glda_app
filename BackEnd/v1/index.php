@@ -321,13 +321,11 @@ $app->get('/events/:room_id', 'authenticate', function($room_id) {
  * url /events/:room_id
  */
 $app->get('/events/:room_id/:day', 'authenticate', function($room_id, $day) {
-    global $user_id;
-    
     $response = array();
     $db = new DbHandler();
 
     // fetch events
-    $result = $db->getEventsByRoomIdAndDay($room_id, $user_id, $day);
+    $result = $db->getEventsByRoomIdAndDay($room_id, $day);
 
     if(count($result) == 0 || $result != NULL) {
         $response["error"] = false;
@@ -336,7 +334,7 @@ $app->get('/events/:room_id/:day', 'authenticate', function($room_id, $day) {
 
     } else {
         $response["error"] = true;
-        $response["message"] = "The requested resource doesn't exists";
+        $response["message"] = "Az események lekérése sikertelen!";
         echoResponse(404, $response);
     }
 });

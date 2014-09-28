@@ -369,38 +369,33 @@ class DbHandler {
      * @param int $room_id id of the room
      * @param int $user_id id of the user
      */
-    public function getEventsByRoomIdAndDay($room_id, $user_id, $day) {
+    public function getEventsByRoomIdAndDay($room_id, $day) {
         $queryString = "SELECT ev.id, ev.date, ev.start_time, ev.end_time, 
                                 tr.name AS trainer, tri.name AS training, ev.spots,
-                        ev.spots - (SELECT COUNT(*) FROM gilda_reservations WHERE event_id=ev.id) AS free_spots, 
-                        CASE
-                            WHEN (SELECT COUNT(*) FROM gilda_reservations WHERE event_id=ev.id AND user_id=?) > 0
-                            THEN 1
-                            ELSE 0
-                        END AS is_reserved 
+                        ev.spots - (SELECT COUNT(*) FROM gilda_reservations WHERE event_id=ev.id) AS free_spots 
                         FROM gilda_events AS ev 
                         LEFT JOIN gilda_trainer AS tr ON ev.trainer = tr.id
                         LEFT JOIN gilda_training AS tri ON ev.training = tri.id
-                        WHERE room_id=? AND date>=? ORDER BY date, start_time";
+                        WHERE room_id=? AND date=? ORDER BY date, start_time";
         $stmt = $this->conn->prepare($queryString);
-        $stmt->bind_param("iis", $user_id, $room_id, $day);
+        $stmt->bind_param("is", $room_id, $day);
         
         $stmt->execute();
         
         $events = array();
         
-        $stmt->bind_result($id, $date, $start_time, $end_time, $trainer, $training, $spots, $free_spots, $is_reserved);
+        $stmt->bind_result($id, $date, $start_time, $end_time, $trainer, $training, $spots, $free_spots);
         
         while($stmt->fetch()) {
             $tmp = array("id" => $id, 
                          "date" => $date, 
-                         "start_time" => $start_time, 
-                         "end_time" => $end_time, 
-                         "trainer" => $trainer, 
-                         "training" => $training,
-                         "spots" => $spots,
-                         "free_spots" => $free_spots, 
-                         "is_reserved" => $is_reserved);
+                         "startTime" => $start_time, 
+                         "endTime" => $end_time, 
+                         "trainerName" => $trainer, 
+                         "trainingName" => $training, 
+                         "spots" => $spots, 
+                         "reservedSpots" => $spots - $free_spots, 
+                         "freeSpots" => $free_spots);
             
             array_push($events, $tmp);
         }
