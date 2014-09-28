@@ -325,7 +325,7 @@ class DbHandler {
      */
     public function getEventsByRoomId($room_id, $user_id) {
         $queryString = "SELECT ev.id, ev.date, ev.start_time, ev.end_time, 
-                                tr.name AS trainer, tri.name AS training, ev.spots,
+                                CONCAT(tr.last_name, ' ', tr.first_name) AS trainer, tri.name AS training, ev.spots,
 					    ev.spots - (SELECT COUNT(*) FROM gilda_reservations WHERE event_id=ev.id) AS free_spots, 
                         CASE
                             WHEN (SELECT COUNT(*) FROM gilda_reservations WHERE event_id=ev.id AND user_id=?) > 0
@@ -371,7 +371,7 @@ class DbHandler {
      */
     public function getEventsByRoomIdAndDay($room_id, $user_id, $day) {
         $queryString = "SELECT ev.id, ev.date, ev.start_time, ev.end_time, 
-                                tr.name AS trainer, tri.name AS training, ev.spots,
+                                CONCAT(tr.last_name, ' ', tr.first_name) AS trainer, tri.name AS training, ev.spots,
                         ev.spots - (SELECT COUNT(*) FROM gilda_reservations WHERE event_id=ev.id) AS free_spots, 
                         CASE
                             WHEN (SELECT COUNT(*) FROM gilda_reservations WHERE event_id=ev.id AND user_id=?) > 0
@@ -543,7 +543,7 @@ class DbHandler {
     */
     public function GetReservationOfEventByEventId($eventId, $user_id) {
         $queryString = "SELECT ev.id, ev.date, ev.start_time, ev.end_time, 
-                                tr.name AS trainer, tri.name AS training, ev.spots,
+                                CONCAT(tr.last_name, ' ', tr.first_name) AS trainer, tri.name AS training, ev.spots,
                         ev.spots - (SELECT COUNT(*) FROM gilda_reservations WHERE event_id=ev.id) AS free_spots, 
                         CASE
                             WHEN (SELECT COUNT(*) FROM gilda_reservations WHERE event_id=ev.id AND user_id=?) > 0
@@ -645,11 +645,10 @@ class DbHandler {
         
         $trainers = array();
         
-        $stmt->bind_result($id, $name, $email);
-        
+        $stmt->bind_result($id, $first_name, $email, $last_name);
         while($stmt->fetch()) {
             $tmp = array("id" => $id, 
-                         "name" => $name,
+                         "name" => $last_name. ' '. $first_name,
                          "email" => $email);
             
             array_push($trainers, $tmp);
