@@ -370,8 +370,8 @@ class DbHandler {
      * @param int $user_id id of the user
      */
     public function getEventsByRoomIdAndDay($room_id, $user_id, $day) {
-        $queryString = "SELECT ev.id, ev.date, ev.start_time, ev.end_time, 
-                                CONCAT(tr.last_name, ' ', tr.first_name) AS trainer, tri.name AS training, ev.spots,
+        $queryString = "SELECT ev.id, ev.date, ev.start_time, ev.end_time,
+                        CONCAT(tr.last_name, ' ', tr.first_name) AS trainer, tri.name AS training, ev.spots,
                         ev.spots - (SELECT COUNT(*) FROM gilda_reservations WHERE event_id=ev.id) AS free_spots, 
                         CASE
                             WHEN (SELECT COUNT(*) FROM gilda_reservations WHERE event_id=ev.id AND user_id=?) > 0
@@ -394,12 +394,13 @@ class DbHandler {
         while($stmt->fetch()) {
             $tmp = array("id" => $id, 
                          "date" => $date, 
-                         "start_time" => $start_time, 
-                         "end_time" => $end_time, 
-                         "trainer" => $trainer, 
-                         "training" => $training,
-                         "spots" => $spots,
-                         "free_spots" => $free_spots, 
+                         "startTime" => $start_time, 
+                         "endTime" => $end_time, 
+                         "trainerName" => $trainer, 
+                         "trainingName" => $training, 
+                         "spots" => $spots, 
+                         "reservedSpots" => $spots - $free_spots, 
+                         "freeSpots" => $free_spots,
                          "is_reserved" => $is_reserved);
             
             array_push($events, $tmp);
