@@ -718,6 +718,29 @@ class DbHandler {
         return $trainers;
     }
 
+        public function CreateTrainer($first_name, $last_name, $email) {
+        //Check training params
+        if ($first_name == NULL || $first_name == '' || $last_name == NULL || $last_name == '' 
+            || $email == NULL || $email == '') {
+            return NULL;
+        }
+
+        $queryString = 
+                "INSERT INTO gilda_trainer(first_name, last_name, email) 
+                             VALUES(?, ?, ?)";
+
+        $stmt = $this->conn->prepare($queryString);
+        $stmt->bind_param("sss", $first_name, $last_name, $email);
+        $result = $stmt->execute();
+        $stmt->close();
+
+        if ($result) {
+            return $result;
+        } else {
+            return NULL;
+        }   
+    }
+
     /* ----------------------- 'gilda_training' table method  ----------------------- */
 
      /**
@@ -762,6 +785,28 @@ class DbHandler {
         $stmt->close();
         
         return $trainings;
+    }
+
+    public function CreateTraining($name) {
+        //Check training params
+        if ($name == NULL || $name == '') {
+            return NULL;
+        }
+
+        $queryString = 
+                "INSERT INTO gilda_training(name) 
+                             VALUES(?)";
+
+        $stmt = $this->conn->prepare($queryString);
+        $stmt->bind_param("s", $name);
+        $result = $stmt->execute();
+        $stmt->close();
+
+        if ($result) {
+            return $result;
+        } else {
+            return NULL;
+        }   
     }
 
     /* ----------------------- 'gilda_news' table method  ----------------------- */

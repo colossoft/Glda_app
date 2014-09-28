@@ -492,6 +492,31 @@ $app->get('/trainings', 'authenticate', function() {
     }
 });
 
+$app->post('/training/', 'authenticate', function() use($app){
+    // Check for required params
+    verifyRequiredParams(array('name'));
+    
+    // reading post params
+    $name = $app->request()->post('name');
+    
+    $response = array();
+    $db = new DbHandler();
+
+    // fetch events
+    $result = $db->CreateTraining($name);
+
+    if($result != NULL) {
+        $response["error"] = false;
+        $response["message"] = "Sikeres mentés!";
+        echoResponse(201, $response);
+    }
+    else {
+        $response["error"] = true;
+        $response["message"] = "Sajnos nem sikerült létrehozni az edzést!";
+        echoResponse(500, $response);
+    }
+});
+
 $app->get('/trainers', 'authenticate', function() {
     $response = array();
     $db = new DbHandler();
@@ -508,6 +533,33 @@ $app->get('/trainers', 'authenticate', function() {
         $response["error"] = true;
         $response["message"] = "The requested resource doesn't exists";
         echoResponse(404, $response);
+    }
+});
+
+$app->post('/trainer/', 'authenticate', function() use($app) {
+    // Check for required params
+    verifyRequiredParams(array('last_name', 'first_name', 'email'));
+    
+    // reading post params
+    $last_name = $app->request()->post('last_name');
+    $first_name = $app->request()->post('first_name');
+    $email = $app->request()->post('email');
+    
+    $response = array();
+    $db = new DbHandler();
+
+    // fetch events
+    $result = $db->CreateTrainer($first_name, $last_name, $email);
+
+    if($result != NULL) {
+        $response["error"] = false;
+        $response["message"] = "Sikeres mentés!";
+        echoResponse(201, $response);
+    }
+    else {
+        $response["error"] = true;
+        $response["message"] = "Sajnos nem sikerült létrehozni az edzőt!";
+        echoResponse(500, $response);
     }
 });
 
