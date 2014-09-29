@@ -60,9 +60,9 @@ gildaApp.controller("eventsListCtrl", function($scope, $rootScope, $location, $h
 					if(data.events.length === 0) {
 						$scope.eventsListAlertMessage = "A megadott teremben ebben az időpontban nem lesznek edzések!";
 						$scope.eventsAlertShow = true;
-					} else {
-						$scope.events = data.events;
 					}
+
+					$scope.events = data.events;
 
 					eventListService.setRoom(room);
 					eventListService.setDate(date);

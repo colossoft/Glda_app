@@ -340,6 +340,60 @@ class DbHandler {
         
         return $num_rows > 0;
     }
+
+    public function CreateRoom($name, $locationId) {
+        $queryString = 
+                "INSERT INTO gilda_rooms(location_id, name) 
+                             VALUES(?, ?)";
+
+        $stmt = $this->conn->prepare($queryString);
+        $stmt->bind_param("is", $locationId, $name);
+        $result = $stmt->execute();
+        $stmt->close();
+
+        if ($result) {
+            return $result;
+        } else {
+            return NULL;
+        }
+    }
+
+    public function DeleteRoom($roomId) {
+        if($this->CheckRoom($roomId) > 0) {
+            return false;
+        } else {
+            $queryString = "DELETE FROM gilda_rooms WHERE id=?";
+            $stmt = $this->conn->prepare($queryString);
+            $stmt->bind_param("i", $roomId);
+
+            $stmt->execute();
+
+            $num_affected_rows = $stmt->affected_rows;
+            
+            $stmt->close();
+
+            if($num_affected_rows > 0)
+                return true;
+            else 
+                return false;
+        }
+    }
+
+    public function CheckRoom($roomId) {
+        $queryString = "SELECT COUNT(*) FROM gilda_events WHERE room_id=?";
+        $stmt = $this->conn->prepare($queryString);
+        $stmt->bind_param("i", $roomId);
+        
+        $stmt->execute();
+        
+        $stmt->bind_result($count);
+
+        $stmt->fetch();
+        
+        $stmt->close();
+
+        return $count;
+    }
     
     /* ----------------------- 'gilda_events' table method  ----------------------- */
     
@@ -394,27 +448,22 @@ class DbHandler {
      * @param int $room_id id of the room
      * @param int $user_id id of the user
      */
-    public function getEventsByRoomIdAndDay($room_id, $user_id, $day) {
+    public function getEventsByRoomIdAndDay($room_id, $day) {
         $queryString = "SELECT ev.id, ev.date, ev.start_time, ev.end_time,
                         CONCAT(tr.last_name, ' ', tr.first_name) AS trainer, tri.name AS training, ev.spots,
-                        ev.spots - (SELECT COUNT(*) FROM gilda_reservations WHERE event_id=ev.id) AS free_spots, 
-                        CASE
-                            WHEN (SELECT COUNT(*) FROM gilda_reservations WHERE event_id=ev.id AND user_id=?) > 0
-                            THEN 1
-                            ELSE 0
-                        END AS is_reserved 
+                        ev.spots - (SELECT COUNT(*) FROM gilda_reservations WHERE event_id=ev.id) AS free_spots
                         FROM gilda_events AS ev 
                         LEFT JOIN gilda_trainer AS tr ON ev.trainer = tr.id
                         LEFT JOIN gilda_training AS tri ON ev.training = tri.id
-                        WHERE room_id=? AND date>=? ORDER BY date, start_time";
+                        WHERE room_id=? AND date=? ORDER BY date, start_time";
         $stmt = $this->conn->prepare($queryString);
-        $stmt->bind_param("iis", $user_id, $room_id, $day);
+        $stmt->bind_param("is", $room_id, $day);
         
         $stmt->execute();
         
         $events = array();
         
-        $stmt->bind_result($id, $date, $start_time, $end_time, $trainer, $training, $spots, $free_spots, $is_reserved);
+        $stmt->bind_result($id, $date, $start_time, $end_time, $trainer, $training, $spots, $free_spots);
         
         while($stmt->fetch()) {
             $tmp = array("id" => $id, 
@@ -425,8 +474,7 @@ class DbHandler {
                          "trainingName" => $training, 
                          "spots" => $spots, 
                          "reservedSpots" => $spots - $free_spots, 
-                         "freeSpots" => $free_spots,
-                         "is_reserved" => $is_reserved);
+                         "freeSpots" => $free_spots);
             
             array_push($events, $tmp);
         }
@@ -596,49 +644,32 @@ class DbHandler {
      /**
     * Fetching all reservation of evet by eventId
     */
-    public function GetReservationOfEventByEventId($eventId, $user_id) {
+    public function GetReservationsOfEventByEventId($eventId) {
         $queryString = "SELECT ev.id, ev.date, ev.start_time, ev.end_time, 
                         CONCAT(tr.last_name, ' ', tr.first_name) AS trainer, tri.name AS training, ev.spots,
-                        ev.spots - (SELECT COUNT(*) FROM gilda_reservations WHERE event_id=ev.id) AS free_spots, 
-                        CASE
-                            WHEN (SELECT COUNT(*) FROM gilda_reservations WHERE event_id=ev.id AND user_id=?) > 0
-                            THEN 1
-                            ELSE 0
-                        END AS is_reserved  
+                        ev.spots - (SELECT COUNT(*) FROM gilda_reservations WHERE event_id=ev.id) AS free_spots   
                         FROM gilda_events AS ev 
                         LEFT JOIN gilda_trainer AS tr ON ev.trainer = tr.id
                         LEFT JOIN gilda_training AS tri ON ev.training = tri.id  
                         WHERE ev.id=?";
         $stmt = $this->conn->prepare($queryString);
-        $stmt->bind_param("ii", $user_id, $eventId);
+        $stmt->bind_param("i", $eventId);
         
         $stmt->execute();
 
+        $event = array();
+        
+        $stmt->bind_result($event['id'], $event['date'], $event['startTime'], $event['endTime'], $event['trainerName'], $event['trainingName'], $event['spots'], $event['freeSpots']);
+        
+        $stmt->fetch();
+
+        $stmt->close();
+
         $result = array();
         
-        $events = array();
-        
-        $stmt->bind_result($id, $date, $start_time, $end_time, $trainer, $training, $spots, $free_spots, $is_reserved);
-        
-        while($stmt->fetch()) {
-            $tmp = array("id" => $id, 
-                         "date" => $date, 
-                         "start_time" => $start_time, 
-                         "end_time" => $end_time, 
-                         "trainer" => $trainer, 
-                         "training" => $training,
-                         "spots" => $spots,
-                         "free_spots" => $free_spots, 
-                         "is_reserved" => $is_reserved);
-            
-            array_push($events, $tmp);
-        }
+        $result["event"] = $event;
 
-        array_push($result, $events);
-
-        $result = $this->GetReservationsOfEvent($eventId, $result);
-        
-        $stmt->close();
+        $result["reservations"] = $this->GetReservationsOfEvent($eventId);
         
         return $result;
     }
@@ -646,30 +677,33 @@ class DbHandler {
     /**
     * Fetching the reservations of event by eventId and put the $events array
     */
-    public function GetReservationsOfEvent($eventId, $events) {
-        $queryString = "SELECT ev.date, CONCAT(us.first_name, ' ', us.last_name) AS name, us.email
-                        FROM gilda_events AS ev 
-                        LEFT JOIN gilda_reservations AS rv ON rv.event_id = ev.id
-                        LEFT JOIN gilda_user AS us ON rv.user_id = us.id
+    public function GetReservationsOfEvent($eventId) {
+        $queryString = "SELECT res.time AS date, us.first_name AS firstName, us.last_name AS lastName, us.email
+                        FROM gilda_reservations AS res 
+                        LEFT JOIN gilda_events AS ev ON res.event_id = ev.id
+                        LEFT JOIN gilda_user AS us ON res.user_id = us.id
                         WHERE ev.id = ?";
         $stmt = $this->conn->prepare($queryString);
         $stmt->bind_param("i", $eventId);
         
         $stmt->execute();
         
-        $stmt->bind_result($date, $name, $email);
+        $stmt->bind_result($date, $firstName, $lastName, $email);
         
+        $reservations = array();
+
         while($stmt->fetch()) {
             $tmp = array("date" => $date,
-                         "name" => $name,
+                         "firstName" => $firstName,
+                         "lastName" => $lastName,
                          "email" => $email);
             
-            array_push($events, $tmp);
+            array_push($reservations, $tmp);
         }
 
         $stmt->close();
 
-        return $events;
+        return $reservations;
     }
 
     /* ----------------------- 'gilda_trainer' table method  ----------------------- */
@@ -718,7 +752,7 @@ class DbHandler {
         return $trainers;
     }
 
-        public function CreateTrainer($first_name, $last_name, $email) {
+    public function CreateTrainer($first_name, $last_name, $email) {
         //Check training params
         if ($first_name == NULL || $first_name == '' || $last_name == NULL || $last_name == '' 
             || $email == NULL || $email == '') {
@@ -766,7 +800,7 @@ class DbHandler {
     * Fetching all trainings
     */
     public function GetAllTrainings() {
-        $queryString = "SELECT * FROM gilda_training";
+        $queryString = "SELECT * FROM gilda_training ORDER BY name";
         $stmt = $this->conn->prepare($queryString);
         
         $stmt->execute();
@@ -806,7 +840,44 @@ class DbHandler {
             return $result;
         } else {
             return NULL;
-        }   
+        }
+    }
+
+    public function DeleteTraining($trainingId) {
+        if($this->CheckTraining($trainingId) > 0) {
+            return false;
+        } else {
+            $queryString = "DELETE FROM gilda_training WHERE id=?";
+            $stmt = $this->conn->prepare($queryString);
+            $stmt->bind_param("i", $trainingId);
+
+            $stmt->execute();
+
+            $num_affected_rows = $stmt->affected_rows;
+            
+            $stmt->close();
+
+            if($num_affected_rows > 0)
+                return true;
+            else 
+                return false;
+        }
+    }
+
+    public function CheckTraining($trainingId) {
+        $queryString = "SELECT COUNT(*) FROM gilda_events WHERE training=?";
+        $stmt = $this->conn->prepare($queryString);
+        $stmt->bind_param("i", $trainingId);
+        
+        $stmt->execute();
+        
+        $stmt->bind_result($count);
+
+        $stmt->fetch();
+        
+        $stmt->close();
+        
+        return $count;
     }
 
     /* ----------------------- 'gilda_news' table method  ----------------------- */

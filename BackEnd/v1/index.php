@@ -289,6 +289,51 @@ $app->get('/rooms/:id', 'authenticate', function($location_id) {
     }
 });
 
+$app->post('/rooms', 'authenticate', function() use($app){
+    // Check for required params
+    verifyRequiredParams(array('name', 'locationId'));
+    
+    // reading post params
+    $name = $app->request()->post('name');
+    $locationId = $app->request()->post('locationId');
+    
+    $response = array();
+    $db = new DbHandler();
+
+    // fetch events
+    $result = $db->CreateRoom($name, $locationId);
+
+    if($result != NULL) {
+        $response["error"] = false;
+        $response["message"] = "Sikeres mentés!";
+        echoResponse(201, $response);
+    }
+    else {
+        $response["error"] = true;
+        $response["message"] = "Sajnos nem sikerült létrehozni a megadott termet!";
+        echoResponse(500, $response);
+    }
+});
+
+$app->delete('/rooms/:roomId', 'authenticate', function($roomId) use($app){
+    
+    $response = array();
+    $db = new DbHandler();
+
+    $result = $db->DeleteRoom($roomId);
+
+    if($result) {
+        $response["error"] = false;
+        $response["message"] = "Sikeres törlés!";
+        echoResponse(201, $response);
+    }
+    else {
+        $response["error"] = true;
+        $response["message"] = "A terem törlése nem lehetséges, mert eseményekhez van hozzárendelve!";
+        echoResponse(405, $response);
+    }
+});
+
 /**
  * Listing events by room_id
  * method GET
@@ -321,12 +366,12 @@ $app->get('/events/:room_id', 'authenticate', function($room_id) {
  * url /events/:room_id
  */
 $app->get('/events/:room_id/:day', 'authenticate', function($room_id, $day) {
-    global $user_id;
+    
     $response = array();
     $db = new DbHandler();
 
     // fetch events
-    $result = $db->getEventsByRoomIdAndDay($room_id, $user_id, $day);
+    $result = $db->getEventsByRoomIdAndDay($room_id, $day);
 
     if(count($result) == 0 || $result != NULL) {
         $response["error"] = false;
@@ -346,17 +391,16 @@ $app->get('/events/:room_id/:day', 'authenticate', function($room_id, $day) {
  * url /events/:room_id
  */
 $app->get('/event/:eventId', 'authenticate', function($eventId) {
-    global $user_id;
     
     $response = array();
     $db = new DbHandler();
 
     // fetch events
-    $result = $db->GetReservationOfEventByEventId($eventId, $user_id);
+    $result = $db->GetReservationsOfEventByEventId($eventId);
 
     if(count($result) == 0 || $result != NULL) {
         $response["error"] = false;
-        $response["events"] = $result;
+        $response["eventDetails"] = $result;
         echoResponse(200, $response);
 
     } else {
@@ -492,7 +536,7 @@ $app->get('/trainings', 'authenticate', function() {
     }
 });
 
-$app->post('/training/', 'authenticate', function() use($app){
+$app->post('/training', 'authenticate', function() use($app){
     // Check for required params
     verifyRequiredParams(array('name'));
     
@@ -512,8 +556,27 @@ $app->post('/training/', 'authenticate', function() use($app){
     }
     else {
         $response["error"] = true;
-        $response["message"] = "Sajnos nem sikerült létrehozni az edzést!";
+        $response["message"] = "Sajnos nem sikerült létrehozni a megadott edzéstípust!";
         echoResponse(500, $response);
+    }
+});
+
+$app->delete('/training/:trainingId', 'authenticate', function($trainingId) use($app){
+    
+    $response = array();
+    $db = new DbHandler();
+
+    $result = $db->DeleteTraining($trainingId);
+
+    if($result) {
+        $response["error"] = false;
+        $response["message"] = "Sikeres törlés!";
+        echoResponse(201, $response);
+    }
+    else {
+        $response["error"] = true;
+        $response["message"] = "Az edzéstípus törlése nem lehetséges, mert eseményekhez van hozzárendelve!";
+        echoResponse(405, $response);
     }
 });
 

@@ -61,7 +61,13 @@ gildaApp.controller("createEventCtrl", function($scope, $http, $filter, baseUrl,
 		$http.post(baseUrl + '/event', newEvent)
 			.success(function(data) {
 				console.log(data);
-				alert(data.message);
+
+				$scope.eventRoom = null;
+				$scope.selectedTrainer = null;
+				$scope.selectedTraining = null;
+				$scope.spots = null;
+
+				alert(data.message);			
 			})
 			.error(function(data) {
 				alert(data.message);

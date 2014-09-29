@@ -3,23 +3,44 @@ gildaApp.controller("roomsCtrl", function($scope, $http, baseUrl, locationServic
 	$scope.room = {}
 
 	// Termek
-	$http.get(baseUrl + '/rooms/' + locationService.getLocationId())
-		.success(function(data) {
-			$scope.rooms = data.rooms;
-		})
-		.error(function(data) {
-			alert(data.message);
-		});
+	function getRooms() {
+		$http.get(baseUrl + '/rooms/' + locationService.getLocationId())
+			.success(function(data) {
+				$scope.rooms = data.rooms;
+			})
+			.error(function(data) {
+				alert(data.message);
+			});
+	}
+
+	getRooms();
 	
 	// Terem törlése
-	$scope.deleteRoom = function(index) {
-		$scope.rooms.splice(index, 1);
+	$scope.deleteRoom = function(roomId) {
+		$http.delete(baseUrl + '/rooms/' + roomId)
+			.success(function(data) {
+				getRooms();
+
+				alert(data.message);
+			})
+			.error(function(data) {
+				alert(data.message);
+			});
 	}
 
 	// Edzés mentése
 	$scope.saveRoom = function() {
-		$scope.rooms.push({id: 1, name: $scope.room.roomName});
-		alert("Terem hozzáadása sikeres!");
-		$scope.room.roomName = null;
+		$scope.room.locationId = locationService.getLocationId();
+
+		$http.post(baseUrl + '/rooms', $scope.room)
+			.success(function(data) {
+				$scope.room.name = null;
+				getRooms();
+
+				alert(data.message);
+			})
+			.error(function(data) {
+				alert(data.message);
+			});
 	}
 });

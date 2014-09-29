@@ -7,7 +7,7 @@
 	        		<ul class="list-group">
 	        			<li class="list-group-item" ng-repeat="room in rooms">
 	        				{{room.name}}
-	        				<span class="glyphicon glyphicon-remove pull-right" ng-click="deleteRoom($index)"></span>
+	        				<span class="glyphicon glyphicon-remove pull-right" ng-click="deleteRoom(rooms[$index].id)"></span>
 	        			</li>
 	        		</ul>
 	        	</tab>
@@ -18,7 +18,7 @@
 								<label class="control-label">Terem neve:</label>
 							</div>
 							<div class="col-sm-9">
-								<input type="text" class="form-control" name="roomName" ng-model="room.roomName" required />
+								<input type="text" class="form-control" name="roomName" ng-model="room.name" required />
 							</div>
 						</div>
 						<div class="row">

@@ -7,7 +7,7 @@
 	        		<ul class="list-group">
 	        			<li class="list-group-item" ng-repeat="training in trainings">
 	        				{{training.name}}
-	        				<span class="glyphicon glyphicon-remove pull-right" ng-click="deleteTraining($index)"></span>
+	        				<span class="glyphicon glyphicon-remove pull-right" ng-click="deleteTraining(trainings[$index].id)"></span>
 	        			</li>
 	        		</ul>
 	        	</tab>
@@ -18,7 +18,7 @@
 								<label class="control-label">Edzés neve:</label>
 							</div>
 							<div class="col-sm-9">
-								<input type="text" class="form-control" name="trainingName" ng-model="training.trainingName" required />
+								<input type="text" class="form-control" name="trainingName" ng-model="training.name" required />
 							</div>
 						</div>
 						<div class="row">

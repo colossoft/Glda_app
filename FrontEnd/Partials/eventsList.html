@@ -32,13 +32,13 @@
 
 				<div class="row" ng-show="eventsAlertShow">
 					<alert type="danger" class="eventsAlert" close="closeEventsAlertShow()">
-		            	<strong>Hibás adatok!</strong> {{eventsListAlertMessage}}
+		            	<strong ng-hide="events.length == 0">Hibás adatok!</strong> {{eventsListAlertMessage}}
 		            </alert>
 	            </div>
 			</div>
 
 			<div class="table-responsive">
-				<table class="table table-striped table-bordered table-hover tableEvents" ng-hide="events == null">
+				<table class="table table-striped table-bordered table-hover tableEvents" ng-hide="events == null || events.length == 0">
 					<thead>
 						<tr>
 							<th>Óra kezdete</th>
