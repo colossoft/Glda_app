@@ -1,4 +1,4 @@
-gildaApp.controller("eventsListCtrl", function($scope, $rootScope, $location, $http, $filter, baseUrl, eventListService) {
+gildaApp.controller("eventsListCtrl", function($scope, $rootScope, $location, $http, $filter, baseUrl, eventListService, locationService) {
 
 	// Datepicker beállítások
 	$scope.openDatePicker = function($event) {
@@ -20,7 +20,7 @@ gildaApp.controller("eventsListCtrl", function($scope, $rootScope, $location, $h
 	$scope.eventListDate = eventListService.getDate();
 
 	// Terem lista beállítások
-	$http.get(baseUrl + '/rooms/' + $scope.$parent.locationId)
+	$http.get(baseUrl + '/rooms/' + locationService.getLocationId())
 		.success(function(data) {
 			$scope.eventListRooms = data.rooms;
 			$scope.eventListRoom = eventListService.getRoom();

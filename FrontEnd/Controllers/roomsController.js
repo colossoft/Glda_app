@@ -1,22 +1,15 @@
-gildaApp.controller("roomsCtrl", function($scope) {
+gildaApp.controller("roomsCtrl", function($scope, $http, baseUrl, locationService) {
 
 	$scope.room = {}
 
 	// Termek
-	$scope.rooms = [
-		{
-			Id: 1, 
-			Name: "Nagyterem"
-		}, 
-		{
-			Id: 2, 
-			Name: "Kisterem"
-		}, 
-		{
-			Id: 3, 
-			Name: "Boxterem"
-		}
-	];
+	$http.get(baseUrl + '/rooms/' + locationService.getLocationId())
+		.success(function(data) {
+			$scope.rooms = data.rooms;
+		})
+		.error(function(data) {
+			alert(data.message);
+		});
 	
 	// Terem törlése
 	$scope.deleteRoom = function(index) {
@@ -25,7 +18,7 @@ gildaApp.controller("roomsCtrl", function($scope) {
 
 	// Edzés mentése
 	$scope.saveRoom = function() {
-		$scope.rooms.push({Id: 1, Name: $scope.room.roomName});
+		$scope.rooms.push({id: 1, name: $scope.room.roomName});
 		alert("Terem hozzáadása sikeres!");
 		$scope.room.roomName = null;
 	}

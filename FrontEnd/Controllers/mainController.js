@@ -1,41 +1,15 @@
 gildaApp.controller("mainCtrl", function($scope, $location, $http, sessionService, loginService, locationService, eventListService) {
 
 	// Set authorization
-	$http.defaults.headers.common.Authorization = sessionService.get('userApiKey');
-	
-	$scope.gildaLocations = [
-        {
-            Id: 1, 
-            Name: "Allee"
-        }, 
-        {
-            Id: 2, 
-            Name: "Óbuda Gate"
-        }, 
-        {
-            Id: 3, 
-            Name: "River Estates"
-        }, 
-        {
-            Id: 4, 
-            Name: "Hermina Towers"
-        }, 
-        {
-            Id: 5, 
-            Name: "Flórián"
-        }, 
-        {
-            Id: 6, 
-            Name: "Savoya Park"
-        }
-    ];
+	loginService.setAuthorization();
 
 	$scope.isLogged = loginService.isLogged();
-	$scope.userStatus = loginService.getStatus();
-	$scope.locationId = locationService.getLocationId();
-	$scope.locationName = locationService.getLocationName();
 	$scope.userName = loginService.getUserName();
-	
+	$scope.userStatus = loginService.getStatus();
+	$scope.userEmail = loginService.getEmail();
+
+	$scope.locationName = locationService.getLocationName();
+
 	$scope.logout = function() {
 		loginService.logout($scope);
 	}

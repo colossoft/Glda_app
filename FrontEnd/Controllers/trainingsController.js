@@ -1,26 +1,15 @@
-gildaApp.controller("trainingsCtrl", function($scope) {
+gildaApp.controller("trainingsCtrl", function($scope, $http, baseUrl) {
 
 	$scope.training = {}
 
 	//Edzés típusok
-	$scope.trainings = [
-		{
-			Id: 1, 
-			Name: "Aerobic"
-		}, 
-		{
-			Id: 1, 
-			Name: "Pilates"
-		},
-		{
-			Id: 1, 
-			Name: "Crossfit"
-		},
-		{
-			Id: 1, 
-			Name: "Spinning"
-		}
-	];
+	$http.get(baseUrl + '/trainings')
+		.success(function(data) {
+			$scope.trainings = data.trainings;
+		})
+		.error(function(data) {
+			alert(data.message);
+		});
 
 	// Edzés törlése
 	$scope.deleteTraining = function(index) {
