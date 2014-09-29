@@ -601,11 +601,11 @@ $app->get('/trainers', 'authenticate', function() {
 
 $app->post('/trainer/', 'authenticate', function() use($app) {
     // Check for required params
-    verifyRequiredParams(array('last_name', 'first_name', 'email'));
+    verifyRequiredParams(array('lastName', 'firstName', 'email'));
     
     // reading post params
-    $last_name = $app->request()->post('last_name');
-    $first_name = $app->request()->post('first_name');
+    $last_name = $app->request()->post('lastName');
+    $first_name = $app->request()->post('firstName');
     $email = $app->request()->post('email');
     
     $response = array();
@@ -623,6 +623,25 @@ $app->post('/trainer/', 'authenticate', function() use($app) {
         $response["error"] = true;
         $response["message"] = "Sajnos nem sikerült létrehozni az edzőt!";
         echoResponse(500, $response);
+    }
+});
+
+$app->delete('/trainer/:trainerId', 'authenticate', function($trainerId) use($app){
+    
+    $response = array();
+    $db = new DbHandler();
+
+    $result = $db->DeleteTrainer($trainerId);
+
+    if($result) {
+        $response["error"] = false;
+        $response["message"] = "Sikeres törlés!";
+        echoResponse(201, $response);
+    }
+    else {
+        $response["error"] = true;
+        $response["message"] = "Az edző törlése nem lehetséges, mert eseményekhez van hozzárendelve!";
+        echoResponse(405, $response);
     }
 });
 

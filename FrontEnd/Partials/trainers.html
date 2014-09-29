@@ -15,10 +15,10 @@
 	        			</thead>
 	        			<tbody>
 	        				<tr ng-repeat="trainer in trainers">
-	        					<td>{{trainer.LastName}}</td>
-	        					<td>{{trainer.FirstName}}</td>
-	        					<td>{{trainer.Email}}</td>
-	        					<td><span class="glyphicon glyphicon-remove-sign" ng-click="deleteTrainer($index)"></span></td>
+	        					<td>{{trainer.lastName}}</td>
+	        					<td>{{trainer.firstName}}</td>
+	        					<td>{{trainer.email}}</td>
+	        					<td><span class="glyphicon glyphicon-remove-sign" ng-click="deleteTrainer(trainers[$index].id)"></span></td>
 	        				</tr>
 	        			</tbody>
 	        		</table>

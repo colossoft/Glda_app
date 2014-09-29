@@ -731,7 +731,7 @@ class DbHandler {
     * Fetching all trainers
     */
     public function GetAllTrainers() {
-        $queryString = "SELECT * FROM gilda_trainer";
+        $queryString = "SELECT * FROM gilda_trainer ORDER BY last_name, first_name";
         $stmt = $this->conn->prepare($queryString);
         
         $stmt->execute();
@@ -741,7 +741,8 @@ class DbHandler {
         $stmt->bind_result($id, $first_name, $email, $last_name);
         while($stmt->fetch()) {
             $tmp = array("id" => $id, 
-                         "name" => $last_name. ' '. $first_name,
+                         "firstName" => $first_name,
+                         "lastName" => $last_name,
                          "email" => $email);
             
             array_push($trainers, $tmp);
@@ -773,6 +774,43 @@ class DbHandler {
         } else {
             return NULL;
         }   
+    }
+
+    public function DeleteTrainer($trainerId) {
+        if($this->CheckTrainer($trainerId) > 0) {
+            return false;
+        } else {
+            $queryString = "DELETE FROM gilda_trainer WHERE id=?";
+            $stmt = $this->conn->prepare($queryString);
+            $stmt->bind_param("i", $trainerId);
+
+            $stmt->execute();
+
+            $num_affected_rows = $stmt->affected_rows;
+            
+            $stmt->close();
+
+            if($num_affected_rows > 0)
+                return true;
+            else 
+                return false;
+        }
+    }
+
+    public function CheckTrainer($trainerId) {
+        $queryString = "SELECT COUNT(*) FROM gilda_events WHERE trainer=?";
+        $stmt = $this->conn->prepare($queryString);
+        $stmt->bind_param("i", $trainerId);
+        
+        $stmt->execute();
+        
+        $stmt->bind_result($count);
+
+        $stmt->fetch();
+        
+        $stmt->close();
+        
+        return $count;
     }
 
     /* ----------------------- 'gilda_training' table method  ----------------------- */

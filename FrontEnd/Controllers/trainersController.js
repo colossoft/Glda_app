@@ -1,47 +1,47 @@
-gildaApp.controller("trainersCtrl", function($scope) {
+gildaApp.controller("trainersCtrl", function($scope, $http, baseUrl) {
 
 	$scope.trainer = {}
 
-	$scope.trainers = [
-		{
-			Id: 1, 
-			FirstName: "Ákos", 
-			LastName: "Átyin", 
-			Email: "atyins@gmail.com"
-		}, 
-		{
-			Id: 1, 
-			FirstName: "Péter", 
-			LastName: "Tóth", 
-			Email: "peter@gmail.com"
-		}, 
-		{
-			Id: 1, 
-			FirstName: "Józsi", 
-			LastName: "Kiss", 
-			Email: "jozsi@gmail.com"
-		}
-	];
+	function getTrainers() {
+		$http.get(baseUrl + '/trainers')
+			.success(function(data) {
+				$scope.trainers = data.trainers;
+			})
+			.error(function(data) {
+				alert(data.message);
+			});
+	}
+
+	getTrainers();
 
 	// Edző törlése
-	$scope.deleteTrainer = function(index) {
-		$scope.trainers.splice(index, 1);
+	$scope.deleteTrainer = function(trainerId) {
+		$http.delete(baseUrl + '/trainer/' + trainerId)
+			.success(function(data) {
+				getTrainers();
+
+				alert(data.message);
+			})
+			.error(function(data) {
+				alert(data.message);
+			});
 	}
 
 	// Edző mentése
 	$scope.saveTrainer = function() {
-		$scope.trainers.push(
-			{
-				Id: 1, 
-				FirstName: $scope.trainer.firstName, 
-				LastName: $scope.trainer.lastName, 
-				Email: $scope.trainer.email
-			}
-		);
-		alert("Edző hozzáadása sikeres!");
-		$scope.trainer.firstName = null;
-		$scope.trainer.lastName = null;
-		$scope.trainer.email = null;
+		$http.post(baseUrl + '/trainer', $scope.trainer)
+			.success(function(data) {
+				$scope.trainer.firstName = null;
+				$scope.trainer.lastName = null;
+				$scope.trainer.email = null;
+				
+				getTrainers();
+
+				alert(data.message);
+			})
+			.error(function(data) {
+				alert(data.message);
+			});
 	}
 	
 });
