@@ -595,7 +595,7 @@ $app->get('/trainers', 'authenticate', function() {
     } else {
         $response["error"] = true;
         $response["message"] = "The requested resource doesn't exists";
-        echoResponse(404, $response);
+        echoResponse(500, $response);
     }
 });
 
@@ -704,6 +704,72 @@ $app->post('/createDevaluation/', 'authenticate', function() use($app) {
     else {
         $response["error"] = true;
         $response["message"] = $result;
+        echoResponse(500, $response);
+    }
+});
+
+/*
+*Fetching all partners
+*/
+$app->get('/partners', 'authenticate', function() {
+    $response = array();
+    $db = new DbHandler();
+
+    // fetch rooms
+    $result = $db->GetPartners();
+
+    if($result != NULL) {
+        $response["error"] = false;
+        $response["partners"] = $result;
+        echoResponse(200, $response);
+
+    } else {
+        $response["error"] = true;
+        $response["message"] = "The requested resource doesn't exists";
+        echoResponse(500, $response);
+    }
+});
+
+/*
+*Fetching logs of partner
+*/
+$app->get('/log/:partnerId', 'authenticate', function($partnerId) {
+    $response = array();
+    $db = new DbHandler();
+
+    // fetch rooms
+    $result = $db->GetLogByPartnerId($partnerId);
+
+    if($result != NULL) {
+        $response["error"] = false;
+        $response["partners"] = $result;
+        echoResponse(200, $response);
+
+    } else {
+        $response["error"] = true;
+        $response["message"] = "The requested resource doesn't exists";
+        echoResponse(500, $response);
+    }
+});
+
+/*
+*Fetching logs of partner
+*/
+$app->put('/ban/:partnerId', 'authenticate', function($partnerId) {
+    $response = array();
+    $db = new DbHandler();
+
+    // fetch rooms
+    $result = $db->DenyPartner($partnerId);
+
+    if($result != NULL) {
+        $response["error"] = false;
+        $response["message"] = "A felhasználó ki lett tiltva!";
+        echoResponse(200, $response);
+
+    } else {
+        $response["error"] = true;
+        $response["message"] = "The requested resource doesn't exists";
         echoResponse(500, $response);
     }
 });

@@ -191,6 +191,54 @@ class DbHandler {
             return NULL;
         }
     }
+
+    /*
+    *Fetching all partners
+    */
+    public function GetPartners() {
+        $queryString = "SELECT first_name, last_name, email
+                            FROM gilda_user WHERE status = 1";
+        $stmt = $this->conn->prepare($queryString);
+
+        if($stmt->execute()) {
+        
+            $stmt->bind_result($first_name, $last_name, $email);
+
+            $result = array();
+
+            while($stmt->fetch()) {
+                $tmp = array("first_name" => $first_name, 
+                             "last_name" => $last_name,
+                             "email" => $email);
+            
+                array_push($result, $tmp);
+            }
+            
+            $stmt->close();
+            
+            return $result;
+        }
+        else {
+            return NULL;
+        }
+    }
+
+    /*
+    * Ban a partner
+    */
+    public function DenyPartner($partnerId) {
+        $queryString = "Update gilda_user Set status = 0 Where id = ?";
+        $stmt = $this->conn->prepare($queryString);
+        
+        $stmt->bind_param("i", $partnerId);
+        
+        if($stmt->execute()) {
+            return true;
+        }
+        else {
+            return NULL;
+        }
+    }
     
     /**
      * Fetching user api key
@@ -1079,13 +1127,39 @@ class DbHandler {
         }
 
         $queryString = 
-            "INSERT INTO gilda_log(name, created_date, operation) 
-                         VALUES(?, ?, ?)";
+            "INSERT INTO gilda_log(name, created_date, operation, user_id) 
+                         VALUES(?, ?, ?, ?)";
 
         $stmt = $this->conn->prepare($queryString);
-        $stmt->bind_param('sss', $name, $created_date, $operation);
+        $stmt->bind_param('sssi', $name, $created_date, $operation, $user_id);
         $stmt->execute();
         $stmt->close();
+     }
+
+     public function GetLogByPartnerId($partnerId) {
+        $queryString = "SELECT * FROM gilda_log Where user_id = ?";
+        $stmt = $this->conn->prepare($queryString);
+        $stmt->bind_param("i", $partnerId);
+        
+        $stmt->execute();
+        
+        $result = array();
+        
+        $stmt->bind_result($id, $name, $created_date, $operation, $user_id);
+        
+        while($stmt->fetch()) {
+            $tmp = array("id" => $id, 
+                         "name" => $name,
+                         "created_date" => $created_date,
+                         "operation" => $operation,
+                         "user_id" => $user_id);
+            
+            array_push($result, $tmp);
+        }
+        
+        $stmt->close();
+        
+        return $result;
      }
 }
 
