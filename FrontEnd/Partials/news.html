@@ -5,18 +5,21 @@
 			<tabset justified="true">
 				<tab heading="Hírek">
 					<div class="panel panel-danger" ng-repeat="n in news">
-						<div class="panel-heading">{{n.Title}}</div>
-						<div class="panel-body">
-							{{n.Text}}
+						<div class="panel-heading clearfix">
+							<span class="pull-left">{{n.title}}</span>
+							<span class="glyphicon glyphicon-remove pull-right newsDelete" ng-click="deleteNews(n.newsId)"></span>
 						</div>
-						<div class="panel-footer">{{n.Date}}</div>
+						<div class="panel-body">
+							{{n.newsText}}
+						</div>
+						<div class="panel-footer">{{n.createdDate}}</div>
 					</div>
 				</tab>
 				<tab heading="Új hír hozzáadása" ng-hide="userStatus == 1">
 					<accordion close-others="false">
 						<accordion-group ng-repeat="l in languages" is-open="accordionStatuses[$index].open">
 							<accordion-heading>
-            					{{l.Name}} nyelv <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': accordionStatuses[$index].open, 'glyphicon-chevron-right': !accordionStatuses[$index].open}"></i>
+            					{{l.name}} nyelv <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': accordionStatuses[$index].open, 'glyphicon-chevron-right': !accordionStatuses[$index].open}"></i>
         					</accordion-heading>
         					<ng-form name="createNewsForm" novalidate>
         						<div class="form-group">

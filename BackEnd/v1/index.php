@@ -646,6 +646,51 @@ $app->delete('/trainer/:trainerId', 'authenticate', function($trainerId) use($ap
 });
 
 /*
+** Get All Languages
+ */
+$app->get('/languages', 'authenticate', function() {
+    $response = array();
+    $db = new DbHandler();
+
+    // fetch rooms
+    $result = $db->GetAllLanguages();
+
+    if($result != NULL) {
+        $response["error"] = false;
+        $response["languages"] = $result;
+        echoResponse(200, $response);
+
+    } else {
+        $response["error"] = true;
+        $response["message"] = "The requested resource doesn't exists";
+        echoResponse(500, $response);
+    }
+});
+
+/*
+** Get All News
+ */
+$app->get('/news/:languageId', 'authenticate', function($languageId) {
+    $response = array();
+    $db = new DbHandler();
+
+    // fetch rooms
+    $result = $db->GetAllNews($languageId);
+
+    if($result != NULL) {
+        $response["error"] = false;
+        $response["news"] = $result;
+        echoResponse(200, $response);
+
+    } else {
+        $response["error"] = true;
+        $response["message"] = "The requested resource doesn't exists";
+        echoResponse(500, $response);
+    }
+});
+
+
+/*
 *Create news
 */
 $app->post('/createNews/', 'authenticate', function() use($app) {
@@ -677,18 +722,62 @@ $app->post('/createNews/', 'authenticate', function() use($app) {
 });
 
 /*
-*Create news
+** Delete News By newsId
+ */
+$app->delete('/news/:newsId', 'authenticate', function($newsId) use($app){
+    
+    $response = array();
+    $db = new DbHandler();
+
+    $result = $db->DeleteNews($newsId);
+
+    if($result) {
+        $response["error"] = false;
+        $response["message"] = "Sikeres törlés!";
+        echoResponse(201, $response);
+    }
+    else {
+        $response["error"] = true;
+        $response["message"] = "A törlés sikertelen!";
+        echoResponse(500, $response);
+    }
+});
+
+/*
+** Get All devaluation
+*/
+$app->get('/devaluations/:languageId', 'authenticate', function($languageId) {
+    $response = array();
+    $db = new DbHandler();
+
+    // fetch rooms
+    $result = $db->GetAllDevaluation($languageId);
+
+    if($result != NULL) {
+        $response["error"] = false;
+        $response["specialOffers"] = $result;
+        echoResponse(200, $response);
+
+    } else {
+        $response["error"] = true;
+        $response["message"] = "The requested resource doesn't exists";
+        echoResponse(500, $response);
+    }
+});
+
+/*
+*Create devaluation
 */
 $app->post('/createDevaluation/', 'authenticate', function() use($app) {
     global $user_id;
 
     // Check for required params
-    verifyRequiredParams(array('start_date', 'end_date', 'devaluation'));
+    verifyRequiredParams(array('startDate', 'endDate', 'offers'));
 
     // reading post params
-    $start_date = $app->request()->post('start_date');
-    $end_date = $app->request()->post('end_date');
-    $devaluation = $app->request()->post('devaluation');
+    $start_date = $app->request()->post('startDate');
+    $end_date = $app->request()->post('endDate');
+    $devaluation = $app->request()->post('offers');
     
     $response = array();
     $db = new DbHandler();
@@ -704,6 +793,28 @@ $app->post('/createDevaluation/', 'authenticate', function() use($app) {
     else {
         $response["error"] = true;
         $response["message"] = $result;
+        echoResponse(500, $response);
+    }
+});
+
+/*
+** Delete Devaluation By devaluationId
+ */
+$app->delete('/devaluation/:devaluationId', 'authenticate', function($devaluationId) use($app){
+    
+    $response = array();
+    $db = new DbHandler();
+
+    $result = $db->DeleteDevaluation($devaluationId);
+
+    if($result) {
+        $response["error"] = false;
+        $response["message"] = "Sikeres törlés!";
+        echoResponse(201, $response);
+    }
+    else {
+        $response["error"] = true;
+        $response["message"] = "A törlés sikertelen!";
         echoResponse(500, $response);
     }
 });

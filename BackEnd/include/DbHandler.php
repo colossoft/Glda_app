@@ -968,6 +968,55 @@ class DbHandler {
 
     /* ----------------------- 'gilda_news' table method  ----------------------- */
 
+    public function GetAllLanguages() {
+        $queryString = "SELECT * FROM gilda_language";
+        $stmt = $this->conn->prepare($queryString);
+
+        $stmt->execute();
+        
+        $languages = array();
+        
+        $stmt->bind_result($id, $name);
+        
+        while($stmt->fetch()) {
+            $tmp = array("id" => $id, 
+                         "name" => $name);
+            
+            array_push($languages, $tmp);
+        }
+        
+        $stmt->close();
+        
+        return $languages;
+    }
+
+    public function GetAllNews($languageId) {
+        $queryString = "SELECT * FROM gilda_news WHERE languageId=? ORDER BY created_date DESC";
+        $stmt = $this->conn->prepare($queryString);
+        $stmt->bind_param("i", $languageId);
+
+        $stmt->execute();
+        
+        $news = array();
+        
+        $stmt->bind_result($id, $newsId, $title, $newsText, $createdDate, $languageId);
+        
+        while($stmt->fetch()) {
+            $tmp = array("id" => $id, 
+                         "newsId" => $newsId, 
+                         "title" => $title, 
+                         "newsText" => $newsText, 
+                         "createdDate" => $createdDate,  
+                         "languageId" => $languageId);
+            
+            array_push($news, $tmp);
+        }
+        
+        $stmt->close();
+        
+        return $news;
+    }
+
     public function CreateNews($created_date, $news) {
         $errorText = '';
 
@@ -1036,7 +1085,52 @@ class DbHandler {
         return $newsId;
     }
 
+    public function DeleteNews($newsId) {
+        $queryString = "DELETE FROM gilda_news WHERE newsId=?";
+        $stmt = $this->conn->prepare($queryString);
+        $stmt->bind_param("i", $newsId);
+
+        $stmt->execute();
+
+        $num_affected_rows = $stmt->affected_rows;
+        
+        $stmt->close();
+
+        if($num_affected_rows > 0)
+            return true;
+        else 
+            return false;
+    }
+
     /* ----------------------- 'gilda_devaluation' table method  ----------------------- */
+
+    public function GetAllDevaluation($languageId) {
+        $queryString = "SELECT * FROM gilda_devaluation WHERE languageId=? ORDER BY start_date DESC";
+        $stmt = $this->conn->prepare($queryString);
+        $stmt->bind_param("i", $languageId);
+
+        $stmt->execute();
+        
+        $devaluations = array();
+        
+        $stmt->bind_result($id, $title, $text, $startDate, $endDate, $languageId, $devaluationId);
+        
+        while($stmt->fetch()) {
+            $tmp = array("id" => $id, 
+                         "title" => $title, 
+                         "text" => $text, 
+                         "startDate" => $startDate, 
+                         "endDate" => $endDate,  
+                         "languageId" => $languageId, 
+                         "devaluationId" => $devaluationId);
+            
+            array_push($devaluations, $tmp);
+        }
+        
+        $stmt->close();
+        
+        return $devaluations;
+    }
 
     public function CreateDevaluation($start_date, $end_date, $devaluation) {
         $errorText = '';
@@ -1064,6 +1158,7 @@ class DbHandler {
             // Check for successful insertion
             if(!$result) {
                 $errorText = 'Váratlan hiba történt. Kérjük próbálja újra!';
+                $errorText = $devaluation[0].Title;
                 break;
             }
         }
@@ -1106,9 +1201,27 @@ class DbHandler {
         return $devaluationId;
     }
 
+    public function DeleteDevaluation($devaluationId) {
+        $queryString = "DELETE FROM gilda_devaluation WHERE devaluationId=?";
+        $stmt = $this->conn->prepare($queryString);
+        $stmt->bind_param("i", $devaluationId);
+
+        $stmt->execute();
+
+        $num_affected_rows = $stmt->affected_rows;
+        
+        $stmt->close();
+
+        if($num_affected_rows > 0)
+            return true;
+        else 
+            return false;
+    }
+
      /* ----------------------- 'gilda_log' table method  ----------------------- */
 
      public function AddLog($event_id, $user_id, $isCreated) {
+        
         
         $name = $this->GetUserNameById($user_id);
         $event = $this->GetInformationOfEventByEventId($event_id);

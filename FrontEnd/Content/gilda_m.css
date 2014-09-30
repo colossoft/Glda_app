@@ -213,6 +213,11 @@ body {
     padding: 10px 15px;
 }
 
+.newsModule .newsDelete {
+    margin-top: 5px;
+    cursor: pointer;
+}
+
 
 /********* Akciók modul **********/
 .specialOffersModule {
@@ -240,4 +245,9 @@ body {
     cursor: pointer;
     display: block;
     padding: 10px 15px;
+}
+
+.specialOffersModule .specialOfferDelete {
+    margin-top: 5px;
+    cursor: pointer;
 }
