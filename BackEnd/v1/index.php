@@ -110,6 +110,49 @@ function sendMailToUser($first_name, $last_name, $email_address, $password) {
 }
 
 /**
+ * PHPMailer function for new password
+ */
+function SendMailToUserForNewPassword($first_name, $last_name, $email_address, $newPassword) {
+    global $mail_error_info;
+
+    $mail = new PHPMailer;
+
+    $mail->CharSet = "UTF-8";
+    
+    $mail->From = 'akos@atyin.url.ph';
+    $mail->FromName = 'GildaMAX';
+    $mail->addAddress($email_address);
+    
+    $mail->isHTML(true);
+
+    $mail->Subject = 'GildaMAX új jelszó értesítő';
+    $mail->Body    = 'Kedves ' . $last_name . ' ' . $first_name . '!<br /><br />A <b>GildaMAX</b> elkészítette új jelszavát:<br />' . 
+                        'Jelszó: ' . '<b>' . $newPassword . '</b><br />' . 'Üdvözlettel: GildaMAX';
+
+    if(!$mail->send()) {
+        $mail_error_info = $mail->ErrorInfo;
+        return false;
+    } else {
+        return true;
+    }
+}
+
+/*
+*Radom password generator
+*/
+function randomPassword() {
+    $alphabet = "abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789";
+    $pass = array(); //remember to declare $pass as an array
+    $alphaLength = strlen($alphabet) - 1; //put the length -1 in cache
+    for ($i = 0; $i < 8; $i++) {
+        $n = rand(0, $alphaLength);
+        $pass[] = $alphabet[$n];
+    }
+
+    return implode($pass); //turn the array into a string
+}
+
+/**
  * User registration
  * url: /register
  * method: POST
@@ -864,7 +907,7 @@ $app->get('/log/:partnerId', 'authenticate', function($partnerId) {
 });
 
 /*
-*Fetching logs of partner
+*Ban a user
 */
 $app->put('/ban/:partnerId', 'authenticate', function($partnerId) {
     $response = array();
@@ -883,6 +926,110 @@ $app->put('/ban/:partnerId', 'authenticate', function($partnerId) {
         $response["message"] = "The requested resource doesn't exists";
         echoResponse(500, $response);
     }
+});
+
+
+/*
+*Disengage a user
+*/
+$app->put('/disengage/:partnerId', 'authenticate', function($partnerId) {
+    $response = array();
+    $db = new DbHandler();
+
+    // fetch rooms
+    $result = $db->DisengagePartner($partnerId);
+
+    if($result != NULL) {
+        $response["error"] = false;
+        $response["message"] = "A felhasználó tiltása feloldódott!";
+        echoResponse(200, $response);
+
+    } else {
+        $response["error"] = true;
+        $response["message"] = "The requested resource doesn't exists";
+        echoResponse(500, $response);
+    }
+});
+
+/*
+*Modify user password
+*/
+$app->put('/passmodify/', 'authenticate', function() use($app) {
+    global $user_id;
+    
+    // Check for required params
+    verifyRequiredParams(array('oldPassword', 'newPassword', 'confirmNewPassword'));
+
+    // reading post params
+    $oldPassword = $app->request()->post('oldPassword');
+    $newPassword = $app->request()->post('newPassword');
+    $confirmNewPassword = $app->request()->post('confirmNewPassword');
+
+    $response = array();
+    $db = new DbHandler();
+
+    // fetch rooms
+    $result = $db->PasswordModify($user_id, $oldPassword, $newPassword, $confirmNewPassword);
+
+    if($result != NULL) {
+        $response["error"] = false;
+        $response["message"] = "A jelszó megváltozott!";
+        echoResponse(200, $response);
+
+    } else {
+        $response["error"] = true;
+        $response["message"] = "Hibásan adta meg a jelszó módosításához szükséges adatokat!";
+        echoResponse(500, $response);
+    }
+});
+
+/*
+*User forget her/his password
+*/
+$app->post('/getnewpassword', function() use($app) {
+    
+    // Check for required params
+    verifyRequiredParams(array('email'));
+
+    // reading post params
+    $email = $app->request()->post('email');
+
+    $response = array();
+    $db = new DbHandler();
+
+    // fetch rooms
+    $result = $db->getUserByEmail($email);
+
+    if($result != NULL) {
+        $first_name = $result['first_name'];
+        $last_name = $result['last_name'];
+        $newPassword = randomPassword();
+
+        $result2 = $db->ForgetedPasswordModify($email, $newPassword);
+
+        if ($result2 != NULL && SendMailToUserForNewPassword($first_name, $last_name, $email, $newPassword)) {
+            $response["error"] = true;
+            $response["message"] = "Az új jelszavát tartalmazó e-mailt elküldtük Önnek!";
+            echoResponse(500, $response);
+        } else {
+            $response["error"] = true;
+            $response["message"] = "Hiba történt, kérem próbálja meg újra!";
+            echoResponse(500, $response);
+        }
+
+    } else {
+        $response["error"] = true;
+        $response["message"] = "Hiba történt, kérem próbálja meg újra!";
+        echoResponse(500, $response);
+    }
+});
+
+/*
+*User forget her/his password
+*/
+$app->get('/getpass', function() {
+    $response["message"] = randomPassword();
+    echoResponse(200, $response);
 });
 
 $app->run();

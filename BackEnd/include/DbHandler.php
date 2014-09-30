@@ -65,6 +65,61 @@ class DbHandler {
         
         return $response;
     }
+
+    /*
+    *Modify user's passord
+    */
+    public function PasswordModify($partnerId, $oldPassword, $newPassword, $confirmNewPassword) {
+        require_once dirname(__FILE__) . '/PassHash.php';
+        $response = array();
+
+        //Check newPassword and confirmNewPassword
+        if (strcmp($newPassword, $confirmNewPassword) != 0) {
+            return null;
+        }
+
+        //Check the user
+        $userIsGood = $this->CheckUser($partnerId, $oldPassword);
+        if (!$userIsGood) {
+            return null;
+        }
+
+        $password_hash = PassHash::hash($newPassword);
+
+        $queryString = "Update gilda_user Set password_hash = ? Where id = ?";
+        $stmt = $this->conn->prepare($queryString);
+        
+        $stmt->bind_param("si", $password_hash, $partnerId);
+        
+        if($stmt->execute()) {
+            return true;
+        }
+        else {
+            return NULL;
+        }
+    }
+
+    /*
+    *Modify the forgeted password of the user
+    */
+    public function ForgetedPasswordModify($email, $newPassword) {
+        require_once dirname(__FILE__) . '/PassHash.php';
+        $response = array();
+
+        $password_hash = PassHash::hash($newPassword);
+
+        $queryString = "Update gilda_user Set password_hash = ? Where email = ?";
+        $stmt = $this->conn->prepare($queryString);
+        
+        $stmt->bind_param("ss", $password_hash, $email);
+        
+        if($stmt->execute()) {
+            return true;
+        }
+        else {
+           return NULL;
+        }
+    }
     
     /**
      * Checking user login
@@ -78,6 +133,55 @@ class DbHandler {
         $stmt = $this->conn->prepare($queryString);
         
         $stmt->bind_param("s", $email);
+        
+        $stmt->execute();
+        
+        $stmt->bind_result($password_hash);
+        
+        $stmt->store_result();
+        
+        if($stmt->num_rows > 0) {
+            // Found user with e-mail
+            // Now verify the password
+            
+            $stmt->fetch();
+            
+            $stmt->close();
+            
+            if(PassHash::check_password($password_hash, $password)) {
+                // User password is correct
+                return TRUE;
+            }
+            else {
+                // User password is incorrect
+                return FALSE;
+            }
+        }
+        else {
+            try{
+                $stmt->close();
+            }
+            catch(Exception $exc) {
+                error_log($exc->getMessage());
+                return false;
+            }
+            
+            // User not existed with the email
+            return FALSE;
+        }
+    }
+
+    /**
+     * Checking user login
+     * @param String $email User login email id
+     * @param String $password User login password
+     * @return boolean User login status success/fail
+     */
+    public function CheckUser($user_id, $password) {
+        // fetching user by email
+        $queryString = "SELECT password_hash FROM gilda_user WHERE id=?";
+        $stmt = $this->conn->prepare($queryString);
+        $stmt->bind_param("i", $user_id);
         
         $stmt->execute();
         
@@ -196,20 +300,21 @@ class DbHandler {
     *Fetching all partners
     */
     public function GetPartners() {
-        $queryString = "SELECT first_name, last_name, email
-                            FROM gilda_user WHERE status = 1";
+        $queryString = "SELECT first_name, last_name, email, status
+                            FROM gilda_user WHERE status = 1 or status = 0";
         $stmt = $this->conn->prepare($queryString);
 
         if($stmt->execute()) {
         
-            $stmt->bind_result($first_name, $last_name, $email);
+            $stmt->bind_result($first_name, $last_name, $email, $status);
 
             $result = array();
 
             while($stmt->fetch()) {
                 $tmp = array("first_name" => $first_name, 
                              "last_name" => $last_name,
-                             "email" => $email);
+                             "email" => $email,
+                             "status" => $status);
             
                 array_push($result, $tmp);
             }
@@ -228,6 +333,23 @@ class DbHandler {
     */
     public function DenyPartner($partnerId) {
         $queryString = "Update gilda_user Set status = 0 Where id = ?";
+        $stmt = $this->conn->prepare($queryString);
+        
+        $stmt->bind_param("i", $partnerId);
+        
+        if($stmt->execute()) {
+            return true;
+        }
+        else {
+            return NULL;
+        }
+    }
+
+    /*
+    * Disengage a partner
+    */
+    public function DisengagePartner($partnerId) {
+        $queryString = "Update gilda_user Set status = 1 Where id = ?";
         $stmt = $this->conn->prepare($queryString);
         
         $stmt->bind_param("i", $partnerId);
