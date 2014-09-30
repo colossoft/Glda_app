@@ -557,7 +557,7 @@ class DbHandler {
      * @param int $event_id id of the event
      */
     public function GetInformationOfEventByEventId($event_id) {
-        $queryString = "SELECT tri.name AS Training, CONCAT(tr.last_name, ' ', tr.first_name) AS Trainer, 
+        $queryString = "SELECT tri.name AS Training, CONCAT(tr.last_name, ' ', tr.first_name) AS Trainer, ev.date, 
                         ev.start_time, ev.end_time 
                         From gilda_events AS ev 
                         Inner Join gilda_trainer AS tr ON tr.Id = ev.Trainer 
@@ -570,7 +570,7 @@ class DbHandler {
 
         $event = array();
         
-        $stmt->bind_result($event['training'], $event['trainer'], $event['start_time'], $event['end_time']);
+        $stmt->bind_result($event['training'], $event['trainer'], $event['date'], $event['start_time'], $event['end_time']);
         
         $stmt->fetch();
         
@@ -1221,22 +1221,20 @@ class DbHandler {
      /* ----------------------- 'gilda_log' table method  ----------------------- */
 
      public function AddLog($event_id, $user_id, $isCreated) {
-        
-        
         $name = $this->GetUserNameById($user_id);
         $event = $this->GetInformationOfEventByEventId($event_id);
-        $created_date = date("Y-m-d");
+        $created_date = date("Y-m-d H:i:s");
         $operation = '';
 
         if ($isCreated) {
-            $operation .= 'Feliratkozott a(z) ' . $event['training'] . ' eseményre, amit ' . $event['trainer'] . ' tart '
+            $operation .= 'Feliratkozott a(z) ' . $event['training'] . ' eseményre, amit ' . $event['trainer'] . ' tart ' . $event['date'] . ' '
              . $event['start_time'] . ' -tól ' . $event['end_time'] . ' -ig';
-            var_dump($operation);
+            //var_dump($operation);
 
         } else {
-            $operation .= 'Leiratkozott a(z) ' . $event['training'] . ' eseményről, amit ' . $event['trainer'] . ' tart '
+            $operation .= 'Leiratkozott a(z) ' . $event['training'] . ' eseményről, amit ' . $event['trainer'] . ' tart ' . $event['date'] . ' '
              . $event['start_time'] . ' -tól ' . $event['end_time'] . ' -ig';
-            var_dump($operation);
+            //var_dump($operation);
         }
 
         $queryString = 

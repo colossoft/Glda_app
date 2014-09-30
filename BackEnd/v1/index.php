@@ -853,7 +853,7 @@ $app->get('/log/:partnerId', 'authenticate', function($partnerId) {
 
     if($result != NULL) {
         $response["error"] = false;
-        $response["partners"] = $result;
+        $response["logs"] = $result;
         echoResponse(200, $response);
 
     } else {
