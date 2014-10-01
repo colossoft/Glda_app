@@ -1,0 +1,34 @@
+<div class="container-fluid logModule">
+	<div class="panel panel-primary">
+		<div class="panel-heading"><h3 class="panel-title">Partner fehasználók listája</h3></div>
+		<div class="panel-body">
+			<div class="table-responsive">
+				<table class="table table-striped table-bordered tableLog" ng-hide="partners == null || partners.length == 0">
+					<thead>
+						<tr>
+							<th>Vezetéknév</th>
+							<th>Keresztnév</th>
+							<th>E-mail</th>
+							<th>Regisztráció dátuma</th>
+							<th>Infó</th>
+							<th>Tiltás/Engedélyezés</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="p in partners" ng-class="{'banned': p.status == 0}">
+							<td>{{p.last_name}}</td>
+							<td>{{p.first_name}}</td>
+							<td>{{p.email}}</td>
+							<td>{{p.created_at}}</td>
+							<td class="tableLogOperations"><span class="glyphicon glyphicon-info-sign" title="Partner tevékenységei" ng-click="openLogDetails(p.id)"></span></td>
+							<td class="tableLogOperations">
+								<span class="glyphicon glyphicon-ban-circle" title="Partner kitiltása" ng-show="p.status == 1" ng-click="banPartner(p.id)"></span>
+								<span class="glyphicon glyphicon-ok-circle" title="Partner engedélyezése" ng-show="p.status == 0" ng-click="disengagePartner(p.id)"></span>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>

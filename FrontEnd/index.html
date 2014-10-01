@@ -49,7 +49,7 @@
                             </ul>
                         </li>
                         <li ng-show="userStatus == 1"><a href="#">Foglalásaim</a></li>
-                        <li ng-show="userStatus == 3"><a href="#">Napló</a></li>
+                        <li ng-show="userStatus == 3"><a href="" ng-click="logPage()">Napló</a></li>
                     </ul>
 
                     <ul class="nav navbar-nav navbar-right">
@@ -118,6 +118,8 @@
     <script src="Controllers/roomsController.js"></script>
     <script src="Controllers/newsController.js"></script>
     <script src="Controllers/specialOffersController.js"></script>
+    <script src="Controllers/logController.js"></script>
+    <script src="Controllers/logDetailsController.js"></script>
 	<script src="Services/loginService.js"></script>
 	<script src="Services/sessionService.js"></script>
     <script src="Services/eventListService.js"></script>

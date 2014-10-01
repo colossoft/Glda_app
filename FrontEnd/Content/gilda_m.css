@@ -251,3 +251,57 @@ body {
     margin-top: 5px;
     cursor: pointer;
 }
+
+
+/********* Log partners táblázat **********/
+.tableLog > thead > tr {
+    background: #cc3433;
+    color: #fff;
+}
+
+.tableLog > tbody > tr:hover > td {
+  cursor: default;
+}
+
+.tableLog > thead > tr > th,
+.tableLog > tbody > tr > td {
+    vertical-align: middle;
+}
+
+.tableLog > thead > tr > th:nth-child(5), 
+.tableLog > thead > tr > th:nth-child(6) {
+    width: 1%;
+}
+
+.tableLog .tableLogOperations {
+    width: 1%;
+    text-align: center;
+    font-size: 1.2em;
+    color: #ff4443;
+}
+
+.tableLog .tableLogOperations:hover span {
+    cursor: pointer;
+}
+
+.tableLog > tbody > tr.banned > td {
+    background: #f00;
+    color: #fff;
+}
+
+/********* LogDetails táblázat **********/
+.tableLogDetails > thead > tr {
+    background: #cc3433;
+    color: #fff;
+}
+
+.tableLogDetails > tbody > tr:hover > td {
+    background-color: #ff4443;
+    color: #fff;
+    cursor: default;
+}
+
+.tableLogDetails > thead > tr > th,
+.tableLogDetails > tbody > tr > td {
+    vertical-align: middle;
+}

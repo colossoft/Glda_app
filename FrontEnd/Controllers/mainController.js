@@ -43,4 +43,8 @@ gildaApp.controller("mainCtrl", function($scope, $location, $http, sessionServic
 	$scope.specialOffers = function() {
 		$location.path('/specialOffers');
 	}
+
+	$scope.logPage = function() {
+		$location.path('/log');
+	}
 });

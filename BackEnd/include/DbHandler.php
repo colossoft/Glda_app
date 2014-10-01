@@ -271,6 +271,29 @@ class DbHandler {
         }
     }
 
+    public function GetUserDetailsById($user_id) {
+        $queryString = "SELECT first_name, last_name, email 
+                            FROM gilda_user WHERE id = ?";
+        $stmt = $this->conn->prepare($queryString);
+        
+        $stmt->bind_param("i", $user_id);
+        
+        if($stmt->execute()) {
+            $stmt->bind_result($firstName, $lastName, $email);
+            
+            $stmt->fetch();
+
+            $datas = array("firstName" => $firstName, "lastName" => $lastName, "email" => $email);
+            
+            $stmt->close();
+            
+            return $datas;
+        }
+        else {
+            return NULL;
+        }
+    }
+
     /**
      * Return name of user by user_id
      * @param String $email User email id
@@ -300,21 +323,22 @@ class DbHandler {
     *Fetching all partners
     */
     public function GetPartners() {
-        $queryString = "SELECT first_name, last_name, email, status
-                            FROM gilda_user WHERE status = 1 or status = 0";
+        $queryString = "SELECT id, first_name, last_name, email, status, created_at
+                            FROM gilda_user WHERE status = 1 or status = 0 ORDER BY last_name, first_name";
         $stmt = $this->conn->prepare($queryString);
 
         if($stmt->execute()) {
-        
-            $stmt->bind_result($first_name, $last_name, $email, $status);
+            $stmt->bind_result($id, $first_name, $last_name, $email, $status, $created_at);
 
             $result = array();
 
             while($stmt->fetch()) {
-                $tmp = array("first_name" => $first_name, 
+                $tmp = array("id" => $id, 
+                             "first_name" => $first_name, 
                              "last_name" => $last_name,
                              "email" => $email,
-                             "status" => $status);
+                             "status" => $status, 
+                             "created_at" => $created_at);
             
                 array_push($result, $tmp);
             }
@@ -1377,6 +1401,7 @@ class DbHandler {
         $stmt->execute();
         
         $result = array();
+        $logs = array();
         
         $stmt->bind_result($id, $name, $created_date, $operation, $user_id);
         
@@ -1387,10 +1412,13 @@ class DbHandler {
                          "operation" => $operation,
                          "user_id" => $user_id);
             
-            array_push($result, $tmp);
+            array_push($logs, $tmp);
         }
         
         $stmt->close();
+
+        $result["logs"] = $logs;
+        $result["userDetails"] = $this->GetUserDetailsById($partnerId);
         
         return $result;
      }

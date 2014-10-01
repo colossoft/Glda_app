@@ -869,14 +869,13 @@ $app->get('/partners', 'authenticate', function() {
     $response = array();
     $db = new DbHandler();
 
-    // fetch rooms
+    // fetch partners
     $result = $db->GetPartners();
 
-    if($result != NULL) {
+    if(!is_null($result)) {
         $response["error"] = false;
         $response["partners"] = $result;
         echoResponse(200, $response);
-
     } else {
         $response["error"] = true;
         $response["message"] = "The requested resource doesn't exists";
@@ -896,7 +895,7 @@ $app->get('/log/:partnerId', 'authenticate', function($partnerId) {
 
     if($result != NULL) {
         $response["error"] = false;
-        $response["logs"] = $result;
+        $response["result"] = $result;
         echoResponse(200, $response);
 
     } else {

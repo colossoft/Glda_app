@@ -93,6 +93,16 @@ gildaApp.config(function($routeProvider) {
         controller: 'specialOffersCtrl'
     });
 
+    $routeProvider.when('/log', {
+        templateUrl: '/Glda_app/FrontEnd/Partials/log.html', 
+        controller: 'logCtrl'
+    });
+
+    $routeProvider.when('/log/:id', {
+        templateUrl: '/Glda_app/FrontEnd/Partials/logDetails.html', 
+        controller: 'logDetailsCtrl'
+    });
+
     $routeProvider.otherwise({
         redirectTo: '/login'
     });
