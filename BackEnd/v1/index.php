@@ -179,13 +179,13 @@ $app->post('/register', function() use($app) {
     $res = $db->createUser($first_name, $last_name, $email, $password);
     
     if($res["status"] == USER_CREATED_SUCCESSFULLY) {
-        if(sendMailToUser($first_name, $last_name, $email, $password)) {
+        /*if(sendMailToUser($first_name, $last_name, $email, $password)) {
             $response["mail_error"] = false;
         }
         else {
             $response["mail_error"] = true;
             $response["mail_error_message"] = $mail_error_info;
-        }
+        }*/
 	
         $response["error"] = false;
         $response["api_key"] = $res["api_key"];
@@ -236,12 +236,12 @@ $app->post('/login', function() use($app) {
             echoResponse(200, $response);
         } else {
             $response['error'] = true;
-            $response['message'] = 'An error occured. Please try again!';
+            $response['message'] = 'Váratlan hiba történt! Kérjük próbáld újra';
             echoResponse(409, $response);
         }
     } else {
         $response['error'] = true;
-        $response['message'] = 'Login failed. Incorrect credentials!';
+        $response['message'] = 'Sikertelen bejelentkezés! Hibás e-mail vagy jelszó!';
         echoResponse(409, $response);
     }
 });
@@ -391,7 +391,7 @@ $app->get('/events/:room_id', 'authenticate', function($room_id) {
     // fetch events
     $result = $db->getEventsByRoomId($room_id, $user_id);
 
-    if(count($result) == 0 || $result != NULL) {
+    if(!is_null($result)) {
         $response["error"] = false;
         $response["events"] = $result;
         echoResponse(200, $response);
@@ -409,14 +409,15 @@ $app->get('/events/:room_id', 'authenticate', function($room_id) {
  * url /events/:room_id
  */
 $app->get('/events/:room_id/:day', 'authenticate', function($room_id, $day) {
-    
+    global $user_id;
+
     $response = array();
     $db = new DbHandler();
 
     // fetch events
-    $result = $db->getEventsByRoomIdAndDay($room_id, $day);
+    $result = $db->getEventsByRoomIdAndDay($user_id, $room_id, $day);
 
-    if(count($result) == 0 || $result != NULL) {
+    if(!is_null($result)) {
         $response["error"] = false;
         $response["events"] = $result;
         echoResponse(200, $response);
@@ -486,6 +487,32 @@ $app->post('/event/', 'authenticate', function() use($app) {
         $response["error"] = true;
         $response["message"] = $result['errorList'];
         echoResponse(409, $response);
+    }
+});
+
+/**
+ * Get reservations
+ * url: /reservation
+ * method: GET
+ */
+$app->get('/reservation', 'authenticate', function() {
+    global $user_id;
+
+    $response = array();
+    $db = new DbHandler();
+
+    // fetch events
+    $result = $db->GetReservationsOfUser($user_id);
+
+    if(!is_null($result)) {
+        $response["error"] = false;
+        $response["reservations"] = $result;
+        echoResponse(200, $response);
+
+    } else {
+        $response["error"] = true;
+        $response["message"] = "The requested resource doesn't exists";
+        echoResponse(404, $response);
     }
 });
 

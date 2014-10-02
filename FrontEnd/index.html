@@ -40,7 +40,7 @@
                                 <li><a href="" ng-click="rooms()">Termek</a></li>
                             </ul>
                         </li>
-                        <li ng-show="userStatus == 1"><a href="#">Események</a></li>
+                        <li ng-show="userStatus == 1"><a href="" ng-click="partnerEvents()">Események</a></li>
                         <li ng-hide="userStatus == 1" class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">Események <span class="caret"></span></a>
                             <ul class="dropdown-menu">
@@ -48,7 +48,7 @@
                                 <li><a href="" ng-click="eventsList()">Események listája</a></li>
                             </ul>
                         </li>
-                        <li ng-show="userStatus == 1"><a href="#">Foglalásaim</a></li>
+                        <li ng-show="userStatus == 1"><a href="" ng-click="partnerReservations()">Foglalásaim</a></li>
                         <li ng-show="userStatus == 3"><a href="" ng-click="logPage()">Napló</a></li>
                     </ul>
 
@@ -120,6 +120,8 @@
     <script src="Controllers/specialOffersController.js"></script>
     <script src="Controllers/logController.js"></script>
     <script src="Controllers/logDetailsController.js"></script>
+    <script src="Controllers/partnerEventsController.js"></script>
+    <script src="Controllers/partnerReservationsController.js"></script>
 	<script src="Services/loginService.js"></script>
 	<script src="Services/sessionService.js"></script>
     <script src="Services/eventListService.js"></script>

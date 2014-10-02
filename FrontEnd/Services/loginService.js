@@ -4,11 +4,11 @@
         login: function (user, scope) {
             var $promise = $http.post(baseUrl + '/login', user);
             
-            $promise.then(function (data) {
-				var apiKey = data.data.api_key;
-				var status = data.data.status;
-				var email = data.data.email;
-				var userName = data.data.last_name + ' ' + data.data.first_name;
+            $promise.success(function (data) {
+				var apiKey = data.api_key;
+				var status = data.status;
+				var email = data.email;
+				var userName = data.last_name + ' ' + data.first_name;
                 
                 if (apiKey) {
                     console.log('Successful login!');
@@ -28,8 +28,14 @@
 					$location.path('/home');
                 } else {
                     console.log("Error login!");
+                    scope.loginAlertMessage = "Váratlan hiba történt! Kérjük próbáld újra";
                     scope.loginAlertShow = true;
                 }
+            })
+            .error(function(data) {
+            	console.log("Error login!");
+            	scope.loginAlertMessage = data.message;
+                scope.loginAlertShow = true;
             });
         }, 
 		logout: function(scope) {

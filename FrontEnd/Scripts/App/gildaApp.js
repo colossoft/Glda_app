@@ -103,6 +103,16 @@ gildaApp.config(function($routeProvider) {
         controller: 'logDetailsCtrl'
     });
 
+    $routeProvider.when('/partner/events', {
+        templateUrl: '/Glda_app/FrontEnd/Partials/partnerEvents.html', 
+        controller: 'partnerEventsCtrl'
+    });
+
+    $routeProvider.when('/partner/reservations', {
+        templateUrl: '/Glda_app/FrontEnd/Partials/partnerReservations.html', 
+        controller: 'partnerReservationsCtrl'
+    });
+
     $routeProvider.otherwise({
         redirectTo: '/login'
     });

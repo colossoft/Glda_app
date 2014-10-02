@@ -642,22 +642,27 @@ class DbHandler {
      * @param int $room_id id of the room
      * @param int $user_id id of the user
      */
-    public function getEventsByRoomIdAndDay($room_id, $day) {
+    public function getEventsByRoomIdAndDay($user_id, $room_id, $day) {
         $queryString = "SELECT ev.id, ev.date, ev.start_time, ev.end_time,
                         CONCAT(tr.last_name, ' ', tr.first_name) AS trainer, tri.name AS training, ev.spots,
-                        ev.spots - (SELECT COUNT(*) FROM gilda_reservations WHERE event_id=ev.id) AS free_spots
+                        ev.spots - (SELECT COUNT(*) FROM gilda_reservations WHERE event_id=ev.id) AS free_spots, 
+                        CASE
+                            WHEN (SELECT COUNT(*) FROM gilda_reservations WHERE event_id=ev.id AND user_id=?) > 0
+                            THEN 1
+                            ELSE 0
+                        END AS is_reserved 
                         FROM gilda_events AS ev 
                         LEFT JOIN gilda_trainer AS tr ON ev.trainer = tr.id
                         LEFT JOIN gilda_training AS tri ON ev.training = tri.id
                         WHERE room_id=? AND date=? ORDER BY date, start_time";
         $stmt = $this->conn->prepare($queryString);
-        $stmt->bind_param("is", $room_id, $day);
+        $stmt->bind_param("iis", $user_id, $room_id, $day);
         
         $stmt->execute();
         
         $events = array();
         
-        $stmt->bind_result($id, $date, $start_time, $end_time, $trainer, $training, $spots, $free_spots);
+        $stmt->bind_result($id, $date, $start_time, $end_time, $trainer, $training, $spots, $free_spots, $is_reserved);
         
         while($stmt->fetch()) {
             $tmp = array("id" => $id, 
@@ -668,7 +673,8 @@ class DbHandler {
                          "trainingName" => $training, 
                          "spots" => $spots, 
                          "reservedSpots" => $spots - $free_spots, 
-                         "freeSpots" => $free_spots);
+                         "freeSpots" => $free_spots, 
+                         "is_reserved" => $is_reserved);
             
             array_push($events, $tmp);
         }
@@ -897,6 +903,44 @@ class DbHandler {
 
         $stmt->close();
 
+        return $reservations;
+    }
+
+    public function GetReservationsOfUser($user_id) {
+        $queryString = "SELECT ev.id, res.time, ev.date, ev.start_time, ev.end_time, 
+                                CONCAT(tr.last_name, ' ', tr.first_name) AS trainer, tri.name AS training, ev.spots,
+                        ev.spots - (SELECT COUNT(*) FROM gilda_reservations WHERE event_id=ev.id) AS free_spots 
+                        FROM gilda_reservations AS res 
+                        LEFT JOIN gilda_events AS ev ON ev.id = res.event_id 
+                        LEFT JOIN gilda_trainer AS tr ON ev.trainer = tr.id
+                        LEFT JOIN gilda_training AS tri ON ev.training = tri.id
+                        WHERE res.user_id=? ORDER BY res.time DESC";
+        $stmt = $this->conn->prepare($queryString);
+        $stmt->bind_param("i", $user_id);
+        
+        $stmt->execute();
+        
+        $reservations = array();
+        
+        $stmt->bind_result($id, $time, $date, $start_time, $end_time, $trainer, $training, $spots, $free_spots);
+        
+        while($stmt->fetch()) {
+            $tmp = array("id" => $id, 
+                         "reservationTime" => $time, 
+                         "date" => $date, 
+                         "startTime" => $start_time, 
+                         "endTime" => $end_time, 
+                         "trainerName" => $trainer, 
+                         "trainingName" => $training,
+                         "spots" => $spots, 
+                         "reservedSpots" => $spots - $free_spots, 
+                         "freeSpots" => $free_spots);
+            
+            array_push($reservations, $tmp);
+        }
+        
+        $stmt->close();
+        
         return $reservations;
     }
 

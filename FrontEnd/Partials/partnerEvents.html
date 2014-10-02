@@ -1,0 +1,73 @@
+<div class="container-fluid partnerEventsModule">
+	<div class="panel panel-primary">
+		<div class="panel-heading"><h3 class="panel-title">Események listája</h3></div>
+		<div class="panel-body">
+			<div class="well">
+				<div class="row">
+					<form class="form-inline" role="form">
+						<div class="form-group">
+							<div class="input-group">
+								<div class="input-group-addon">Terem:</div>
+								<select class="form-control" ng-model="eventListRoom" ng-options="elr.id as elr.name for elr in eventListRooms">
+									<option value="">- Válassz termet -</option>
+								</select>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<div class="input-group">
+								<div class="input-group-addon">Dátum:</div>
+								<input type="text" class="form-control" datepicker-popup="yyyy-MM-dd" ng-model="eventListDate" is-open="datePickerOpened" datepicker-options="datePickerOptions" datepicker-append-to-body="true" close-text="Bezárás" clear-text="Törlés" current-text="Mai nap" placeholder="Válassz dátumot &raquo;&raquo;" ng-required="true" />
+								<div class="input-group-btn">
+									<button type="button" class="btn btn-default" ng-click="openDatePicker($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+
+				<div class="row">
+					<button type="button" class="btn btn-success" ng-click="getEventsList(eventListRoom, eventListDate)">Események listázása</button>
+				</div>
+
+				<div class="row" ng-show="eventsAlertShow">
+					<alert type="danger" class="eventsAlert" close="closeEventsAlertShow()">
+		            	<strong ng-hide="events.length == 0">Hibás adatok!</strong> {{eventsListAlertMessage}}
+		            </alert>
+	            </div>
+			</div>
+
+			<div class="table-responsive">
+				<table class="table table-striped table-bordered tablePartnerEvents" ng-hide="events == null || events.length == 0">
+					<thead>
+						<tr>
+							<th>Óra kezdete</th>
+							<th>Óra vége</th>
+							<th>Edző neve</th>
+							<th>Edzés típusa</th>
+							<th>Férőhelyek száma</th>
+							<th>Foglalt helyek</th>
+							<th>Szabad helyek</th>
+							<th>Foglalás/Lemondás</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="event in events" ng-class="{'reserved': event.is_reserved == 1}">
+							<td class="text-center">{{event.startTime}}</td>
+							<td class="text-center">{{event.endTime}}</td>
+							<td>{{event.trainerName}}</td>
+							<td>{{event.trainingName}}</td>
+							<td class="text-center">{{event.spots}}</td>
+							<td class="text-center">{{event.reservedSpots}}</td>
+							<td class="text-center">{{event.freeSpots}}</td>
+							<td class="text-center">
+								<button class="btn btn-sm btn-success" ng-hide="event.is_reserved == 1" ng-click="makeReservation(event.id)">Foglalás</button>
+								<button class="btn btn-sm btn-warning" ng-hide="event.is_reserved == 0" ng-click="deleteReservation(event.id)">Lemondás</button>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>

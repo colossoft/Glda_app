@@ -47,4 +47,12 @@ gildaApp.controller("mainCtrl", function($scope, $location, $http, sessionServic
 	$scope.logPage = function() {
 		$location.path('/log');
 	}
+
+	$scope.partnerEvents = function() {
+		$location.path('/partner/events');
+	}
+
+	$scope.partnerReservations = function() {
+		$location.path('/partner/reservations');
+	}
 });

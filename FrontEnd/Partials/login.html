@@ -7,11 +7,11 @@
 
             <div class="well">
                 <tabset justified="true">
-                    <tab heading="Belépés">
+                    <tab heading="Belépés" active="actives.loginTabActive">
                         <ng-form name="loginForm" novalidate>
                             <div ng-show="loginAlertShow">
                                 <alert type="danger" close="closeLoginAlertShow()">
-                                    <strong>Sikertelen bejelentkezés!</strong> Hibás e-mail vagy jelszó!
+                                    {{loginAlertMessage}}
                                 </alert>
                             </div>
                             <div class="form-group" ng-class="{'has-error': loginForm.email.$invalid && loginForm.email.$dirty, 'has-success': loginForm.email.$valid && loginForm.email.$dirty}">
@@ -22,26 +22,25 @@
                                 <label class="control-label" for="password">Jelszó:</label>
                                 <input type="password" class="form-control" name="password" ng-model="user.password" required />
                             </div>
-                            <!-- <div class="form-group" ng-class="{'has-error': loginForm.location.$invalid && loginForm.location.$dirty, 'has-success': loginForm.location.$valid && loginForm.location.$dirty}">
-                                <label class="control-label">Helyszín:</label>
-                                <select class="form-control" ng-model="user.selectedLocation" name="location" ng-required="true" ng-options="location as location.Name for location in gildaLocations">
-                                    <option value="">--- Válasszon helyszínt! ---</option>
-                                </select>
-                            </div> -->
                             <div class="form-group" style="margin-top:40px">
                                 <button type="button" ng-click="login(user)" ng-disabled="loginForm.$invalid" class="btn btn-primary btn-block">Belépés</button>
                             </div>
                         </ng-form>
                     </tab>
-                    <tab heading="Partner regisztráció">
+                    <tab heading="Partner regisztráció" active="actives.regTabActive">
                         <ng-form name="regForm" novalidate>
-                            <div class="form-group" ng-class="{'has-error': regForm.lastName.$invalid && regForm.lastName.$dirty, 'has-success': regForm.lastName.$valid && regForm.lastName.$dirty}">
-                                <label class="control-label" for="lastName">Vezetéknév:</label>
-                                <input type="text" class="form-control" name="lastName" ng-model="regUser.lastName" required />
+                            <div ng-show="regAlertShow">
+                                <alert type="danger" close="closeRegAlertShow()">
+                                    {{regAlertMessage}}
+                                </alert>
                             </div>
-                            <div class="form-group" ng-class="{'has-error': regForm.firstName.$invalid && regForm.firstName.$dirty, 'has-success': regForm.firstName.$valid && regForm.firstName.$dirty}">
-                                <label class="control-label" for="firstName">Keresztnév:</label>
-                                <input type="text" class="form-control" name="firstName" ng-model="regUser.firstName" required />
+                            <div class="form-group" ng-class="{'has-error': regForm.last_name.$invalid && regForm.last_name.$dirty, 'has-success': regForm.last_name.$valid && regForm.last_name.$dirty}">
+                                <label class="control-label" for="last_name">Vezetéknév:</label>
+                                <input type="text" class="form-control" name="last_name" ng-model="regUser.last_name" required />
+                            </div>
+                            <div class="form-group" ng-class="{'has-error': regForm.first_name.$invalid && regForm.first_name.$dirty, 'has-success': regForm.first_name.$valid && regForm.first_name.$dirty}">
+                                <label class="control-label" for="first_name">Keresztnév:</label>
+                                <input type="text" class="form-control" name="first_name" ng-model="regUser.first_name" required />
                             </div>
                             <div class="form-group" ng-class="{'has-error': regForm.regEmail.$invalid && regForm.regEmail.$dirty, 'has-success': regForm.regEmail.$valid && regForm.regEmail.$dirty}">
                                 <label class="control-label" for="regEmail">E-mail:</label>
@@ -56,7 +55,7 @@
                                 <input type="password" class="form-control" name="regConfirmPassword" ng-model="regUser.confirmPassword" required />
                             </div>
                             <div class="form-group" style="margin-top:40px">
-                                <button type="button" ng-click="register(regUser)" ng-disabled="regForm.$invalid" class="btn btn-primary btn-block">Regisztráció</button>
+                                <button type="button" ng-click="register(regUser)" ng-disabled="regForm.$invalid || regUser.password != regUser.confirmPassword" class="btn btn-primary btn-block">Regisztráció</button>
                             </div>
                         </ng-form>
                     </tab>

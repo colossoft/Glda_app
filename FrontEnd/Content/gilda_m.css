@@ -136,6 +136,46 @@ body {
     text-align: center;
 }
 
+/********* Partnerek - Események listája táblázat **********/
+.tablePartnerEvents > thead > tr {
+    background: #cc3433;
+    color: #fff;
+}
+
+.tablePartnerEvents > thead > tr > th,
+.tablePartnerEvents > tbody > tr > td {
+    vertical-align: middle;
+}
+
+.tablePartnerEvents > thead > tr > th:nth-child(1), 
+.tablePartnerEvents > thead > tr > th:nth-child(2),
+.tablePartnerEvents > thead > tr > th:nth-child(5), 
+.tablePartnerEvents > thead > tr > th:nth-child(6),
+.tablePartnerEvents > thead > tr > th:nth-child(7), 
+.tablePartnerEvents > thead > tr > th:nth-child(8) {
+    width: 8%;
+    text-align: center;
+}
+
+.tablePartnerEvents > tbody > tr.reserved > td {
+    background: #4CAF50;
+    color: #fff;
+}
+
+/********* Partnerek - Foglalások listája táblázat **********/
+.tablePartnerReservations > thead > tr {
+    background: #cc3433;
+    color: #fff;
+}
+
+.tablePartnerReservations > thead > tr > th,
+.tablePartnerReservations > tbody > tr > td {
+    vertical-align: middle;
+}
+
+.tablePartnerReservations > thead > tr > th {
+    text-align: center;
+}
 
 /********* Események részletei modul **********/
 .eventDetailModule .label {
