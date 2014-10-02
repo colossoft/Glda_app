@@ -980,28 +980,28 @@ $app->put('/disengage/:partnerId', 'authenticate', function($partnerId) {
 /*
 *Modify user password
 */
-$app->put('/passmodify/', 'authenticate', function() use($app) {
+$app->put('/passmodify', 'authenticate', function() use($app) {
     global $user_id;
     
     // Check for required params
     verifyRequiredParams(array('oldPassword', 'newPassword', 'confirmNewPassword'));
 
     // reading post params
-    $oldPassword = $app->request()->post('oldPassword');
-    $newPassword = $app->request()->post('newPassword');
-    $confirmNewPassword = $app->request()->post('confirmNewPassword');
-
+    parse_str($app->request()->getBody(), $request_params);
+    $oldPassword = $request_params['oldPassword'];
+    $newPassword = $request_params['newPassword'];
+    $confirmNewPassword = $request_params['confirmNewPassword'];
+    
     $response = array();
     $db = new DbHandler();
 
     // fetch rooms
     $result = $db->PasswordModify($user_id, $oldPassword, $newPassword, $confirmNewPassword);
 
-    if($result != NULL) {
+    if(!is_null($result)) {
         $response["error"] = false;
         $response["message"] = "A jelszó megváltozott!";
         echoResponse(200, $response);
-
     } else {
         $response["error"] = true;
         $response["message"] = "Hibásan adta meg a jelszó módosításához szükséges adatokat!";

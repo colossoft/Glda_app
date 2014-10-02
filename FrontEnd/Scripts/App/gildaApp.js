@@ -113,6 +113,11 @@ gildaApp.config(function($routeProvider) {
         controller: 'partnerReservationsCtrl'
     });
 
+    $routeProvider.when('/changePassword', {
+        templateUrl: '/Glda_app/FrontEnd/Partials/changePassword.html', 
+        controller: 'changePasswordCtrl'
+    });
+
     $routeProvider.otherwise({
         redirectTo: '/login'
     });

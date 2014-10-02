@@ -196,9 +196,10 @@ class DbHandler {
             $stmt->fetch();
             
             $stmt->close();
-            
+
             if(PassHash::check_password($password_hash, $password)) {
                 // User password is correct
+
                 return TRUE;
             }
             else {

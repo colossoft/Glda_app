@@ -55,4 +55,8 @@ gildaApp.controller("mainCtrl", function($scope, $location, $http, sessionServic
 	$scope.partnerReservations = function() {
 		$location.path('/partner/reservations');
 	}
+
+	$scope.changePassword = function() {
+		$location.path('/changePassword');
+	}
 });

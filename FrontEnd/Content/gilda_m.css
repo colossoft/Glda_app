@@ -345,3 +345,10 @@ body {
 .tableLogDetails > tbody > tr > td {
     vertical-align: middle;
 }
+
+/********* Change password **********/
+.changePasswordTitle {
+    margin: 0 0 25px 0;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 5px;
+}
