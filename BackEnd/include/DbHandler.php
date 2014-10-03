@@ -100,9 +100,9 @@ class DbHandler {
     }
 
     /*
-    *Modify the forgeted password of the user
+    *Modify the forgotten password of the user
     */
-    public function ForgetedPasswordModify($email, $newPassword) {
+    public function forgottenPasswordModify($email, $newPassword) {
         require_once dirname(__FILE__) . '/PassHash.php';
         $response = array();
 
@@ -129,7 +129,7 @@ class DbHandler {
      */
     public function checkLogin($email, $password) {
         // fetching user by email
-        $queryString = "SELECT password_hash FROM gilda_user WHERE email = ?";
+        $queryString = "SELECT password_hash FROM gilda_user WHERE email = ? AND status <> 0";
         $stmt = $this->conn->prepare($queryString);
         
         $stmt->bind_param("s", $email);
@@ -226,7 +226,7 @@ class DbHandler {
      * @param String $email E-mail to check in db
      * @return boolean
      */
-    private function isUserExists($email) {
+    public function isUserExists($email) {
         $queryString = "SELECT id FROM gilda_user WHERE email = ?";
         $stmt = $this->conn->prepare($queryString);
         
@@ -438,7 +438,7 @@ class DbHandler {
      * @return boolean
      */
     public function isValidApiKey($api_key) {
-        $queryString = "SELECT id FROM gilda_user WHERE api_key = ?";
+        $queryString = "SELECT id FROM gilda_user WHERE api_key = ? and status <> 0";
         $stmt = $this->conn->prepare($queryString);
         
         $stmt->bind_param("s", $api_key);

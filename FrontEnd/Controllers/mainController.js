@@ -59,4 +59,8 @@ gildaApp.controller("mainCtrl", function($scope, $location, $http, sessionServic
 	$scope.changePassword = function() {
 		$location.path('/changePassword');
 	}
+
+	$scope.forgetPassword = function() {
+		$location.path('/forgetPassword');
+	}
 });

@@ -26,6 +26,9 @@
                                 <button type="button" ng-click="login(user)" ng-disabled="loginForm.$invalid" class="btn btn-primary btn-block">Belépés</button>
                             </div>
                         </ng-form>
+                        <p class="text-right">
+                            <a class="text-muted" href="" ng-click="forgetPassword()"><small>Elfelejtetted a jelszavad?</small></a>
+                        </p>
                     </tab>
                     <tab heading="Partner regisztráció" active="actives.regTabActive">
                         <ng-form name="regForm" novalidate>

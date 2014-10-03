@@ -118,6 +118,11 @@ gildaApp.config(function($routeProvider) {
         controller: 'changePasswordCtrl'
     });
 
+    $routeProvider.when('/forgetPassword', {
+        templateUrl: '/Glda_app/FrontEnd/Partials/forgetPassword.html', 
+        controller: 'forgetPasswordCtrl'
+    });
+
     $routeProvider.otherwise({
         redirectTo: '/login'
     });

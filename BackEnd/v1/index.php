@@ -266,7 +266,7 @@ function authenticate(\Slim\Route $route) {
         if (!$db->isValidApiKey($api_key)) {
             // api key is not present in gilda_user table
             $response["error"] = true;
-            $response["message"] = "Access Denied. Invalid Api key";
+            $response["message"] = "Hozzáférés megtagadva! A felhasználót nem lehet azonosítani!";
             echoResponse(401, $response);
             $app->stop();
         } else {
@@ -279,7 +279,7 @@ function authenticate(\Slim\Route $route) {
     } else {
         // api key is missing in header
         $response["error"] = true;
-        $response["message"] = "Api key is misssing";
+        $response["message"] = "Api key is missing!";
         echoResponse(400, $response);
         $app->stop();
     }
@@ -1023,39 +1023,32 @@ $app->post('/getnewpassword', function() use($app) {
     $response = array();
     $db = new DbHandler();
 
-    // fetch rooms
-    $result = $db->getUserByEmail($email);
+    $result = $db->isUserExists($email);
 
-    if($result != NULL) {
+    if($result) {
+        $result = $db->getUserByEmail($email);
         $first_name = $result['first_name'];
         $last_name = $result['last_name'];
         $newPassword = randomPassword();
 
-        $result2 = $db->ForgetedPasswordModify($email, $newPassword);
+        $result2 = $db->forgottenPasswordModify($email, $newPassword);
 
-        if ($result2 != NULL && SendMailToUserForNewPassword($first_name, $last_name, $email, $newPassword)) {
+        if (!is_null($result2) && SendMailToUserForNewPassword($first_name, $last_name, $email, $newPassword)) {
             $response["error"] = true;
-            $response["message"] = "Az új jelszavát tartalmazó e-mailt elküldtük Önnek!";
+            $response["message"] = "Az új jelszót tartalmazó levelet elküldtük az e-mail címedre!";
+            $response["newPassword"] = $newPassword;
             echoResponse(500, $response);
         } else {
             $response["error"] = true;
-            $response["message"] = "Hiba történt, kérem próbálja meg újra!";
+            $response["message"] = "Hiba történt, kérjük próbáld meg újra!";
             echoResponse(500, $response);
         }
 
     } else {
         $response["error"] = true;
-        $response["message"] = "Hiba történt, kérem próbálja meg újra!";
+        $response["message"] = "A megadott e-mail cím nincs regisztrálva a rendszerben!";
         echoResponse(500, $response);
     }
-});
-
-/*
-*User forget her/his password
-*/
-$app->get('/getpass', function() {
-    $response["message"] = randomPassword();
-    echoResponse(200, $response);
 });
 
 $app->run();
