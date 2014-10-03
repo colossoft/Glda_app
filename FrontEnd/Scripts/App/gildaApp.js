@@ -40,86 +40,88 @@
 });
 
 gildaApp.constant('baseUrl', 'http://localhost:8080/Glda_app/BackEnd/v1');
+gildaApp.constant('frontEndUrl', 'http://localhost:8080/Glda_app/FrontEnd');
 //gildaApp.constant('baseUrl', 'http://gildamax.atyin.url.ph/v1');
+//gildaApp.constant('frontEndUrl', 'http://gildamax.atyin.url.ph/GildaMaxWeb');
 
-gildaApp.config(function($routeProvider) {
+gildaApp.config(function($routeProvider, frontEndUrl) {
     $routeProvider.when('/login', {
-        templateUrl: '/Glda_app/FrontEnd/Partials/login.html', 
+        templateUrl: frontEndUrl + '/Partials/login.html', 
         controller: 'loginCtrl'
     });
 	
 	$routeProvider.when('/home', {
-        templateUrl: '/Glda_app/FrontEnd/Partials/home.html', 
+        templateUrl: frontEndUrl + '/Partials/home.html', 
         controller: 'homeCtrl'
     });
 
     $routeProvider.when('/events/list', {
-        templateUrl: '/Glda_app/FrontEnd/Partials/eventsList.html', 
+        templateUrl: frontEndUrl + '/Partials/eventsList.html', 
         controller: 'eventsListCtrl'
     });
 
     $routeProvider.when('/events/create', {
-        templateUrl: '/Glda_app/FrontEnd/Partials/createEvent.html', 
+        templateUrl: frontEndUrl + '/Partials/createEvent.html', 
         controller: 'createEventCtrl'
     });
 
     $routeProvider.when('/events/:id', {
-        templateUrl: '/Glda_app/FrontEnd/Partials/eventDetails.html', 
+        templateUrl: frontEndUrl + '/Partials/eventDetails.html', 
         controller: 'eventDetailCtrl'
     });
 
     $routeProvider.when('/trainings', {
-        templateUrl: '/Glda_app/FrontEnd/Partials/trainings.html', 
+        templateUrl: frontEndUrl + '/Partials/trainings.html', 
         controller: 'trainingsCtrl'
     });
 
     $routeProvider.when('/trainers', {
-        templateUrl: '/Glda_app/FrontEnd/Partials/trainers.html', 
+        templateUrl: frontEndUrl + '/Partials/trainers.html', 
         controller: 'trainersCtrl'
     });
 
     $routeProvider.when('/rooms', {
-        templateUrl: '/Glda_app/FrontEnd/Partials/rooms.html', 
+        templateUrl: frontEndUrl + '/Partials/rooms.html', 
         controller: 'roomsCtrl'
     });
 
     $routeProvider.when('/news', {
-        templateUrl: '/Glda_app/FrontEnd/Partials/news.html', 
+        templateUrl: frontEndUrl + '/Partials/news.html', 
         controller: 'newsCtrl'
     });
 
     $routeProvider.when('/specialOffers', {
-        templateUrl: '/Glda_app/FrontEnd/Partials/specialOffers.html', 
+        templateUrl: frontEndUrl + '/Partials/specialOffers.html', 
         controller: 'specialOffersCtrl'
     });
 
     $routeProvider.when('/log', {
-        templateUrl: '/Glda_app/FrontEnd/Partials/log.html', 
+        templateUrl: frontEndUrl + '/Partials/log.html', 
         controller: 'logCtrl'
     });
 
     $routeProvider.when('/log/:id', {
-        templateUrl: '/Glda_app/FrontEnd/Partials/logDetails.html', 
+        templateUrl: frontEndUrl + '/Partials/logDetails.html', 
         controller: 'logDetailsCtrl'
     });
 
     $routeProvider.when('/partner/events', {
-        templateUrl: '/Glda_app/FrontEnd/Partials/partnerEvents.html', 
+        templateUrl: frontEndUrl + '/Partials/partnerEvents.html', 
         controller: 'partnerEventsCtrl'
     });
 
     $routeProvider.when('/partner/reservations', {
-        templateUrl: '/Glda_app/FrontEnd/Partials/partnerReservations.html', 
+        templateUrl: frontEndUrl + '/Partials/partnerReservations.html', 
         controller: 'partnerReservationsCtrl'
     });
 
     $routeProvider.when('/changePassword', {
-        templateUrl: '/Glda_app/FrontEnd/Partials/changePassword.html', 
+        templateUrl: frontEndUrl + '/Partials/changePassword.html', 
         controller: 'changePasswordCtrl'
     });
 
     $routeProvider.when('/forgetPassword', {
-        templateUrl: '/Glda_app/FrontEnd/Partials/forgetPassword.html', 
+        templateUrl: frontEndUrl + '/Partials/forgetPassword.html', 
         controller: 'forgetPasswordCtrl'
     });
 
@@ -129,7 +131,7 @@ gildaApp.config(function($routeProvider) {
 });
 
 gildaApp.run(function($location, $rootScope, loginService) {
-	var routesPermission = ['/home'];
+	var routesPermission = ['/home', '/events/list'];
 	
 	$rootScope.$on('$routeChangeStart', function() {
 		if(routesPermission.indexOf($location.path()) != -1 && !loginService.isLogged()) {

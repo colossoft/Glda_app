@@ -179,13 +179,13 @@ $app->post('/register', function() use($app) {
     $res = $db->createUser($first_name, $last_name, $email, $password);
     
     if($res["status"] == USER_CREATED_SUCCESSFULLY) {
-        /*if(sendMailToUser($first_name, $last_name, $email, $password)) {
+        if(sendMailToUser($first_name, $last_name, $email, $password)) {
             $response["mail_error"] = false;
         }
         else {
             $response["mail_error"] = true;
             $response["mail_error_message"] = $mail_error_info;
-        }*/
+        }
 	
         $response["error"] = false;
         $response["api_key"] = $res["api_key"];
@@ -1037,7 +1037,7 @@ $app->post('/getnewpassword', function() use($app) {
             $response["error"] = true;
             $response["message"] = "Az új jelszót tartalmazó levelet elküldtük az e-mail címedre!";
             $response["newPassword"] = $newPassword;
-            echoResponse(500, $response);
+            echoResponse(200, $response);
         } else {
             $response["error"] = true;
             $response["message"] = "Hiba történt, kérjük próbáld meg újra!";
@@ -1047,7 +1047,7 @@ $app->post('/getnewpassword', function() use($app) {
     } else {
         $response["error"] = true;
         $response["message"] = "A megadott e-mail cím nincs regisztrálva a rendszerben!";
-        echoResponse(500, $response);
+        echoResponse(409, $response);
     }
 });
 
