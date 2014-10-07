@@ -4,13 +4,21 @@ gildaApp.controller("eventDetailCtrl", function($scope, $routeParams, $location,
 		$scope.eventId = $routeParams["id"];
 
 		// Esemény foglalásai
-		$http.get(baseUrl + '/event/' + $scope.eventId)
-			.success(function(data) {
-				$scope.eventDetails = data.eventDetails;
-			})
-			.error(function(data) {
-				alert(data.message);
-			});
+		function getEventDetails() {
+			$http.get(baseUrl + '/event/' + $scope.eventId)
+				.success(function(data) {
+					$scope.eventDetails = data.eventDetails;
+				})
+				.error(function(data) {
+					if(angular.isUndefined(data.message)) {
+						getEventDetails();
+					} else {
+						alert(data.message);	
+					}
+				});	
+		}
+
+		getEventDetails();
 	});
 
 	// Vissza gomb

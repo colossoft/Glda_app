@@ -9,14 +9,18 @@ gildaApp.controller("trainingsCtrl", function($scope, $http, baseUrl) {
 				$scope.trainings = data.trainings;
 			})
 			.error(function(data) {
-				alert(data.message);
+				if(angular.isUndefined(data.message)) {
+					getTrainings();
+				} else {
+					alert(data.message);	
+				}
 			});
 	}
 
 	getTrainings();
 
 	// Edzés törlése
-	$scope.deleteTraining = function(trainingId) {
+	function delTraining(trainingId) {
 		$http.delete(baseUrl + '/training/' + trainingId)
 			.success(function(data) {
 				getTrainings();
@@ -24,21 +28,37 @@ gildaApp.controller("trainingsCtrl", function($scope, $http, baseUrl) {
 				alert(data.message);
 			})
 			.error(function(data) {
-				alert(data.message);
+				if(angular.isUndefined(data.message)) {
+					delTraining(trainingId);
+				} else {
+					alert(data.message);	
+				}
 			});
+	}
+
+	$scope.deleteTraining = function(trainingId) {
+		delTraining(trainingId);
 	}
 
 	// Edzés mentése
 	$scope.saveTraining = function() {
-		$http.post(baseUrl + '/training', $scope.training)
-			.success(function(data) {
-				$scope.training.name = null;
-				getTrainings();
+		function sTraining() {
+			$http.post(baseUrl + '/training', $scope.training)
+				.success(function(data) {
+					$scope.training.name = null;
+					getTrainings();
 
-				alert(data.message);
-			})
-			.error(function(data) {
-				alert(data.message);
-			});
+					alert(data.message);
+				})
+				.error(function(data) {
+					if(angular.isUndefined(data.message)) {
+						sTraining();
+					} else {
+						alert(data.message);	
+					}
+				});
+		}
+
+		sTraining();
 	}
 });

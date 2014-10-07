@@ -609,7 +609,7 @@ class DbHandler {
                         FROM gilda_events AS ev 
                         LEFT JOIN gilda_trainer AS tr ON ev.trainer = tr.id
                         LEFT JOIN gilda_training AS tri ON ev.training = tri.id
-                        WHERE room_id=? AND date>=NOW() AND date<=(NOW() + INTERVAL 2 WEEK) ORDER BY date, start_time";
+                        WHERE room_id=? AND date>=CURDATE() AND date<=(CURDATE() + INTERVAL 2 WEEK) ORDER BY date, start_time";
         $stmt = $this->conn->prepare($queryString);
         $stmt->bind_param("ii", $user_id, $room_id);
         

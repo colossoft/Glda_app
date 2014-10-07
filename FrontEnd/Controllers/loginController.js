@@ -21,17 +21,25 @@
     $scope.register = function(regUser) {
         $scope.regAlertShow = false;
 
-    	$http.post(baseUrl + '/register', $scope.regUser)
-            .success(function(data) {
-                $scope.regUser = {}
-                $scope.actives.loginTabActive = true;
+        function regUser() {
+            $http.post(baseUrl + '/register', $scope.regUser)
+                .success(function(data) {
+                    $scope.regUser = {}
+                    $scope.actives.loginTabActive = true;
 
-                alert(data.message + ' Lépj be a megadott adatokkal!');
-            })
-            .error(function(data) {
-                $scope.regAlertShow = true;
-                $scope.regAlertMessage = data.message;
-            });
+                    alert(data.message + ' Lépj be a megadott adatokkal!');
+                })
+                .error(function(data) {
+                    if(angular.isUndefined(data.message)) {
+                        regUser();
+                    } else {
+                        $scope.regAlertShow = true;
+                        $scope.regAlertMessage = data.message;  
+                    }
+                });
+        }
+    	
+        regUser();
     }
 
 });

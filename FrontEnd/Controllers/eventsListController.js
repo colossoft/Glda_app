@@ -20,14 +20,23 @@ gildaApp.controller("eventsListCtrl", function($scope, $rootScope, $location, $h
 	$scope.eventListDate = eventListService.getDate();
 
 	// Terem lista beállítások
-	$http.get(baseUrl + '/rooms/' + locationService.getLocationId())
-		.success(function(data) {
-			$scope.eventListRooms = data.rooms;
-			$scope.eventListRoom = eventListService.getRoom();
-		})
-		.error(function(data) {
-			alert(data.message);
-		});
+	function getRooms() {
+		$http.get(baseUrl + '/rooms/' + locationService.getLocationId())
+			.success(function(data) {
+				$scope.eventListRooms = data.rooms;
+				$scope.eventListRoom = eventListService.getRoom();
+			})
+			.error(function(data) {
+				if(angular.isUndefined(data.message)) {
+					getRooms();
+				} else {
+					alert(data.message);	
+				}
+			});
+	}
+
+	getRooms();
+	
 
 	$scope.$watch('eventListRoom', function() {
 		console.log("Room:");
@@ -55,23 +64,32 @@ gildaApp.controller("eventsListCtrl", function($scope, $rootScope, $location, $h
 		else {
 			var fDate = $filter('date')(date, 'yyyy-MM-dd');
 
-			$http.get(baseUrl + '/events/' + room + '/' + fDate)
-				.success(function(data) {
-					if(data.events.length === 0) {
-						$scope.eventsListAlertMessage = "A megadott teremben ebben az időpontban nem lesznek edzések!";
-						$scope.eventsAlertShow = true;
-					}
+			function getEvents(room, fDate, date) {
+				$http.get(baseUrl + '/events/' + room + '/' + fDate)
+					.success(function(data) {
+						if(data.events.length === 0) {
+							$scope.eventsListAlertMessage = "A megadott teremben ebben az időpontban nem lesznek edzések!";
+							$scope.eventsAlertShow = true;
+						}
 
-					$scope.events = data.events;
+						$scope.events = data.events;
 
-					eventListService.setRoom(room);
-					eventListService.setDate(date);
-					eventListService.setEvents($scope.events);
-				})
-				.error(function(data) {
-					$scope.eventsListAlertMessage = data.message;
-					$scope.eventsAlertShow = true;
-				});
+						eventListService.setRoom(room);
+						eventListService.setDate(date);
+						eventListService.setEvents($scope.events);
+					})
+					.error(function(data) {
+						if(angular.isUndefined(data.message)) {
+							getEvents(room, fDate, date);
+						} else {
+							$scope.eventsListAlertMessage = data.message;
+							$scope.eventsAlertShow = true;	
+						}
+						
+					});
+			}
+			
+			getEvents(room, fDate, date);
 		}
 	}
 

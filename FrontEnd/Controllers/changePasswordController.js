@@ -1,7 +1,7 @@
 gildaApp.controller("changePasswordCtrl", function($scope, $http, baseUrl) {
 	$scope.cp = {}
 
-	$scope.changePassword = function(cp) {
+	function cPass(cp) {
 		$http.put(baseUrl + '/passmodify', cp)
 			.success(function(data) {
 				$scope.cp = {}
@@ -9,8 +9,16 @@ gildaApp.controller("changePasswordCtrl", function($scope, $http, baseUrl) {
 				alert(data.message);
 			})
 			.error(function(data) {
-				alert(data.message);
+				if(angular.isUndefined(data.message)) {
+					cPass(cp);
+				} else {
+					alert(data.message);	
+				}
 			});
+	}
+
+	$scope.changePassword = function(cp) {
+		cPass(cp);
 	}
 
 });

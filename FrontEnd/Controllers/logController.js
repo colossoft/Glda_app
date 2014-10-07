@@ -6,7 +6,11 @@ gildaApp.controller("logCtrl", function($scope, $http, $location, baseUrl) {
 				$scope.partners = data.partners;
 			})
 			.error(function(data) {
-				alert(data.message);
+				if(angular.isUndefined(data.message)) {
+					getPartners();
+				} else {
+					alert(data.message);	
+				}
 			});
 	}
 
@@ -17,7 +21,7 @@ gildaApp.controller("logCtrl", function($scope, $http, $location, baseUrl) {
 	}
 
 	$scope.banPartner = function(id) {
-		if(confirm("Biztos ki szeretné tiltani a partnert?")) {
+		function banUser(id) {
 			$http.put(baseUrl + '/ban/' + id)
 				.success(function(data) {
 					getPartners();
@@ -25,13 +29,21 @@ gildaApp.controller("logCtrl", function($scope, $http, $location, baseUrl) {
 					alert(data.message);
 				})
 				.error(function(data) {
-					alert(data.message);
+					if(angular.isUndefined(data.message)) {
+						banUser(id);
+					} else {
+						alert(data.message);	
+					}
 				});
+		}
+
+		if(confirm("Biztos ki szeretné tiltani a partnert?")) {
+			banUser(id);
 		}
 	}
 
 	$scope.disengagePartner = function(id) {
-		if(confirm("Biztos engedélyezni szeretné a partnert?")) {
+		function allowUser(id) {
 			$http.put(baseUrl + '/disengage/' + id)
 				.success(function(data) {
 					getPartners();
@@ -39,8 +51,16 @@ gildaApp.controller("logCtrl", function($scope, $http, $location, baseUrl) {
 					alert(data.message);
 				})
 				.error(function(data) {
-					alert(data.message);
+					if(angular.isUndefined(data.message)) {
+						allowUser(id);
+					} else {
+						alert(data.message);	
+					}
 				});
+		}
+
+		if(confirm("Biztos engedélyezni szeretné a partnert?")) {
+			allowUser(id);
 		}
 	}
 

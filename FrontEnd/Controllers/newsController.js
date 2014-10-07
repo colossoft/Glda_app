@@ -2,15 +2,24 @@ gildaApp.controller("newsCtrl", function($scope, $http, $filter, baseUrl) {
 
 	$scope.accordionStatuses = [{open:true}];
 
-	$http.get(baseUrl + '/languages')
-		.success(function(data) {
-			$scope.languages = data.languages;
+	function getLanguages() {
+		$http.get(baseUrl + '/languages')
+			.success(function(data) {
+				$scope.languages = data.languages;
 
-			initNews();
-		})
-		.error(function(data) {
-			alert(data.message);
-		});
+				initNews();
+			})
+			.error(function(data) {
+				if(angular.isUndefined(data.message)) {
+					getLanguages();
+				} else {
+					alert(data.message);	
+				}
+			});
+	}
+
+	getLanguages();
+	
 
 	function getAllNews() {
 		$http.get(baseUrl + '/news/' + '1')
@@ -18,7 +27,11 @@ gildaApp.controller("newsCtrl", function($scope, $http, $filter, baseUrl) {
 				$scope.news = data.news;
 			})
 			.error(function(data) {
-				alert(data.message);
+				if(angular.isUndefined(data.message)) {
+					getAllNews();
+				} else {
+					alert(data.message);	
+				}
 			});
 	}
 
@@ -40,7 +53,7 @@ gildaApp.controller("newsCtrl", function($scope, $http, $filter, baseUrl) {
 	}
 
 	$scope.deleteNews = function(id) {
-		if(confirm("Biztos törölni akarod ezt a hírt?")) {
+		function delNews(id) {
 			$http.delete(baseUrl + '/news/' + id)
 				.success(function(data) {
 					getAllNews();
@@ -48,8 +61,16 @@ gildaApp.controller("newsCtrl", function($scope, $http, $filter, baseUrl) {
 					alert(data.message);
 				})
 				.error(function(data) {
-					alert(data.message);
+					if(angular.isUndefined(data.message)) {
+						delNews(id);
+					} else {
+						alert(data.message);	
+					}
 				});
+		}
+
+		if(confirm("Biztos törölni akarod ezt a hírt?")) {
+			delNews(id);
 		}
 	}
 	
@@ -62,6 +83,23 @@ gildaApp.controller("newsCtrl", function($scope, $http, $filter, baseUrl) {
 			}
 		});
 
+		function sNews() {
+			$http.post(baseUrl + '/createNews', $scope.createNews)
+				.success(function(data) {
+					initNews();
+					getAllNews();
+
+					alert(data.message);
+				})
+				.error(function(data) {
+					if(angular.isUndefined(data.message)) {
+						sNews();
+					} else {
+						alert(data.message);	
+					}	
+				});
+		}
+
 		if(hasEmpty) {
 			alert('Nem töltött ki minden nyelvet megfelelően!');
 		} else {
@@ -69,16 +107,7 @@ gildaApp.controller("newsCtrl", function($scope, $http, $filter, baseUrl) {
 
 			console.log($scope.createNews);
 
-			$http.post(baseUrl + '/createNews', $scope.createNews)
-				.success(function(data) {
-					initNews();
-					getAllNews();
-
-					alert(data.data.message);
-				})
-				.error(function(data) {
-					alert(data.data.message);	
-				});
+			sNews();
 		}
 	}
 });

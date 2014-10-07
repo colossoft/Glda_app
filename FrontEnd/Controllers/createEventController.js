@@ -16,33 +16,58 @@ gildaApp.controller("createEventCtrl", function($scope, $http, $filter, baseUrl,
 	$scope.endTime = new Date();
 
 	// Termek
-	$http.get(baseUrl + '/rooms/' + locationService.getLocationId())
-		.success(function(data) {
-			$scope.eventRooms = data.rooms;
-		})
-		.error(function(data) {
-			alert(data.message);
-		});
+	function getRooms() {
+		$http.get(baseUrl + '/rooms/' + locationService.getLocationId())
+			.success(function(data) {
+				$scope.eventRooms = data.rooms;
+			})
+			.error(function(data) {
+				if(angular.isUndefined(data.message)) {
+					getRooms();
+				} else {
+					alert(data.message);	
+				}
+			});
+	}
+
+	getRooms();
 
 	// Edzők nevei
-	$http.get(baseUrl + '/trainers')
-		.success(function(data) {
-			console.log(data);
-			$scope.trainers = data.trainers;
-		})
-		.error(function(data) {
-			alert(data.message);
-		});
+	function getTrainers() {
+		$http.get(baseUrl + '/trainers')
+			.success(function(data) {
+				console.log(data);
+				$scope.trainers = data.trainers;
+			})
+			.error(function(data) {
+				if(angular.isUndefined(data.message)) {
+					getTrainers();
+				} else {
+					alert(data.message);	
+				}
+			});	
+	}
 
+	getTrainers();
+	
 	//Edzés típusok
-	$http.get(baseUrl + '/trainings')
-		.success(function(data) {
-			console.log(data);
-			$scope.trainings = data.trainings;
-		})
-		.error(function() {
-			alert(data.message);
-		});
+	function getTrainings() {
+		$http.get(baseUrl + '/trainings')
+			.success(function(data) {
+				console.log(data);
+				$scope.trainings = data.trainings;
+			})
+			.error(function(data) {
+				if(angular.isUndefined(data.message)) {
+					getTrainings();
+				} else {
+					alert(data.message);	
+				}
+			});	
+	}
+
+	getTrainings();
+	
 
 	// Esemény mentése
 	$scope.saveEvent = function() {
@@ -58,19 +83,27 @@ gildaApp.controller("createEventCtrl", function($scope, $http, $filter, baseUrl,
 
 		console.log(newEvent);
 
-		$http.post(baseUrl + '/event', newEvent)
-			.success(function(data) {
-				console.log(data);
+		function sEvent(newEvent) {
+			$http.post(baseUrl + '/event', newEvent)
+				.success(function(data) {
+					console.log(data);
 
-				$scope.eventRoom = null;
-				$scope.selectedTrainer = null;
-				$scope.selectedTraining = null;
-				$scope.spots = null;
+					$scope.eventRoom = null;
+					$scope.selectedTrainer = null;
+					$scope.selectedTraining = null;
+					$scope.spots = null;
 
-				alert(data.message);			
-			})
-			.error(function(data) {
-				alert(data.message);
-			});
+					alert(data.message);			
+				})
+				.error(function(data) {
+					if(angular.isUndefined(data.message)) {
+						sEvent(newEvent);
+					} else {
+						alert(data.message);	
+					}
+				});
+		}
+
+		sEvent(newEvent);
 	}
 });

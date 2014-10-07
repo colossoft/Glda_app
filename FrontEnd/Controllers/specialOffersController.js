@@ -18,15 +18,23 @@ gildaApp.controller("specialOffersCtrl", function($scope, $filter, $http, baseUr
 	}
 
 	// Nyelvek
-	$http.get(baseUrl + '/languages')
-		.success(function(data) {
-			$scope.languages = data.languages;
+	function getLanguages() {
+		$http.get(baseUrl + '/languages')
+			.success(function(data) {
+				$scope.languages = data.languages;
 
-			initSpecialOffers();
-		})
-		.error(function(data) {
-			alert(data.message);
-		});
+				initSpecialOffers();
+			})
+			.error(function(data) {
+				if(angular.isUndefined(data.message)) {
+					getLanguages();
+				} else {
+					alert(data.message);	
+				}
+			});
+	}
+	
+	getLanguages();
 
 	// Visszakapott akciók magyarul
 	function getAllSpecialOffers() {
@@ -35,7 +43,11 @@ gildaApp.controller("specialOffersCtrl", function($scope, $filter, $http, baseUr
 				$scope.specialOffers = data.specialOffers;
 			})
 			.error(function(data) {
-				alert(data.message);
+				if(angular.isUndefined(data.message)) {
+					getAllSpecialOffers();
+				} else {
+					alert(data.message);	
+				}
 			});
 	}
 
@@ -58,17 +70,25 @@ gildaApp.controller("specialOffersCtrl", function($scope, $filter, $http, baseUr
 		});
 	}
 
+	function delSpecOffer(id) {
+		$http.delete(baseUrl + '/devaluation/' + id)
+			.success(function(data) {
+				getAllSpecialOffers();
+
+				alert(data.message);
+			})
+			.error(function(data) {
+				if(angular.isUndefined(data.message)) {
+					delSpecOffer(id);
+				} else {
+					alert(data.message);	
+				}
+			});
+	}
+
 	$scope.deleteSpecialOffer = function(id) {
 		if(confirm("Biztos törölni akarod ezt az akciót?")) {
-			$http.delete(baseUrl + '/devaluation/' + id)
-				.success(function(data) {
-					getAllSpecialOffers();
-
-					alert(data.message);
-				})
-				.error(function(data) {
-					alert(data.message);
-				});
+			delSpecOffer(id);
 		}
 	}
 
@@ -88,12 +108,7 @@ gildaApp.controller("specialOffersCtrl", function($scope, $filter, $http, baseUr
 			hasEmpty = true;
 		}
 
-		if(hasEmpty) {
-			alert('Nem töltött ki minden nyelvet vagy dátumot megfelelően!');
-		} else {
-			$scope.createSpecialOffers.startDate = $filter('date')($scope.createSpecialOffers.startDate, 'yyyy-MM-dd');
-			$scope.createSpecialOffers.endDate = $filter('date')($scope.createSpecialOffers.endDate, 'yyyy-MM-dd');
-
+		function sSpecOffer() {
 			$http.post(baseUrl + '/createDevaluation', $scope.createSpecialOffers)
 				.success(function(data) {
 					initSpecialOffers();
@@ -102,8 +117,21 @@ gildaApp.controller("specialOffersCtrl", function($scope, $filter, $http, baseUr
 					alert(data.message);
 				})
 				.error(function(data) {
-					alert(data.message);	
+					if(angular.isUndefined(data.message)) {
+						sSpecOffer();
+					} else {
+						alert(data.message);	
+					}
 				});
+		}
+
+		if(hasEmpty) {
+			alert('Nem töltött ki minden nyelvet vagy dátumot megfelelően!');
+		} else {
+			$scope.createSpecialOffers.startDate = $filter('date')($scope.createSpecialOffers.startDate, 'yyyy-MM-dd');
+			$scope.createSpecialOffers.endDate = $filter('date')($scope.createSpecialOffers.endDate, 'yyyy-MM-dd');
+
+			sSpecOffer();
 		}
 	}
 

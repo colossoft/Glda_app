@@ -9,7 +9,11 @@ gildaApp.controller("roomsCtrl", function($scope, $http, baseUrl, locationServic
 				$scope.rooms = data.rooms;
 			})
 			.error(function(data) {
-				alert(data.message);
+				if(angular.isUndefined(data.message)) {
+					getRooms();
+				} else {
+					alert(data.message);	
+				}
 			});
 	}
 
@@ -17,30 +21,46 @@ gildaApp.controller("roomsCtrl", function($scope, $http, baseUrl, locationServic
 	
 	// Terem törlése
 	$scope.deleteRoom = function(roomId) {
-		$http.delete(baseUrl + '/rooms/' + roomId)
-			.success(function(data) {
-				getRooms();
+		function delRoom(roomId) {
+			$http.delete(baseUrl + '/rooms/' + roomId)
+				.success(function(data) {
+					getRooms();
 
-				alert(data.message);
-			})
-			.error(function(data) {
-				alert(data.message);
-			});
+					alert(data.message);
+				})
+				.error(function(data) {
+					if(angular.isUndefined(data.message)) {
+						delRoom(roomId);
+					} else {
+						alert(data.message);	
+					}
+				});
+		}
+		
+		delRoom(roomId);
 	}
 
 	// Edzés mentése
 	$scope.saveRoom = function() {
 		$scope.room.locationId = locationService.getLocationId();
 
-		$http.post(baseUrl + '/rooms', $scope.room)
-			.success(function(data) {
-				$scope.room.name = null;
-				getRooms();
+		function sRoom() {
+			$http.post(baseUrl + '/rooms', $scope.room)
+				.success(function(data) {
+					$scope.room.name = null;
+					getRooms();
 
-				alert(data.message);
-			})
-			.error(function(data) {
-				alert(data.message);
-			});
+					alert(data.message);
+				})
+				.error(function(data) {
+					if(angular.isUndefined(data.message)) {
+						sRoom();
+					} else {
+						alert(data.message);	
+					}
+				});
+		}
+
+		sRoom();
 	}
 });

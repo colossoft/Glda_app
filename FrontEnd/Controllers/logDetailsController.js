@@ -3,14 +3,22 @@ gildaApp.controller("logDetailsCtrl", function($scope, $routeParams, $http, $loc
 	$scope.$on("$routeChangeSuccess", function() {
 		$scope.partnerId = $routeParams["id"];
 
-		$http.get(baseUrl + '/log/' + $scope.partnerId)
-			.success(function(data) {
-				$scope.userDetails = data.result.userDetails;
-				$scope.logs = data.result.logs;
-			})
-			.error(function(data) {
-				alert(data.message);
-			});
+		function getLogDetails() {
+			$http.get(baseUrl + '/log/' + $scope.partnerId)
+				.success(function(data) {
+					$scope.userDetails = data.result.userDetails;
+					$scope.logs = data.result.logs;
+				})
+				.error(function(data) {
+					if(angular.isUndefined(data.message)) {
+						getLogDetails();
+					} else {
+						alert(data.message);	
+					}
+				});
+		}
+		
+		getLogDetails();
 	});
 
 	$scope.backToLogPartners = function() {

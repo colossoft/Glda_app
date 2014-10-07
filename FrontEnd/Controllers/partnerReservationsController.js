@@ -6,14 +6,18 @@ gildaApp.controller("partnerReservationsCtrl", function($scope, $http, baseUrl) 
 				$scope.reservations = data.reservations;
 			})
 			.error(function(data) {
-				alert(data.message);
+				if(angular.isUndefined(data.message)) {
+					getReservations();
+				} else {
+					alert(data.message);	
+				}
 			});
 	}
 
 	getReservations();
 
 	$scope.deleteReservation = function(id) {
-		if(confirm("Biztos szeretnéd lemondani a foglalást?")) {
+		function delRes(id) {
 			$http.delete(baseUrl + '/reservation/' + id)
 				.success(function(data) {
 					getReservations();
@@ -21,8 +25,16 @@ gildaApp.controller("partnerReservationsCtrl", function($scope, $http, baseUrl) 
 					alert(data.message);
 				})
 				.error(function(data) {
-					alert(data.message);
+					if(angular.isUndefined(data.message)) {
+						delRes(id);
+					} else {
+						alert(data.message);	
+					}
 				});
+		}
+
+		if(confirm("Biztos szeretnéd lemondani a foglalást?")) {
+			delRes(id);
 		}
 	}
 

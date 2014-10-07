@@ -3,7 +3,7 @@ gildaApp.controller("forgetPasswordCtrl", function($scope, $location, $http, bas
 		email: null
 	}
 
-	$scope.getNewPassword = function() {
+	function getNPass() {
 		$http.post(baseUrl + '/getnewpassword', $scope.f)
 			.success(function(data) {
 				$location.path('/login');
@@ -11,8 +11,16 @@ gildaApp.controller("forgetPasswordCtrl", function($scope, $location, $http, bas
 				alert(data.message);
 			})
 			.error(function(data) {
-				alert(data.message);
+				if(angular.isUndefined(data.message)) {
+					getNPass();
+				} else {
+					alert(data.message);	
+				}
 			});
+	}
+
+	$scope.getNewPassword = function() {
+		getNPass();
 	}
 
 	$scope.backToLogin = function() {

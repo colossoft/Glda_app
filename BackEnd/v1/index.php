@@ -747,7 +747,7 @@ $app->get('/news/:languageId', 'authenticate', function($languageId) {
     // fetch rooms
     $result = $db->GetAllNews($languageId);
 
-    if($result != NULL) {
+    if(!is_null($result)) {
         $response["error"] = false;
         $response["news"] = $result;
         echoResponse(200, $response);
@@ -823,7 +823,7 @@ $app->get('/devaluations/:languageId', 'authenticate', function($languageId) {
     // fetch rooms
     $result = $db->GetAllDevaluation($languageId);
 
-    if($result != NULL) {
+    if(!is_null($result)) {
         $response["error"] = false;
         $response["specialOffers"] = $result;
         echoResponse(200, $response);
