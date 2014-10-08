@@ -1,23 +1,25 @@
 gildaApp.controller("eventsListCtrl", function($scope, $rootScope, $location, $http, $filter, baseUrl, eventListService, locationService) {
 
 	// Datepicker beállítások
-	$scope.openDatePicker = function($event) {
+	$scope.datePickerOpened = [false, false];
+
+	$scope.openDatePicker = function($event, index) {
 		$event.preventDefault();
 		$event.stopPropagation();
 
-		$scope.datePickerOpened = true;
+		if(index == 0)
+			$scope.datePickerOpened = [true, false];
+		
+		if(index == 1)
+			$scope.datePickerOpened = [false, true];	
 	};
 
 	$scope.datePickerOptions = {
 		startingDay: 1
 	}
 
-	$scope.$watch('eventListDate', function() {
-		console.log("Date:");
-		console.log($scope.eventListDate);
-	});
-
-	$scope.eventListDate = eventListService.getDate();
+	$scope.eventListStartDate = eventListService.getStartDate();
+	$scope.eventListEndDate = eventListService.getEndDate();
 
 	// Terem lista beállítások
 	function getRooms() {
@@ -36,12 +38,6 @@ gildaApp.controller("eventsListCtrl", function($scope, $rootScope, $location, $h
 	}
 
 	getRooms();
-	
-
-	$scope.$watch('eventListRoom', function() {
-		console.log("Room:");
-		console.log($scope.eventListRoom);
-	});
 
 	// Alert beállítások
 	$scope.closeEventsAlertShow = function() {
@@ -49,7 +45,7 @@ gildaApp.controller("eventsListCtrl", function($scope, $rootScope, $location, $h
 	}
 	
 	// Események lekérése
-	$scope.getEventsList = function(room, date) {
+	$scope.getEventsList = function(room, startDate, endDate) {
 		$scope.eventsAlertShow = false;
 		$scope.events = null;
 
@@ -57,30 +53,36 @@ gildaApp.controller("eventsListCtrl", function($scope, $rootScope, $location, $h
 			$scope.eventsListAlertMessage = "Válassz ki egy termet!";
 			$scope.eventsAlertShow = true;
 		}
-		else if(angular.isUndefined(date)) {
-			$scope.eventsListAlertMessage = "Helytelen dátumformátum!";
+		else if(angular.isUndefined(startDate)) {
+			$scope.eventsListAlertMessage = "Helytelen kezdő dátum formátum!";
+			$scope.eventsAlertShow = true;
+		}
+		else if(angular.isUndefined(endDate)) {
+			$scope.eventsListAlertMessage = "Helytelen végdátum formátum!";
 			$scope.eventsAlertShow = true;
 		}
 		else {
-			var fDate = $filter('date')(date, 'yyyy-MM-dd');
+			var fStartDate = $filter('date')(startDate, 'yyyy-MM-dd');
+			var fEndDate = $filter('date')(endDate, 'yyyy-MM-dd');
 
-			function getEvents(room, fDate, date) {
-				$http.get(baseUrl + '/events/' + room + '/' + fDate)
+			function getEvents(room, fStartDate, fEndDate, startDate, endDate) {
+				$http.get(baseUrl + '/events/' + room + '/' + fStartDate + '/' + fEndDate)
 					.success(function(data) {
 						if(data.events.length === 0) {
-							$scope.eventsListAlertMessage = "A megadott teremben ebben az időpontban nem lesznek edzések!";
+							$scope.eventsListAlertMessage = "A megadott teremben ebben az időintervallumban nem lesznek edzések!";
 							$scope.eventsAlertShow = true;
 						}
 
 						$scope.events = data.events;
 
 						eventListService.setRoom(room);
-						eventListService.setDate(date);
+						eventListService.setStartDate(startDate);
+						eventListService.setEndDate(endDate);
 						eventListService.setEvents($scope.events);
 					})
 					.error(function(data) {
 						if(angular.isUndefined(data.message)) {
-							getEvents(room, fDate, date);
+							getEvents(room, fStartDate, fEndDate, startDate, endDate);
 						} else {
 							$scope.eventsListAlertMessage = data.message;
 							$scope.eventsAlertShow = true;	
@@ -89,14 +91,16 @@ gildaApp.controller("eventsListCtrl", function($scope, $rootScope, $location, $h
 					});
 			}
 			
-			getEvents(room, fDate, date);
+			getEvents(room, fStartDate, fEndDate, startDate, endDate);
 		}
 	}
 
 	$scope.events = eventListService.getEvents();
+	$scope.eventListFilter = eventListService.getEventListFilter();
 
 	// Esemény részleteinek megnyitása
 	$scope.openEventDetail = function(index) {
+		eventListService.setEventListFilter($scope.eventListFilter);
 		$location.path('/events/' + $scope.events[index].id);
 	}
 });

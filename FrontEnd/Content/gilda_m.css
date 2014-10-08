@@ -88,7 +88,7 @@ body {
 
 /******** Események listája alert **********/
 .eventsAlert {
-    max-width: 350px;
+    max-width: 500px;
     margin-bottom: 5px;
 }
 
@@ -128,9 +128,10 @@ body {
 
 .tableEvents > thead > tr > th:nth-child(1), 
 .tableEvents > thead > tr > th:nth-child(2),
-.tableEvents > thead > tr > th:nth-child(5), 
+.tableEvents > thead > tr > th:nth-child(3), 
 .tableEvents > thead > tr > th:nth-child(6),
 .tableEvents > thead > tr > th:nth-child(7),
+.tableEvents > thead > tr > th:nth-child(8), 
 .tableEventDetails > thead > tr > th:first-child {
     width: 8%;
     text-align: center;
@@ -149,10 +150,11 @@ body {
 
 .tablePartnerEvents > thead > tr > th:nth-child(1), 
 .tablePartnerEvents > thead > tr > th:nth-child(2),
-.tablePartnerEvents > thead > tr > th:nth-child(5), 
-.tablePartnerEvents > thead > tr > th:nth-child(6),
-.tablePartnerEvents > thead > tr > th:nth-child(7), 
-.tablePartnerEvents > thead > tr > th:nth-child(8) {
+.tablePartnerEvents > thead > tr > th:nth-child(3), 
+.tablePartnerEvents > thead > tr > th:nth-child(6), 
+.tablePartnerEvents > thead > tr > th:nth-child(7),
+.tablePartnerEvents > thead > tr > th:nth-child(8), 
+.tablePartnerEvents > thead > tr > th:nth-child(9) {
     width: 8%;
     text-align: center;
 }

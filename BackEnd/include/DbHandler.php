@@ -643,7 +643,7 @@ class DbHandler {
      * @param int $room_id id of the room
      * @param int $user_id id of the user
      */
-    public function getEventsByRoomIdAndDay($user_id, $room_id, $day) {
+    public function getEventsByRoomIdAndDay($user_id, $room_id, $startDay, $endDay) {
         $queryString = "SELECT ev.id, ev.date, ev.start_time, ev.end_time,
                         CONCAT(tr.last_name, ' ', tr.first_name) AS trainer, tri.name AS training, ev.spots,
                         ev.spots - (SELECT COUNT(*) FROM gilda_reservations WHERE event_id=ev.id) AS free_spots, 
@@ -655,9 +655,9 @@ class DbHandler {
                         FROM gilda_events AS ev 
                         LEFT JOIN gilda_trainer AS tr ON ev.trainer = tr.id
                         LEFT JOIN gilda_training AS tri ON ev.training = tri.id
-                        WHERE room_id=? AND date=? ORDER BY date, start_time";
+                        WHERE room_id=? AND date>=? AND date<=? ORDER BY date, start_time";
         $stmt = $this->conn->prepare($queryString);
-        $stmt->bind_param("iis", $user_id, $room_id, $day);
+        $stmt->bind_param("iiss", $user_id, $room_id, $startDay, $endDay);
         
         $stmt->execute();
         

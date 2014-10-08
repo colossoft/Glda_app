@@ -408,14 +408,14 @@ $app->get('/events/:room_id', 'authenticate', function($room_id) {
  * method GET
  * url /events/:room_id
  */
-$app->get('/events/:room_id/:day', 'authenticate', function($room_id, $day) {
+$app->get('/events/:room_id/:startDay/:endDay', 'authenticate', function($room_id, $startDay, $endDay) {
     global $user_id;
 
     $response = array();
     $db = new DbHandler();
 
     // fetch events
-    $result = $db->getEventsByRoomIdAndDay($user_id, $room_id, $day);
+    $result = $db->getEventsByRoomIdAndDay($user_id, $room_id, $startDay, $endDay);
 
     if(!is_null($result)) {
         $response["error"] = false;
