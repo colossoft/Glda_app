@@ -18,6 +18,29 @@ class DbHandler {
         $db = new DbConnect();
         $this->conn = $db->connect();
     }
+
+    public function get_timezone_offset($remote_tz, $origin_tz = null) {
+        if($origin_tz === null) {
+            if(!is_string($origin_tz = date_default_timezone_get())) {
+                return false; // A UTC timestamp was returned -- bail out!
+            }
+        }
+        if($origin_tz == 'UTC') {
+            $origin_dtz = new DateTimeZone('GMT');
+        } else {
+            $origin_dtz = new DateTimeZone($origin_tz);
+        }
+        
+        $remote_dtz = new DateTimeZone($remote_tz);
+        $origin_dt = new DateTime("now", $origin_dtz);
+        $remote_dt = new DateTime("now", $remote_dtz);
+        $offset = $origin_dtz->getOffset($origin_dt) - $remote_dtz->getOffset($remote_dt);
+        return $offset;
+    }
+
+    public function get_correct_current_timestamp() {
+        return date('Y-m-d H:i:s', time() - $this->get_timezone_offset('Europe/Budapest', date_default_timezone_get()));
+    }
     
     /* --------------------- 'gilda_user' table method  --------------------- */
     
@@ -794,9 +817,11 @@ class DbHandler {
 		$free_spots = $this->getFreeSpotsByEventId($event_id);
 		
         if($free_spots != 0) {
-            $queryString = "INSERT INTO gilda_reservations(user_id, event_id) VALUES (?, ?)";
+            $queryString = "INSERT INTO gilda_reservations(user_id, event_id, time) VALUES (?, ?, ?)";
             $stmt = $this->conn->prepare($queryString);
-            $stmt->bind_param("ii", $user_id, $event_id);
+
+            $correct_time = $this->get_correct_current_timestamp();
+            $stmt->bind_param("iis", $user_id, $event_id, $correct_time);
 
             $result = $stmt->execute();
 

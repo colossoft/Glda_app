@@ -1051,6 +1051,12 @@ $app->post('/getnewpassword', function() use($app) {
     }
 });
 
+
+
+$app->get('/teszt', 'authenticate', function() {
+    echo DateTimeZone::UTC;
+});
+
 $app->run();
 
 ?>
