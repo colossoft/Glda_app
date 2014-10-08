@@ -65,10 +65,13 @@ class DbHandler {
             
             // insert query
             $queryString = 
-                "INSERT INTO gilda_user(first_name, last_name, email, password_hash, api_key, status) 
-                             VALUES(?, ?, ?, ?, ?, 1)";
+                "INSERT INTO gilda_user(first_name, last_name, email, password_hash, api_key, status, created_at) 
+                             VALUES(?, ?, ?, ?, ?, 1, ?)";
             $stmt = $this->conn->prepare($queryString);
-            $stmt->bind_param("sssss", $first_name, $last_name, $email, $password_hash, $api_key);
+
+            $act_ts = $this->get_correct_current_timestamp();
+
+            $stmt->bind_param("ssssss", $first_name, $last_name, $email, $password_hash, $api_key, $act_ts);
             
             $result = $stmt->execute();
             
@@ -689,6 +692,9 @@ class DbHandler {
         $stmt->bind_result($id, $date, $start_time, $end_time, $trainer, $training, $spots, $free_spots, $is_reserved);
         
         while($stmt->fetch()) {
+            $event_date = DateTime::createFromFormat('Y-m-d H:i:s', $date . ' ' . $start_time . ':00');
+            $actual_date = DateTime::createFromFormat('Y-m-d H:i:s', $this->get_correct_current_timestamp());
+
             $tmp = array("id" => $id, 
                          "date" => $date, 
                          "startTime" => $start_time, 
@@ -698,7 +704,8 @@ class DbHandler {
                          "spots" => $spots, 
                          "reservedSpots" => $spots - $free_spots, 
                          "freeSpots" => $free_spots, 
-                         "is_reserved" => $is_reserved);
+                         "is_reserved" => $is_reserved, 
+                         "past" => $event_date < $actual_date);
             
             array_push($events, $tmp);
         }
@@ -789,6 +796,7 @@ class DbHandler {
             "INSERT INTO gilda_events(room_id, date, start_time, end_time, trainer, training, spots) 
                          VALUES(?, ?, ?, ?, ?, ?, ?)";
         $stmt = $this->conn->prepare($queryString);
+
         $stmt->bind_param("isssiii", $roomId, $date, $startTime, $endTime, $trainerId, $trainingId, $spots);
         
         $result = $stmt->execute();
@@ -815,6 +823,15 @@ class DbHandler {
      */
     public function createReservation($event_id, $user_id) {
 		$free_spots = $this->getFreeSpotsByEventId($event_id);
+
+        $actual_date = DateTime::createFromFormat('Y-m-d H:i:s', $this->get_correct_current_timestamp());
+        $event_date = $this->getEventStartByEventId($event_id);
+        $event_date->modify('-2 hour');
+
+        //echo $actual_date->format('Y-m-d H:i:s') . '  ' . $event_date->format('Y-m-d H:i:s') . '   ';
+        if($actual_date > $event_date) {
+            return array('status' => RESERVATION_CREATE_DEADLINE_EXPIRED, 'free_spots' => $free_spots);
+        }
 		
         if($free_spots != 0) {
             $queryString = "INSERT INTO gilda_reservations(user_id, event_id, time) VALUES (?, ?, ?)";
@@ -847,6 +864,15 @@ class DbHandler {
      */
     public function deleteReservation($event_id, $user_id) {
 		$free_spots = $this->getFreeSpotsByEventId($event_id);
+
+        $actual_date = DateTime::createFromFormat('Y-m-d H:i:s', $this->get_correct_current_timestamp());
+        $event_date = $this->getEventStartByEventId($event_id);
+        $event_date->modify('-2 hour');
+
+        //echo $actual_date->format('Y-m-d H:i:s') . '  ' . $event_date->format('Y-m-d H:i:s') . '   ';
+        if($actual_date > $event_date) {
+            return array('status' => RESERVATION_DELETE_DEADLINE_EXPIRED, 'free_spots' => $free_spots);
+        }
 	
         $queryString = "DELETE FROM gilda_reservations WHERE user_id=? AND event_id=?";
         $stmt = $this->conn->prepare($queryString);
@@ -860,11 +886,34 @@ class DbHandler {
         
         if($num_affected_rows > 0) {
             $this->AddLog($event_id, $user_id, false);
-			return array('status' => true, 'free_spots' => ($free_spots+1));
+			return array('status' => RESERVATION_DELETED_SUCCESSFULLY, 'free_spots' => ($free_spots+1));
 		}
 		else {
-			return array('status' => false, 'free_spots' => $free_spots);
+			return array('status' => RESERVATION_DELETE_FAILED, 'free_spots' => $free_spots);
 		}
+    }
+
+    /**
+     * Get event start DateTime by eventId
+     * @param int $eventId id of the event
+     * @return DateTime of the event
+     */
+    public function getEventStartByEventId($eventId) {
+        $queryString = "SELECT date, start_time FROM gilda_events WHERE id=?";
+        $stmt = $this->conn->prepare($queryString);
+        $stmt->bind_param("i", $eventId);
+        
+        $stmt->execute();
+        
+        $stmt->bind_result($date, $startTime);
+        
+        $stmt->fetch();
+        
+        $stmt->close();
+        
+        $event_date = DateTime::createFromFormat('Y-m-d H:i:s', $date . ' ' . $startTime . ':00');
+
+        return $event_date;
     }
 
      /**
@@ -951,6 +1000,9 @@ class DbHandler {
         $stmt->bind_result($id, $time, $date, $start_time, $end_time, $trainer, $training, $spots, $free_spots);
         
         while($stmt->fetch()) {
+            $event_date = DateTime::createFromFormat('Y-m-d H:i:s', $date . ' ' . $start_time . ':00');
+            $actual_date = DateTime::createFromFormat('Y-m-d H:i:s', $this->get_correct_current_timestamp());
+
             $tmp = array("id" => $id, 
                          "reservationTime" => $time, 
                          "date" => $date, 
@@ -960,7 +1012,8 @@ class DbHandler {
                          "trainingName" => $training,
                          "spots" => $spots, 
                          "reservedSpots" => $spots - $free_spots, 
-                         "freeSpots" => $free_spots);
+                         "freeSpots" => $free_spots, 
+                         "past" => $event_date < $actual_date);
             
             array_push($reservations, $tmp);
         }
@@ -1439,7 +1492,7 @@ class DbHandler {
      public function AddLog($event_id, $user_id, $isCreated) {
         $name = $this->GetUserNameById($user_id);
         $event = $this->GetInformationOfEventByEventId($event_id);
-        $created_date = date("Y-m-d H:i:s");
+        $created_date = $this->get_correct_current_timestamp();
         $operation = '';
 
         if ($isCreated) {

@@ -548,11 +548,17 @@ $app->post('/reservation/', 'authenticate', function() use($app) {
 		$response["free_spots"] = $res['free_spots'];
         echoResponse(500, $response);
     }
+    else if($res['status'] = RESERVATION_CREATE_DEADLINE_EXPIRED) {
+        $response["error"] = true;
+        $response["message"] = "A foglalás határideje lejárt! Az esemény kezdete előtti 2 órában már nincs mód a foglalásra!";
+        $response["free_spots"] = $res['free_spots'];
+        echoResponse(405, $response);
+    }
     else if($res['status'] = NO_FREE_SPOTS) {
         $response["error"] = true;
         $response["message"] = "Sajnos nincs több szabad hely erre az edzésre!";
 		$response["free_spots"] = $res['free_spots'];
-        echoResponse(400, $response);
+        echoResponse(405, $response);
     }
 });
 
@@ -571,7 +577,7 @@ $app->delete('/reservation/:event_id', 'authenticate', function($event_id) use($
     // Delete reservation
     $result = $db->deleteReservation($event_id, $user_id);
     
-    if($result['status']) {
+    if($result['status'] == RESERVATION_DELETED_SUCCESSFULLY) {
         // Esetleg mail küldés?
         
         $response["error"] = false;
@@ -579,11 +585,17 @@ $app->delete('/reservation/:event_id', 'authenticate', function($event_id) use($
         $response["free_spots"] = $result['free_spots'];
         echoResponse(200, $response);
     }
-    else {
+    else if($result['status'] == RESERVATION_DELETE_FAILED) {
         $response["error"] = true;
         $response["message"] = "A foglalás törlése sikertelen! Kérjük próbáld újra!";
         $response["free_spots"] = $result['free_spots'];
-        echoResponse(405, $response);
+        echoResponse(500, $response);
+    }
+    else if($result['status'] == RESERVATION_DELETE_DEADLINE_EXPIRED) {
+        $response["error"] = true;
+        $response["message"] = "A foglalás törlésének határideje lejárt! Az esemény kezdete előtti 2 órában már nincs mód a foglalás törlésére!";
+        $response["free_spots"] = $result['free_spots'];
+        echoResponse(405, $response);   
     }
 });
 

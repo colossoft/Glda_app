@@ -20,7 +20,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						<tr ng-repeat="r in reservations">
+						<tr ng-repeat="r in reservations" ng-class="{'inPast': r.past}">
 							<td class="text-center">{{r.reservationTime}}</td>
 							<td class="text-center">{{r.date}}</td>
 							<td class="text-center">{{r.startTime}}</td>
@@ -31,7 +31,7 @@
 							<td class="text-center">{{r.reservedSpots}}</td>
 							<td class="text-center">{{r.freeSpots}}</td>
 							<td class="text-center">
-								<button class="btn btn-sm btn-warning" ng-click="deleteReservation(r.id)">Lemondás</button>
+								<button class="btn btn-sm btn-warning" ng-disabled="r.past" ng-click="deleteReservation(r.id)">Lemondás</button>
 							</td>
 						</tr>
 					</tbody>

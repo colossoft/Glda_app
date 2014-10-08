@@ -179,6 +179,10 @@ body {
     text-align: center;
 }
 
+.tablePartnerReservations > tbody > tr.inPast > td {
+    background: #dfdfdf;
+}
+
 /********* Események részletei modul **********/
 .eventDetailModule .label {
     font-size: 1.0em;

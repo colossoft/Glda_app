@@ -77,8 +77,8 @@
 							<td class="text-center">{{event.reservedSpots}}</td>
 							<td class="text-center">{{event.freeSpots}}</td>
 							<td class="text-center">
-								<button class="btn btn-sm btn-success" ng-hide="event.is_reserved == 1" ng-click="makeReservation(event.id)">Foglalás</button>
-								<button class="btn btn-sm btn-warning" ng-hide="event.is_reserved == 0" ng-click="deleteReservation(event.id)">Lemondás</button>
+								<button class="btn btn-sm btn-success" ng-disabled="event.past" ng-hide="event.is_reserved == 1" ng-click="makeReservation(event.id)">Foglalás</button>
+								<button class="btn btn-sm btn-warning" ng-disabled="event.past" ng-hide="event.is_reserved == 0" ng-click="deleteReservation(event.id)">Lemondás</button>
 							</td>
 						</tr>
 					</tbody>
