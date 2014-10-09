@@ -49,7 +49,7 @@
                             </ul>
                         </li>
                         <li ng-show="userStatus == 1"><a href="" ng-click="partnerReservations()">Foglalásaim</a></li>
-                        <li ng-show="userStatus == 3"><a href="" ng-click="logPage()">Napló</a></li>
+                        <li ng-hide="userStatus == 1"><a href="" ng-click="logPage()">Napló</a></li>
                     </ul>
 
                     <ul class="nav navbar-nav navbar-right">

@@ -63,6 +63,35 @@ function validateEmail($email) {
 }
 
 /**
+ * Validating password
+ */
+function validatePassword($password) {
+    $app = \Slim\Slim::getInstance();
+
+    $errorList = "";
+
+    if(strlen($password) < 8) {
+        $errorList .= "A jelszónak legalább 8 karaktert kell tartalmaznia!\n";
+    }
+    if(!preg_match("#[0-9]+#", $password)) {
+        $errorList .= "A jelszónak legalább egy számot tartalmaznia kell!\n";
+    }
+    if(!preg_match("#[A-Z]+#", $password)) {
+        $errorList .= "A jelszónak legalább egy nagybetűt tartalmaznia kell!\n";
+    }
+    if(!preg_match("#[a-z]+#", $password)) {
+        $errorList .= "A jelszónak legalább egy kisbetűt tartalmaznia kell!";
+    }
+
+    if(strlen($errorList) != 0) {
+        $response["error"] = true;
+        $response["message"] = $errorList;
+        echoResponse(400, $response);
+        $app->stop();
+    }
+}
+
+/**
  * Echoing json response to client
  * @param Int $status_code Http response code
  * @param String $response Json response
@@ -174,6 +203,9 @@ $app->post('/register', function() use($app) {
     
     // validating e-mail address
     validateEmail($email);
+
+    // validating password
+    validatePassword($password);
     
     $db = new DbHandler();
     $res = $db->createUser($first_name, $last_name, $email, $password);
@@ -964,11 +996,13 @@ $app->get('/log/:partnerId', 'authenticate', function($partnerId) {
 *Ban a user
 */
 $app->put('/ban/:partnerId', 'authenticate', function($partnerId) {
+    global $user_id;
+
     $response = array();
     $db = new DbHandler();
 
     // fetch rooms
-    $result = $db->DenyPartner($partnerId);
+    $result = $db->DenyPartner($partnerId, $user_id);
 
     if($result != NULL) {
         $response["error"] = false;
@@ -987,11 +1021,13 @@ $app->put('/ban/:partnerId', 'authenticate', function($partnerId) {
 *Disengage a user
 */
 $app->put('/disengage/:partnerId', 'authenticate', function($partnerId) {
+    global $user_id;
+
     $response = array();
     $db = new DbHandler();
 
     // fetch rooms
-    $result = $db->DisengagePartner($partnerId);
+    $result = $db->DisengagePartner($partnerId, $user_id);
 
     if($result != NULL) {
         $response["error"] = false;

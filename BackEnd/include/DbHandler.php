@@ -382,13 +382,15 @@ class DbHandler {
     /*
     * Ban a partner
     */
-    public function DenyPartner($partnerId) {
+    public function DenyPartner($partnerId, $user_id) {
         $queryString = "Update gilda_user Set status = 0 Where id = ?";
         $stmt = $this->conn->prepare($queryString);
         
         $stmt->bind_param("i", $partnerId);
         
         if($stmt->execute()) {
+            $this->AddDenyLog($partnerId, $user_id, true);
+
             return true;
         }
         else {
@@ -399,13 +401,15 @@ class DbHandler {
     /*
     * Disengage a partner
     */
-    public function DisengagePartner($partnerId) {
+    public function DisengagePartner($partnerId, $user_id) {
         $queryString = "Update gilda_user Set status = 1 Where id = ?";
         $stmt = $this->conn->prepare($queryString);
         
         $stmt->bind_param("i", $partnerId);
         
         if($stmt->execute()) {
+            $this->AddDenyLog($partnerId, $user_id, false);
+
             return true;
         }
         else {
@@ -794,21 +798,38 @@ class DbHandler {
 
         //Check the roomId
         if (!$this->CheckRoomId($roomId)) {
-            $errorList .= '\nRosszul adta meg a termet.';
+            $errorList .= "Rosszul adta meg a termet.\n";
             $haveError = true;
         }
 
         //Check the trainerId
         if (!$this->CheckTrainerId($trainerId)) {
-            $errorList .='\nRosszul adta meg az edzőt.';
+            $errorList .="Rosszul adta meg az edzőt.\n";
             $haveError = true;
         }
 
         //Check the training
         if (!$this->CheckTrainingId($trainingId)) {
-            $errorList .= '\nRosszul adta meg az edzés típusát.';
+            $errorList .= "Rosszul adta meg az edzés típusát.\n";
             $haveError = true;
         }
+
+        $event_date = DateTime::createFromFormat('Y-m-d H:i:s', $date . ' ' . $startTime . ':00');
+        $actual_date = DateTime::createFromFormat('Y-m-d H:i:s', $this->get_correct_current_timestamp());
+
+        if($event_date < $actual_date) {
+            $errorList .= "Az esemény dátuma nem helyes! Kérjük állíts be egy jövőbeli dátumot!\n";
+            $haveError = true;
+        }
+
+        $startTimeDt = DateTime::createFromFormat('Y-m-d H:i:s', $date . ' ' . $startTime . ':00');
+        $endTimeDt = DateTime::createFromFormat('Y-m-d H:i:s', $date . ' ' . $endTime . ':00');
+
+        if($startTimeDt > $endTimeDt) {
+            $errorList .= "Az edzés kezdete időpont későbbre van állítva, mint az edzés vége! Kérjük add meg helyesen az időpontokat!";
+            $haveError = true;
+        }
+
         if ($haveError) {
             error_log($errorList);
            return array('errorList' => $errorList);
@@ -1585,8 +1606,30 @@ class DbHandler {
         $stmt->close();
      }
 
+     public function AddDenyLog($partner_id, $user_id, $isBan) {
+        $partnerName = $this->GetUserNameById($partner_id);
+        $userDetails = $this->GetUserDetailsById($user_id);
+        $created_date = $this->get_correct_current_timestamp();
+        $operation = '';
+
+        if ($isBan) {
+            $operation .= 'A partner ki lett tiltva ' . $userDetails["lastName"] . ' ' . $userDetails["firstName"] . ' (' . $userDetails["email"] . ') által!';
+        } else {
+            $operation .= 'A partner engedélyezve lett ' . $userDetails["lastName"] . ' ' . $userDetails["firstName"] . ' (' . $userDetails["email"] . ') által!';
+        }
+
+        $queryString = 
+            "INSERT INTO gilda_log(name, created_date, operation, user_id) 
+                         VALUES(?, ?, ?, ?)";
+
+        $stmt = $this->conn->prepare($queryString);
+        $stmt->bind_param('sssi', $partnerName, $created_date, $operation, $partner_id);
+        $stmt->execute();
+        $stmt->close();
+     }
+
      public function GetLogByPartnerId($partnerId) {
-        $queryString = "SELECT * FROM gilda_log Where user_id = ?";
+        $queryString = "SELECT * FROM gilda_log Where user_id = ? ORDER BY created_date DESC";
         $stmt = $this->conn->prepare($queryString);
         $stmt->bind_param("i", $partnerId);
         
