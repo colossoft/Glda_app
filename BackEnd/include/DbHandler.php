@@ -562,7 +562,30 @@ class DbHandler {
         return $num_rows > 0;
     }
 
+    /**
+    * Check existing room by name
+    */
+    public function CheckRoomName($name) {
+        $queryString = "SELECT * FROM gilda_rooms WHERE name=?";
+        $stmt = $this->conn->prepare($queryString);
+        $stmt->bind_param("s", $name);
+        
+        $stmt->execute();
+        
+        $stmt->store_result();
+        
+        $num_rows = $stmt->num_rows;
+        
+        $stmt->close();
+        
+        return $num_rows > 0;
+    }
+
     public function CreateRoom($name, $locationId) {
+        if($this->CheckRoomName($name)) {
+            return false;
+        }
+
         $queryString = 
                 "INSERT INTO gilda_rooms(location_id, name) 
                              VALUES(?, ?)";
@@ -1044,6 +1067,25 @@ class DbHandler {
         return $num_rows > 0;
     }
 
+     /**
+    * Check existing trainer by email
+    */
+    public function CheckTrainerEmail($email) {
+        $queryString = "SELECT * FROM gilda_trainer WHERE email=?";
+        $stmt = $this->conn->prepare($queryString);
+        $stmt->bind_param("s", $email);
+        
+        $stmt->execute();
+        
+        $stmt->store_result();
+        
+        $num_rows = $stmt->num_rows;
+        
+        $stmt->close();
+        
+        return $num_rows > 0;
+    }
+
     /**
     * Fetching all trainers
     */
@@ -1075,6 +1117,10 @@ class DbHandler {
         if ($first_name == NULL || $first_name == '' || $last_name == NULL || $last_name == '' 
             || $email == NULL || $email == '') {
             return NULL;
+        }
+
+        if($this->CheckTrainerEmail($email)) {
+            return false;
         }
 
         $queryString = 
@@ -1152,6 +1198,25 @@ class DbHandler {
     }
 
     /**
+    * Check existing training by name
+    */
+    public function CheckTrainingName($name) {
+        $queryString = "SELECT * FROM gilda_training WHERE name=?";
+        $stmt = $this->conn->prepare($queryString);
+        $stmt->bind_param("s", $name);
+        
+        $stmt->execute();
+        
+        $stmt->store_result();
+        
+        $num_rows = $stmt->num_rows;
+        
+        $stmt->close();
+        
+        return $num_rows > 0;
+    }
+
+    /**
     * Fetching all trainings
     */
     public function GetAllTrainings() {
@@ -1180,6 +1245,10 @@ class DbHandler {
         //Check training params
         if ($name == NULL || $name == '') {
             return NULL;
+        }
+
+        if($this->CheckTrainingName($name)) {
+            return false;
         }
 
         $queryString = 

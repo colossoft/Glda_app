@@ -346,15 +346,20 @@ $app->post('/rooms', 'authenticate', function() use($app){
     // fetch events
     $result = $db->CreateRoom($name, $locationId);
 
-    if($result != NULL) {
-        $response["error"] = false;
-        $response["message"] = "Sikeres mentés!";
-        echoResponse(201, $response);
-    }
-    else {
+    if(is_null($result)) {
         $response["error"] = true;
         $response["message"] = "Sajnos nem sikerült létrehozni a megadott termet!";
         echoResponse(500, $response);
+    }
+    else if($result == false) {
+        $response["error"] = true;
+        $response["message"] = "Ilyen nevű terem már létezik!";
+        echoResponse(405, $response);
+    }
+    else if($result == true) {
+        $response["error"] = false;
+        $response["message"] = "Sikeres mentés!";
+        echoResponse(201, $response);
     }
 });
 
@@ -631,15 +636,21 @@ $app->post('/training', 'authenticate', function() use($app){
     // fetch events
     $result = $db->CreateTraining($name);
 
-    if($result != NULL) {
-        $response["error"] = false;
-        $response["message"] = "Sikeres mentés!";
-        echoResponse(201, $response);
-    }
-    else {
+    if(is_null($result)) {
         $response["error"] = true;
         $response["message"] = "Sajnos nem sikerült létrehozni a megadott edzéstípust!";
         echoResponse(500, $response);
+        
+    }
+    else if($result == false) {
+        $response["error"] = true;
+        $response["message"] = "Ilyen nevű edzés már létezik!";
+        echoResponse(405, $response);
+    }
+    else if($result == true) {
+        $response["error"] = false;
+        $response["message"] = "Sikeres mentés!";
+        echoResponse(201, $response);
     }
 });
 
@@ -696,15 +707,20 @@ $app->post('/trainer/', 'authenticate', function() use($app) {
     // fetch events
     $result = $db->CreateTrainer($first_name, $last_name, $email);
 
-    if($result != NULL) {
-        $response["error"] = false;
-        $response["message"] = "Sikeres mentés!";
-        echoResponse(201, $response);
-    }
-    else {
+    if(is_null($result)) {
         $response["error"] = true;
         $response["message"] = "Sajnos nem sikerült létrehozni az edzőt!";
         echoResponse(500, $response);
+    }
+    else if($result == false) {
+        $response["error"] = true;
+        $response["message"] = "Ezzel az e-mail címmel már regisztráltak edzőt!";
+        echoResponse(405, $response);
+    }
+    else if($result == true) {
+        $response["error"] = false;
+        $response["message"] = "Sikeres mentés!";
+        echoResponse(201, $response);
     }
 });
 
