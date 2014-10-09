@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.0.9
+-- version 4.2.7.1
 -- http://www.phpmyadmin.net
 --
--- Hoszt: 127.0.0.1
--- Létrehozás ideje: 2014. Okt 04. 18:10
--- Szerver verzió: 5.5.34
--- PHP verzió: 5.4.22
+-- Host: 127.0.0.1
+-- Generation Time: Oct 09, 2014 at 11:37 AM
+-- Server version: 5.6.20
+-- PHP Version: 5.5.15
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -17,46 +17,44 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 --
--- Adatbázis: `gilda`
+-- Database: `gilda`
 --
 
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `gilda_devaluation`
+-- Table structure for table `gilda_devaluation`
 --
 
 CREATE TABLE IF NOT EXISTS `gilda_devaluation` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+`id` int(11) NOT NULL,
   `title` varchar(250) NOT NULL,
   `text` varchar(500) NOT NULL,
   `start_date` date NOT NULL,
   `end_date` date NOT NULL,
   `languageId` int(11) NOT NULL,
-  `devaluationId` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=7 ;
+  `devaluationId` int(11) NOT NULL
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=10 ;
 
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `gilda_events`
+-- Table structure for table `gilda_events`
 --
 
 CREATE TABLE IF NOT EXISTS `gilda_events` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+`id` int(11) NOT NULL,
   `room_id` int(11) NOT NULL,
   `date` date NOT NULL,
   `start_time` varchar(5) NOT NULL,
   `end_time` varchar(5) NOT NULL,
   `trainer` int(11) NOT NULL,
   `training` int(11) NOT NULL,
-  `spots` int(3) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=42 ;
+  `spots` int(3) NOT NULL
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=44 ;
 
 --
--- A tábla adatainak kiíratása `gilda_events`
+-- Dumping data for table `gilda_events`
 --
 
 INSERT INTO `gilda_events` (`id`, `room_id`, `date`, `start_time`, `end_time`, `trainer`, `training`, `spots`) VALUES
@@ -99,22 +97,23 @@ INSERT INTO `gilda_events` (`id`, `room_id`, `date`, `start_time`, `end_time`, `
 (37, 1, '2014-09-07', '17:00', '18:00', 16, 2, 18),
 (38, 1, '2014-09-07', '18:00', '19:00', 15, 1, 23),
 (40, 1, '2014-10-01', '12:00', '13:00', 20, 1, 30),
-(41, 4, '2014-09-30', '18:00', '19:00', 9, 2, 15);
+(41, 4, '2014-09-30', '18:00', '19:00', 9, 2, 15),
+(42, 1, '2014-10-10', '10:00', '11:00', 21, 8, 10),
+(43, 2, '2014-10-09', '11:00', '12:00', 2, 2, 10);
 
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `gilda_language`
+-- Table structure for table `gilda_language`
 --
 
 CREATE TABLE IF NOT EXISTS `gilda_language` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) NOT NULL,
-  PRIMARY KEY (`id`)
+`id` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
 
 --
--- A tábla adatainak kiíratása `gilda_language`
+-- Dumping data for table `gilda_language`
 --
 
 INSERT INTO `gilda_language` (`id`, `name`) VALUES
@@ -125,20 +124,19 @@ INSERT INTO `gilda_language` (`id`, `name`) VALUES
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `gilda_locations`
+-- Table structure for table `gilda_locations`
 --
 
 CREATE TABLE IF NOT EXISTS `gilda_locations` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+`id` int(11) NOT NULL,
   `name` varchar(100) NOT NULL,
   `address` varchar(150) NOT NULL,
   `latitude` decimal(9,6) NOT NULL,
-  `longitude` decimal(9,6) NOT NULL,
-  PRIMARY KEY (`id`)
+  `longitude` decimal(9,6) NOT NULL
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=7 ;
 
 --
--- A tábla adatainak kiíratása `gilda_locations`
+-- Dumping data for table `gilda_locations`
 --
 
 INSERT INTO `gilda_locations` (`id`, `name`, `address`, `latitude`, `longitude`) VALUES
@@ -152,69 +150,94 @@ INSERT INTO `gilda_locations` (`id`, `name`, `address`, `latitude`, `longitude`)
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `gilda_log`
+-- Table structure for table `gilda_log`
 --
 
 CREATE TABLE IF NOT EXISTS `gilda_log` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+`id` int(11) NOT NULL,
   `name` varchar(100) NOT NULL,
-  `created_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `created_date` datetime NOT NULL,
   `operation` varchar(500) NOT NULL,
-  `user_id` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=17 ;
+  `user_id` int(11) NOT NULL
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=33 ;
+
+--
+-- Dumping data for table `gilda_log`
+--
+
+INSERT INTO `gilda_log` (`id`, `name`, `created_date`, `operation`, `user_id`) VALUES
+(17, 'Ákos Átyin', '2014-10-07 11:37:45', 'Feliratkozott a(z) Alakformáló eseményre, amit Klobusitzky Claudia tart 2014-09-01 12:00 -tól 13:00 -ig', 48),
+(18, 'Ákos Átyin', '2014-10-07 11:37:51', 'Leiratkozott a(z) Alakformáló eseményről, amit Klobusitzky Claudia tart 2014-09-01 12:00 -tól 13:00 -ig', 48),
+(19, 'Ákos Átyin', '2014-10-07 11:38:01', 'Feliratkozott a(z) Kickbox aerobic eseményre, amit Gárdus Bence tart 2014-09-01 18:00 -tól 19:00 -ig', 48),
+(20, 'Ákos Átyin', '2014-10-07 11:38:17', 'Leiratkozott a(z) Kickbox aerobic eseményről, amit Gárdus Bence tart 2014-09-01 18:00 -tól 19:00 -ig', 48),
+(21, 'Ákos Átyin', '2014-10-08 16:06:55', 'Feliratkozott a(z) Alakformáló eseményre, amit Klobusitzky Claudia tart 2014-09-05 12:00 -tól 13:00 -ig', 48),
+(22, 'Ákos Átyin', '2014-10-08 16:28:49', 'Feliratkozott a(z) Zsírégető eseményre, amit Béres Réka tart 2014-09-01 07:00 -tól 08:00 -ig', 48),
+(23, 'Ákos Átyin', '2014-10-08 16:50:48', 'Feliratkozott a(z) Alakformáló eseményre, amit Klobusitzky Claudia tart 2014-09-01 12:00 -tól 13:00 -ig', 48),
+(24, 'Ákos Átyin', '2014-10-08 17:22:09', 'Feliratkozott a(z) Zsírégető eseményre, amit Béres Réka tart 2014-09-01 07:00 -tól 08:00 -ig', 48),
+(25, 'Ákos Átyin', '2014-10-08 17:40:45', 'Feliratkozott a(z) Zsírégető eseményre, amit Béres Réka tart 2014-09-01 07:00 -tól 08:00 -ig', 48),
+(26, 'Ákos Átyin', '2014-10-08 17:42:19', 'Feliratkozott a(z) Alakformáló eseményre, amit Gárdus Bence tart 2014-09-01 19:00 -tól 20:00 -ig', 48),
+(30, 'Józsi Kamu', '2014-10-09 10:50:33', 'A partner engedélyezve lett Átyin Ákos (atyins@gmail.com) által!', 49),
+(29, 'Józsi Kamu', '2014-10-09 10:50:25', 'A partner ki lett tiltva Átyin Ákos (atyins@gmail.com) által!', 49),
+(31, 'Józsi Kamu', '2014-10-09 10:51:09', 'A partner ki lett tiltva Átyin Ákos (atyins@gmail.com) által!', 49),
+(32, 'Józsi Kamu', '2014-10-09 10:52:12', 'A partner engedélyezve lett Átyin Ákos (atyins@gmail.com) által!', 49);
 
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `gilda_news`
+-- Table structure for table `gilda_news`
 --
 
 CREATE TABLE IF NOT EXISTS `gilda_news` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+`id` int(11) NOT NULL,
   `newsId` int(11) NOT NULL,
   `title` varchar(100) NOT NULL,
   `newsText` varchar(500) NOT NULL,
   `created_date` date NOT NULL,
-  `languageId` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=17 ;
+  `languageId` int(11) NOT NULL
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=20 ;
 
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `gilda_reservations`
+-- Table structure for table `gilda_reservations`
 --
 
 CREATE TABLE IF NOT EXISTS `gilda_reservations` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+`id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `event_id` int(11) NOT NULL,
-  `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=64 ;
+  `time` datetime NOT NULL
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=72 ;
+
+--
+-- Dumping data for table `gilda_reservations`
+--
+
+INSERT INTO `gilda_reservations` (`id`, `user_id`, `event_id`, `time`) VALUES
+(66, 48, 26, '2014-10-08 16:06:55'),
+(71, 48, 4, '2014-10-08 17:42:19'),
+(68, 48, 2, '2014-10-08 16:50:48'),
+(70, 48, 1, '2014-10-08 17:40:45');
 
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `gilda_rooms`
+-- Table structure for table `gilda_rooms`
 --
 
 CREATE TABLE IF NOT EXISTS `gilda_rooms` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+`id` int(11) NOT NULL,
   `location_id` int(11) NOT NULL,
-  `name` varchar(100) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=20 ;
+  `name` varchar(100) NOT NULL
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=21 ;
 
 --
--- A tábla adatainak kiíratása `gilda_rooms`
+-- Dumping data for table `gilda_rooms`
 --
 
 INSERT INTO `gilda_rooms` (`id`, `location_id`, `name`) VALUES
 (1, 1, 'Aerobic nagyterem'),
 (2, 1, 'Aerobic Kisterem'),
-(3, 1, 'Boxterem'),
 (4, 2, 'Aerobic nagyterem'),
 (5, 2, 'Aerobic Kisterem'),
 (6, 2, 'Spinning nagyterem'),
@@ -235,19 +258,18 @@ INSERT INTO `gilda_rooms` (`id`, `location_id`, `name`) VALUES
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `gilda_trainer`
+-- Table structure for table `gilda_trainer`
 --
 
 CREATE TABLE IF NOT EXISTS `gilda_trainer` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+`id` int(11) NOT NULL,
   `first_name` varchar(100) NOT NULL,
   `email` varchar(100) NOT NULL,
-  `last_name` varchar(100) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=22 ;
+  `last_name` varchar(100) NOT NULL
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=23 ;
 
 --
--- A tábla adatainak kiíratása `gilda_trainer`
+-- Dumping data for table `gilda_trainer`
 --
 
 INSERT INTO `gilda_trainer` (`id`, `first_name`, `email`, `last_name`) VALUES
@@ -276,17 +298,16 @@ INSERT INTO `gilda_trainer` (`id`, `first_name`, `email`, `last_name`) VALUES
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `gilda_training`
+-- Table structure for table `gilda_training`
 --
 
 CREATE TABLE IF NOT EXISTS `gilda_training` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=15 ;
+`id` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=17 ;
 
 --
--- A tábla adatainak kiíratása `gilda_training`
+-- Dumping data for table `gilda_training`
 --
 
 INSERT INTO `gilda_training` (`id`, `name`) VALUES
@@ -308,29 +329,157 @@ INSERT INTO `gilda_training` (`id`, `name`) VALUES
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `gilda_user`
+-- Table structure for table `gilda_user`
 --
 
 CREATE TABLE IF NOT EXISTS `gilda_user` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+`id` int(11) NOT NULL,
   `first_name` varchar(255) NOT NULL,
   `last_name` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
   `password_hash` text NOT NULL,
   `api_key` varchar(32) NOT NULL,
   `status` int(1) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=50 ;
+  `created_at` datetime NOT NULL
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=51 ;
 
 --
--- A tábla adatainak kiíratása `gilda_user`
+-- Dumping data for table `gilda_user`
 --
 
 INSERT INTO `gilda_user` (`id`, `first_name`, `last_name`, `email`, `password_hash`, `api_key`, `status`, `created_at`) VALUES
-(49, 'Józsi', 'Kamu', 'jozsi@kamu.com', '$2a$10$77549a0a06d39e1ee86e4uZHVwTIjJKRybaBqBFGRZ.WzIL3kp7Ju', 'd7a4b5b931d18276e43400a01646fd39', 1, '2014-10-03 18:41:56'),
-(48, 'Ákos', 'Átyin', 'atyins@gmail.com', '$2a$10$5cc0bbfa8304ce6bd2e61uzimvhM5SmsT/GveNa.OjBeMzGzOexMe', 'd0758438913e95c21bdfa6109d780908', 3, '2014-10-03 17:35:48');
+(49, 'Józsi', 'Kamu', 'jozsi@kamu.com', '$2a$10$77549a0a06d39e1ee86e4uZHVwTIjJKRybaBqBFGRZ.WzIL3kp7Ju', 'd7a4b5b931d18276e43400a01646fd39', 1, '2014-10-03 20:41:56'),
+(48, 'Ákos', 'Átyin', 'atyins@gmail.com', '$2a$10$2b6bf9602745c60348d70OOTsEXqECUnf.E9VMj.xPMujvHrIAF4e', 'd0758438913e95c21bdfa6109d780908', 3, '2014-10-03 19:35:48');
 
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `gilda_devaluation`
+--
+ALTER TABLE `gilda_devaluation`
+ ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `gilda_events`
+--
+ALTER TABLE `gilda_events`
+ ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `gilda_language`
+--
+ALTER TABLE `gilda_language`
+ ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `gilda_locations`
+--
+ALTER TABLE `gilda_locations`
+ ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `gilda_log`
+--
+ALTER TABLE `gilda_log`
+ ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `gilda_news`
+--
+ALTER TABLE `gilda_news`
+ ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `gilda_reservations`
+--
+ALTER TABLE `gilda_reservations`
+ ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `gilda_rooms`
+--
+ALTER TABLE `gilda_rooms`
+ ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `gilda_trainer`
+--
+ALTER TABLE `gilda_trainer`
+ ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `gilda_training`
+--
+ALTER TABLE `gilda_training`
+ ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `gilda_user`
+--
+ALTER TABLE `gilda_user`
+ ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `gilda_devaluation`
+--
+ALTER TABLE `gilda_devaluation`
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=10;
+--
+-- AUTO_INCREMENT for table `gilda_events`
+--
+ALTER TABLE `gilda_events`
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=44;
+--
+-- AUTO_INCREMENT for table `gilda_language`
+--
+ALTER TABLE `gilda_language`
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=4;
+--
+-- AUTO_INCREMENT for table `gilda_locations`
+--
+ALTER TABLE `gilda_locations`
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=7;
+--
+-- AUTO_INCREMENT for table `gilda_log`
+--
+ALTER TABLE `gilda_log`
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=33;
+--
+-- AUTO_INCREMENT for table `gilda_news`
+--
+ALTER TABLE `gilda_news`
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=20;
+--
+-- AUTO_INCREMENT for table `gilda_reservations`
+--
+ALTER TABLE `gilda_reservations`
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=72;
+--
+-- AUTO_INCREMENT for table `gilda_rooms`
+--
+ALTER TABLE `gilda_rooms`
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=21;
+--
+-- AUTO_INCREMENT for table `gilda_trainer`
+--
+ALTER TABLE `gilda_trainer`
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=23;
+--
+-- AUTO_INCREMENT for table `gilda_training`
+--
+ALTER TABLE `gilda_training`
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=17;
+--
+-- AUTO_INCREMENT for table `gilda_user`
+--
+ALTER TABLE `gilda_user`
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=51;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
