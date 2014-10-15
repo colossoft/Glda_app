@@ -114,15 +114,14 @@ body {
     vertical-align: middle;
 }
 
-.tableEvents > thead > tr > th:last-child {
+.tableEvents > thead > tr > th:nth-child(9), 
+.tableEvents > thead > tr > th:nth-child(10) {
     width: 1%;
 }
 
-.tableEvents > tbody > tr > td:last-child {
+.tableEvents > tbody > tr > td:nth-child(9),
+.tableEvents > tbody > tr > td:nth-child(10)  {
     font-size: 1.2em;
-}
-
-.tableEvents > tbody > tr > td:last-child {
     color: #ff4443;
 }
 

@@ -63,11 +63,12 @@
 							<th>Férőhelyek száma</th>
 							<th>Foglalt helyek</th>
 							<th>Szabad helyek</th>
-							<th> </th>
+							<th>Infó</th>
+							<th>Foglalás</th>
 						</tr>
 					</thead>
 					<tbody>
-						<tr ng-repeat="event in events | filter:eventListFilter" ng-click="openEventDetail($index)">
+						<tr ng-repeat="event in events | filter:eventListFilter">
 							<td class="text-center">{{event.date}}</td>
 							<td class="text-center">{{event.startTime}}</td>
 							<td class="text-center">{{event.endTime}}</td>
@@ -76,7 +77,8 @@
 							<td class="text-center">{{event.spots}}</td>
 							<td class="text-center">{{event.reservedSpots}}</td>
 							<td class="text-center">{{event.freeSpots}}</td>
-							<td><span class="glyphicon glyphicon-info-sign"></span></td>
+							<td class="text-center"><span class="glyphicon glyphicon-info-sign" ng-click="openEventDetail($index)" title="Esemény foglalásai"></span></td>
+							<td class="text-center"><span class="glyphicon glyphicon-book" title="Foglalás"></span></td>
 						</tr>
 					</tbody>
 				</table>

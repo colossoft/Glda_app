@@ -961,7 +961,7 @@ class DbHandler {
     }
 
      /**
-    * Fetching all reservation of evet by eventId
+    * Fetching all reservation of event by eventId
     */
     public function GetReservationsOfEventByEventId($eventId) {
         $queryString = "SELECT ev.id, ev.date, ev.start_time, ev.end_time, 
@@ -988,20 +988,22 @@ class DbHandler {
         
         $result["event"] = $event;
 
-        $result["reservations"] = $this->GetReservationsOfEvent($eventId);
+        $result["partner_reservations"] = $this->GetPartnerReservationsOfEvent($eventId);
+
+        $result["custom_reservations"] = $this->GetCustomReservationsOfEvent($eventId);
         
         return $result;
     }
 
     /**
-    * Fetching the reservations of event by eventId and put the $events array
+    * Fetching the reservations of partners
     */
-    public function GetReservationsOfEvent($eventId) {
+    public function GetPartnerReservationsOfEvent($eventId) {
         $queryString = "SELECT res.time AS date, us.first_name AS firstName, us.last_name AS lastName, us.email
                         FROM gilda_reservations AS res 
                         LEFT JOIN gilda_events AS ev ON res.event_id = ev.id
                         LEFT JOIN gilda_user AS us ON res.user_id = us.id
-                        WHERE ev.id = ?";
+                        WHERE ev.id = ? AND partner_id IS NULL AND customer_id IS NULL";
         $stmt = $this->conn->prepare($queryString);
         $stmt->bind_param("i", $eventId);
         
@@ -1016,6 +1018,52 @@ class DbHandler {
                          "firstName" => $firstName,
                          "lastName" => $lastName,
                          "email" => $email);
+            
+            array_push($reservations, $tmp);
+        }
+
+        $stmt->close();
+
+        return $reservations;
+    }
+
+    /**
+    * Fetching the reservations of non-partners
+    */
+    public function GetCustomReservationsOfEvent($eventId) {
+        $queryString = "SELECT res.time AS date, us.first_name AS firstName, us.last_name AS lastName, us.email, CONCAT(pn.last_name, ' ', pn.first_name) AS customerName, 
+                            pn.email AS customerEmail, '-' AS customerDetails, res.comment  
+                        FROM gilda_reservations AS res 
+                        LEFT JOIN gilda_events AS ev ON res.event_id = ev.id
+                        LEFT JOIN gilda_user AS us ON res.user_id = us.id 
+                        LEFT JOIN gilda_user AS pn ON res.partner_id = pn.id
+                        WHERE ev.id = ? AND res.partner_id IS NOT NULL 
+                        UNION 
+                        SELECT res.time AS date, us.first_name AS firstName, us.last_name AS lastName, us.email, cus.name AS customerName, 
+                            '-' AS customerEmail, cus.details AS customerDetails, res.comment  
+                        FROM gilda_reservations AS res 
+                        LEFT JOIN gilda_events AS ev ON res.event_id = ev.id
+                        LEFT JOIN gilda_user AS us ON res.user_id = us.id 
+                        LEFT JOIN gilda_customer AS cus ON res.customer_id = cus.id
+                        WHERE ev.id = ? AND res.customer_id IS NOT NULL";
+        $stmt = $this->conn->prepare($queryString);
+        $stmt->bind_param("ii", $eventId, $eventId);
+        
+        $stmt->execute();
+        
+        $stmt->bind_result($date, $firstName, $lastName, $email, $customerName, $customerEmail, $customerDetails, $comment);
+        
+        $reservations = array();
+
+        while($stmt->fetch()) {
+            $tmp = array("date" => $date,
+                         "firstName" => $firstName,
+                         "lastName" => $lastName,
+                         "email" => $email, 
+                         "customerName" => $customerName, 
+                         "customerEmail" => $customerEmail, 
+                         "customerDetails" => $customerDetails, 
+                         "comment" => $comment);
             
             array_push($reservations, $tmp);
         }

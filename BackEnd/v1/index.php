@@ -479,7 +479,7 @@ $app->get('/event/:eventId', 'authenticate', function($eventId) {
     // fetch events
     $result = $db->GetReservationsOfEventByEventId($eventId);
 
-    if(count($result) == 0 || $result != NULL) {
+    if(!is_null($result)) {
         $response["error"] = false;
         $response["eventDetails"] = $result;
         echoResponse(200, $response);

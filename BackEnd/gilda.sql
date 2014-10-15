@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 09, 2014 at 11:37 AM
+-- Generation Time: Oct 15, 2014 at 04:58 PM
 -- Server version: 5.6.20
 -- PHP Version: 5.5.15
 
@@ -19,6 +19,25 @@ SET time_zone = "+00:00";
 --
 -- Database: `gilda`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `gilda_customer`
+--
+
+CREATE TABLE IF NOT EXISTS `gilda_customer` (
+`id` int(11) NOT NULL,
+  `name` varchar(200) NOT NULL,
+  `details` varchar(500) DEFAULT NULL
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+
+--
+-- Dumping data for table `gilda_customer`
+--
+
+INSERT INTO `gilda_customer` (`id`, `name`, `details`) VALUES
+(1, 'Buga Józsi', 'Buga Józsinak nincsen bunkofonja, mert paréj...');
 
 -- --------------------------------------------------------
 
@@ -206,18 +225,23 @@ CREATE TABLE IF NOT EXISTS `gilda_reservations` (
 `id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `event_id` int(11) NOT NULL,
-  `time` datetime NOT NULL
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=72 ;
+  `time` datetime NOT NULL,
+  `partner_id` int(11) DEFAULT NULL,
+  `customer_id` int(11) DEFAULT NULL,
+  `comment` varchar(500) DEFAULT NULL
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=102 ;
 
 --
 -- Dumping data for table `gilda_reservations`
 --
 
-INSERT INTO `gilda_reservations` (`id`, `user_id`, `event_id`, `time`) VALUES
-(66, 48, 26, '2014-10-08 16:06:55'),
-(71, 48, 4, '2014-10-08 17:42:19'),
-(68, 48, 2, '2014-10-08 16:50:48'),
-(70, 48, 1, '2014-10-08 17:40:45');
+INSERT INTO `gilda_reservations` (`id`, `user_id`, `event_id`, `time`, `partner_id`, `customer_id`, `comment`) VALUES
+(66, 48, 26, '2014-10-08 16:06:55', NULL, NULL, NULL),
+(71, 48, 4, '2014-10-08 17:42:19', NULL, NULL, NULL),
+(68, 48, 2, '2014-10-08 16:50:48', NULL, NULL, NULL),
+(70, 48, 1, '2014-10-08 17:40:45', NULL, NULL, NULL),
+(100, 49, 1, '2014-10-15 15:04:00', NULL, 1, 'Valami foglalós komment...'),
+(101, 49, 1, '2014-10-15 15:06:00', 48, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -356,6 +380,12 @@ INSERT INTO `gilda_user` (`id`, `first_name`, `last_name`, `email`, `password_ha
 --
 
 --
+-- Indexes for table `gilda_customer`
+--
+ALTER TABLE `gilda_customer`
+ ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `gilda_devaluation`
 --
 ALTER TABLE `gilda_devaluation`
@@ -426,6 +456,11 @@ ALTER TABLE `gilda_user`
 --
 
 --
+-- AUTO_INCREMENT for table `gilda_customer`
+--
+ALTER TABLE `gilda_customer`
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
+--
 -- AUTO_INCREMENT for table `gilda_devaluation`
 --
 ALTER TABLE `gilda_devaluation`
@@ -459,7 +494,7 @@ MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=20;
 -- AUTO_INCREMENT for table `gilda_reservations`
 --
 ALTER TABLE `gilda_reservations`
-MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=72;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=102;
 --
 -- AUTO_INCREMENT for table `gilda_rooms`
 --

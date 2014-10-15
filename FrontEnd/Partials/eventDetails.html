@@ -3,16 +3,22 @@
 		<div class="panel-heading"><h3 class="panel-title">Esemény foglalásai</h3></div>
 		<div class="panel-body">
 			<div class="well" ng-hide="eventDetails.event == null">
-				<div class="row">
-					<h5>Esemény adatai:
-						<span class="label label-info">{{eventDetails.event.date}} &nbsp;{{eventDetails.event.startTime}} - {{eventDetails.event.endTime}} / {{eventDetails.event.trainingName}} ({{eventDetails.event.trainerName}})</span>
-					</h5>
-				</div>
-
-				<div class="row">
-					<h5>Szabad/Összes hely:
-						<span class="label label-info">{{eventDetails.event.freeSpots}}/{{eventDetails.event.spots}}</span>
-					</h5>
+				<h5 style="border-bottom:1px dotted #ccc;padding-bottom:5px;margin-top:0">Esemény adatai:</h5>
+				<div class="row">	
+					<dl class="dl-horizontal" style="margin:0 0 0 20px">
+						<dt>Dátum:</dt>
+						<dd>{{eventDetails.event.date}}</dd>
+						<dt>Óra kezdete:</dt>
+						<dd>{{eventDetails.event.startTime}}</dd>
+						<dt>Óra vége:</dt>
+						<dd>{{eventDetails.event.endTime}}</dd>
+						<dt>Edző neve:</dt>
+						<dd>{{eventDetails.event.trainingName}}</dd>
+						<dt>Edzés típusa:</dt>
+						<dd>{{eventDetails.event.trainerName}}</dd>
+						<dt>Szabad/Összes hely:</dt>
+						<dd>{{eventDetails.event.freeSpots}}/{{eventDetails.event.spots}}</dd>
+					</dl>
 				</div>
 			</div>
 
