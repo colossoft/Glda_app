@@ -70,6 +70,11 @@ gildaApp.config(function($routeProvider, frontEndUrl) {
         controller: 'eventDetailCtrl'
     });
 
+    $routeProvider.when('/events/book/:id', {
+        templateUrl: frontEndUrl + '/Partials/eventBook.html', 
+        controller: 'eventBookCtrl'
+    });
+
     $routeProvider.when('/trainings', {
         templateUrl: frontEndUrl + '/Partials/trainings.html', 
         controller: 'trainingsCtrl'

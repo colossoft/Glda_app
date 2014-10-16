@@ -6,7 +6,7 @@
 			<div class="panel panel-primary">
 				<div class="panel-heading"><h3 class="panel-title">Esemény hozzáadása</h3></div>
 				<div class="panel-body">
-					<form name="createEventForm">
+					<form name="createEventForm" novalidate>
 						
 						<div class="row" ng-class="{'has-error': createEventForm.eventRoom.$dirty && eventRoom == null, 'has-success': createEventForm.eventRoom.$valid && createEventForm.eventRoom.$dirty && eventRoom != null}">
 							<div class="col-sm-4">

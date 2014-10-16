@@ -866,7 +866,11 @@ class DbHandler {
      * @param int $user_id id of the user
      */
     public function createReservation($event_id, $user_id) {
-		$free_spots = $this->getFreeSpotsByEventId($event_id);
+        $free_spots = $this->getFreeSpotsByEventId($event_id);
+
+        if($this->CheckExistingPartnerReservation($event_id, $user_id)) {
+            return array('status' => ALREADY_RESERVED, 'free_spots' => $free_spots);
+        }
 
         $actual_date = DateTime::createFromFormat('Y-m-d H:i:s', $this->get_correct_current_timestamp());
         $event_date = $this->getEventStartByEventId($event_id);
@@ -899,6 +903,90 @@ class DbHandler {
         else {
             return array('status' => NO_FREE_SPOTS, 'free_spots' => $free_spots);
         }
+    }
+
+    public function createReservationForPartner($event_id, $user_id, $partner_id, $comment) {
+        if($this->CheckExistingPartnerReservation($event_id, $partner_id)) {
+            return ALREADY_RESERVED;
+        }
+
+        $queryString = "INSERT INTO gilda_reservations(user_id, event_id, time, partner_id, comment) VALUES (?, ?, ?, ?, ?)";
+        $stmt = $this->conn->prepare($queryString);
+
+        $correct_time = $this->get_correct_current_timestamp();
+        $stmt->bind_param("iisis", $user_id, $event_id, $correct_time, $partner_id, $comment);
+
+        $result = $stmt->execute();
+
+        $stmt->close();
+
+        if($result) {
+            return RESERVATION_CREATED_SUCCESSFULLY;
+        }
+        else {
+            return RESERVATION_CREATE_FAILED;
+        }
+    }
+
+    public function createReservationForCustomer($event_id, $user_id, $customer_id, $comment) {
+        if($this->CheckExistingCustomerReservation($event_id, $customer_id)) {
+            return ALREADY_RESERVED;
+        }
+
+        $queryString = "INSERT INTO gilda_reservations(user_id, event_id, time, customer_id, comment) VALUES (?, ?, ?, ?, ?)";
+        $stmt = $this->conn->prepare($queryString);
+
+        $correct_time = $this->get_correct_current_timestamp();
+        $stmt->bind_param("iisis", $user_id, $event_id, $correct_time, $customer_id, $comment);
+
+        $result = $stmt->execute();
+
+        $stmt->close();
+
+        if($result) {
+            return RESERVATION_CREATED_SUCCESSFULLY;
+        }
+        else {
+            return RESERVATION_CREATE_FAILED;
+        }
+    }
+
+    /**
+    * Check existing partner reservation
+    */
+    public function CheckExistingPartnerReservation($eventId, $partnerId) {
+        $queryString = "SELECT * FROM gilda_reservations WHERE event_id=? AND (user_id=? OR partner_id=?)";
+        $stmt = $this->conn->prepare($queryString);
+        $stmt->bind_param("iii", $eventId, $partnerId, $partnerId);
+        
+        $stmt->execute();
+        
+        $stmt->store_result();
+        
+        $num_rows = $stmt->num_rows;
+        
+        $stmt->close();
+        
+        return $num_rows > 0;
+    }
+
+    /**
+    * Check existing customer reservation
+    */
+    public function CheckExistingCustomerReservation($eventId, $customerId) {
+        $queryString = "SELECT * FROM gilda_reservations WHERE event_id=? AND customer_id=?)";
+        $stmt = $this->conn->prepare($queryString);
+        $stmt->bind_param("ii", $eventId, $customerId);
+        
+        $stmt->execute();
+        
+        $stmt->store_result();
+        
+        $num_rows = $stmt->num_rows;
+        
+        $stmt->close();
+        
+        return $num_rows > 0;
     }
     
     /**
@@ -1113,6 +1201,97 @@ class DbHandler {
         $stmt->close();
         
         return $reservations;
+    }
+
+    public function GetDatasForEventReservation($eventId) {
+        $queryString = "SELECT ev.id, ev.date, ev.start_time, ev.end_time, 
+                        CONCAT(tr.last_name, ' ', tr.first_name) AS trainer, tri.name AS training, ev.spots,
+                        ev.spots - (SELECT COUNT(*) FROM gilda_reservations WHERE event_id=ev.id) AS free_spots   
+                        FROM gilda_events AS ev 
+                        LEFT JOIN gilda_trainer AS tr ON ev.trainer = tr.id
+                        LEFT JOIN gilda_training AS tri ON ev.training = tri.id  
+                        WHERE ev.id=?";
+        $stmt = $this->conn->prepare($queryString);
+        $stmt->bind_param("i", $eventId);
+        
+        $stmt->execute();
+
+        $event = array();
+        
+        $stmt->bind_result($event['id'], $event['date'], $event['startTime'], $event['endTime'], $event['trainerName'], $event['trainingName'], $event['spots'], $event['freeSpots']);
+        
+        $stmt->fetch();
+
+        $stmt->close();
+
+        $result = array();
+        
+        $result["event"] = $event;
+
+        $result["partners"] = $this->GetPartnerNames();
+
+        $result["customers"] = $this->GetCustomers();
+        
+        return $result;
+    }
+
+    /*
+    *Fetching all partners
+    */
+    public function GetPartnerNames() {
+        $queryString = "SELECT id, CONCAT(first_name, ' ', last_name) AS name, email
+                            FROM gilda_user WHERE status = 1 ORDER BY last_name, first_name";
+        $stmt = $this->conn->prepare($queryString);
+
+        if($stmt->execute()) {
+            $stmt->bind_result($id, $name, $email);
+
+            $result = array();
+
+            while($stmt->fetch()) {
+                $tmp = array("id" => $id, 
+                             "name" => $name, 
+                             "email" => $email);
+            
+                array_push($result, $tmp);
+            }
+            
+            $stmt->close();
+            
+            return $result;
+        }
+        else {
+            return NULL;
+        }
+    }
+
+    /*
+    *Fetching all customers
+    */
+    public function GetCustomers() {
+        $queryString = "SELECT * FROM gilda_customer ORDER BY name";
+        $stmt = $this->conn->prepare($queryString);
+
+        if($stmt->execute()) {
+            $stmt->bind_result($id, $name, $details);
+
+            $result = array();
+
+            while($stmt->fetch()) {
+                $tmp = array("id" => $id, 
+                             "name" => $name, 
+                             "details" => $details);
+            
+                array_push($result, $tmp);
+            }
+            
+            $stmt->close();
+            
+            return $result;
+        }
+        else {
+            return NULL;
+        }
     }
 
     /* ----------------------- 'gilda_trainer' table method  ----------------------- */

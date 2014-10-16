@@ -94,6 +94,10 @@ body {
 
 
 /********* Események listája táblázat **********/
+.tableEventDetails {
+    margin-top: 15px;
+}
+
 .tableEvents > thead > tr,
 .tableEventDetails > thead > tr,
 .tableTrainers > thead > tr {

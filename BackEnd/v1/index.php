@@ -491,6 +491,31 @@ $app->get('/event/:eventId', 'authenticate', function($eventId) {
     }
 });
 
+/**
+ * Listing event and datas for reservation
+ * method GET
+ * url /event/book/:eventId
+ */
+$app->get('/event/book/:eventId', 'authenticate', function($eventId) {
+    
+    $response = array();
+    $db = new DbHandler();
+
+    // fetch datas
+    $result = $db->GetDatasForEventReservation($eventId);
+
+    if(!is_null($result)) {
+        $response["error"] = false;
+        $response["eventDetails"] = $result;
+        echoResponse(200, $response);
+
+    } else {
+        $response["error"] = true;
+        $response["message"] = "The requested resource doesn't exists";
+        echoResponse(404, $response);
+    }
+});
+
 /*
 *Create event
 */

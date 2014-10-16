@@ -1,0 +1,125 @@
+<div class="container-fluid eventBookModule">
+	<div class="panel panel-primary">
+		<div class="panel-heading"><h3 class="panel-title">Foglalás ügyfelek számára</h3></div>
+		<div class="panel-body">
+			<div class="well" ng-hide="eventDetails.event == null">
+				<h5 style="border-bottom:1px dotted #ccc;padding-bottom:5px;margin-top:0">Esemény adatai:</h5>
+				<div class="row">	
+					<dl class="dl-horizontal" style="margin:0 0 0 20px">
+						<dt>Dátum:</dt>
+						<dd>{{eventDetails.event.date}}</dd>
+						<dt>Óra kezdete:</dt>
+						<dd>{{eventDetails.event.startTime}}</dd>
+						<dt>Óra vége:</dt>
+						<dd>{{eventDetails.event.endTime}}</dd>
+						<dt>Edző neve:</dt>
+						<dd>{{eventDetails.event.trainingName}}</dd>
+						<dt>Edzés típusa:</dt>
+						<dd>{{eventDetails.event.trainerName}}</dd>
+						<dt>Szabad/Összes hely:</dt>
+						<dd>{{eventDetails.event.freeSpots}}/{{eventDetails.event.spots}}</dd>
+					</dl>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-lg-3"></div>
+				<div class="col-lg-6">
+					<tabset justified="true">
+
+						<tab heading="Foglalás partnerek számára">
+							<form name="createReservationForPartnerForm" style="margin-top:15px" novalidate>
+
+								<div class="row" ng-class="{'has-error': createReservationForPartnerForm.partner.$invalid && createReservationForPartnerForm.partner.$dirty && selectedPartner == null, 'has-success': createReservationForPartnerForm.partner.$valid && createReservationForPartnerForm.partner.$dirty && selectedPartner != null}">
+									<div class="col-md-4">
+										<label class="control-label">Partner neve:</label>
+									</div>
+									<div class="col-md-8">
+										<input type="text" class="form-control" ng-model="selectedPartner" name="partner" typeahead="p as p.name for p in eventDetails.partners | filter:$viewValue" typeahead-append-to-body="true" typeahead-editable="false" required>
+									</div>
+								</div>
+
+								<div class="row">
+									<div class="col-md-4">
+										<label class="control-label">Partner e-mail címe:</label>
+									</div>
+									<div class="col-md-8">
+										<input type="email" class="form-control" ng-model="selectedPartner.email" disabled>
+									</div>
+								</div>
+
+								<div class="row">
+									<div class="col-md-4">
+										<label class="control-label">Megjegyzés:</label>
+									</div>
+									<div class="col-md-8">
+										<textarea class="form-control" ng-model="partnerComment" rows="3" style="max-width:100%"></textarea>
+									</div>
+								</div>
+
+								<div class="row" style="margin-top:30px">
+									<div class="col-md-12">
+										<button type="button" class="btn btn-primary pull-left" ng-click="backToEventsList()">
+											<span class="glyphicon glyphicon-circle-arrow-left"></span> Vissza
+										</button>
+										<button type="button" class="btn btn-success pull-right" ng-disabled="createReservationForPartnerForm.$invalid || selectedPartner == null" ng-click="">
+											<span class="glyphicon glyphicon-book"></span> Foglalás
+										</button>
+									</div>
+								</div>	
+
+							</form>
+						</tab>
+
+						<tab heading="Foglalás nem regisztrált ügyfelek számára">
+							<form name="createReservationForCustomerForm" style="margin-top:15px" novalidate>
+
+								<div class="row" ng-class="{'has-error': createReservationForCustomerForm.customer.$invalid && createReservationForCustomerForm.customer.$dirty && selectedCustomer == null, 'has-success': createReservationForCustomerForm.customer.$valid && createReservationForCustomerForm.customer.$dirty && selectedCustomer != null}">
+									<div class="col-md-4">
+										<label class="control-label">Ügyfél neve:</label>
+									</div>
+									<div class="col-md-8">
+										<input type="text" class="form-control" ng-model="selectedCustomer" name="customer" typeahead="c as c.name for c in eventDetails.customers | filter:$viewValue" typeahead-append-to-body="true" required>
+									</div>
+								</div>
+
+								<div class="row">
+									<div class="col-md-4">
+										<label class="control-label">Ügyfél adatai:</label>
+									</div>
+									<div class="col-md-8">
+										<textarea class="form-control" ng-model="selectedCustomer.details" rows="5" style="max-width:100%"></textarea>
+									</div>
+								</div>
+
+								<div class="row">
+									<div class="col-md-4">
+										<label class="control-label">Megjegyzés:</label>
+									</div>
+									<div class="col-md-8">
+										<textarea class="form-control" ng-model="customerComment" rows="3" style="max-width:100%"></textarea>
+									</div>
+								</div>
+
+								<div class="row" style="margin-top:30px">
+									<div class="col-md-12">
+										<button type="button" class="btn btn-primary pull-left" ng-click="backToEventsList()">
+											<span class="glyphicon glyphicon-circle-arrow-left"></span> Vissza
+										</button>
+										<button type="button" class="btn btn-success pull-right" ng-disabled="createReservationForCustomerForm.$invalid" ng-click="">
+											<span class="glyphicon glyphicon-book"></span> Foglalás
+										</button>
+									</div>
+								</div>	
+
+							</form>
+						</tab>
+
+					</tabset>
+					
+				</div>
+				<div class="col-lg-3"></div>
+			</div>
+		</div>
+	</div>
+</div>

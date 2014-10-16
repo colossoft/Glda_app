@@ -22,28 +22,61 @@
 				</div>
 			</div>
 
-			<div class="alert alert-danger" role="alert" ng-show="eventDetails.reservations.length == 0">
-				Erre az eseményre még nem foglalt senki helyet!
-			</div>
+			<tabset>
+				<tab heading="Partnerek foglalásai ({{eventDetails.partner_reservations.length}})">
+					<div class="alert alert-danger" style="margin-top:15px" role="alert" ng-show="eventDetails.partner_reservations.length == 0">
+						Erre az eseményre még nem foglalt senki helyet!
+					</div>
 
-			<table class="table table-striped table-bordered tableEventDetails" ng-hide="eventDetails.reservations == null || eventDetails.reservations.length == 0">
-				<thead>
-					<tr>
-						<th>Foglalás időpontja</th>
-						<th>Vezetéknév</th>
-						<th>Keresztnév</th>
-						<th>Email</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr ng-repeat="reservation in eventDetails.reservations">
-						<td class="text-center">{{reservation.date}}</td>
-						<td>{{reservation.lastName}}</td>
-						<td>{{reservation.firstName}}</td>
-						<td>{{reservation.email}}</td>
-					</tr>
-				</tbody>
-			</table>
+					<table class="table table-striped table-bordered tableEventDetails" ng-hide="eventDetails.partner_reservations == null || eventDetails.partner_reservations.length == 0">
+						<thead>
+							<tr>
+								<th>Foglalás időpontja</th>
+								<th>Név</th>
+								<th>Email</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="reservation in eventDetails.partner_reservations">
+								<td class="text-center">{{reservation.date}}</td>
+								<td>{{reservation.lastName}} {{reservation.firstName}}</td>
+								<td>{{reservation.email}}</td>
+							</tr>
+						</tbody>
+					</table>
+				</tab>
+				<tab heading="Külön foglalások ({{eventDetails.custom_reservations.length}})">
+					<div class="alert alert-danger" style="margin-top:15px" role="alert" ng-show="eventDetails.custom_reservations.length == 0">
+						Erre az eseményre még nem volt külön foglalás!
+					</div>
+
+					<table class="table table-striped table-bordered tableEventDetails" ng-hide="eventDetails.custom_reservations == null || eventDetails.custom_reservations.length == 0">
+						<thead>
+							<tr>
+								<th>Foglalás időpontja</th>
+								<th>Foglaló neve</th>
+								<th>Foglaló e-mail címe</th>
+								<th>Ügyfél neve</th>
+								<th>Ügyfél e-mail címe (regisztrált partnerek)</th>
+								<th>Ügyfél adatai (nem regisztrált ügyfelek)</th>
+								<th>Megjegyzés</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="reservation in eventDetails.custom_reservations">
+								<td class="text-center">{{reservation.date}}</td>
+								<td>{{reservation.lastName}} {{reservation.firstName}}</td>
+								<td>{{reservation.email}}</td>
+								<td>{{reservation.customerName}}</td>
+								<td>{{reservation.customerEmail}}</td>
+								<td>{{reservation.customerDetails}}</td>
+								<td>{{reservation.comment}}</td>
+							</tr>
+						</tbody>
+					</table>
+				</tab>
+			</tabset>
+			
 
 			<button type="button" class="btn btn-primary" ng-click="backToEventsList()">
 				<span class="glyphicon glyphicon-circle-arrow-left"></span> Vissza
