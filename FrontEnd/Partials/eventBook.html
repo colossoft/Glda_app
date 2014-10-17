@@ -62,7 +62,7 @@
 										<button type="button" class="btn btn-primary pull-left" ng-click="backToEventsList()">
 											<span class="glyphicon glyphicon-circle-arrow-left"></span> Vissza
 										</button>
-										<button type="button" class="btn btn-success pull-right" ng-disabled="createReservationForPartnerForm.$invalid || selectedPartner == null" ng-click="">
+										<button type="button" class="btn btn-success pull-right" ng-disabled="createReservationForPartnerForm.$invalid || selectedPartner == null" ng-click="bookForPartner(selectedPartner, partnerComment)">
 											<span class="glyphicon glyphicon-book"></span> Foglalás
 										</button>
 									</div>
@@ -79,7 +79,7 @@
 										<label class="control-label">Ügyfél neve:</label>
 									</div>
 									<div class="col-md-8">
-										<input type="text" class="form-control" ng-model="selectedCustomer" name="customer" typeahead="c as c.name for c in eventDetails.customers | filter:$viewValue" typeahead-append-to-body="true" required>
+										<input type="text" class="form-control" ng-model="customer.selected" name="customer" typeahead="c as c.name for c in eventDetails.customers | filter:$viewValue" typeahead-append-to-body="true" required>
 									</div>
 								</div>
 
@@ -88,7 +88,7 @@
 										<label class="control-label">Ügyfél adatai:</label>
 									</div>
 									<div class="col-md-8">
-										<textarea class="form-control" ng-model="selectedCustomer.details" rows="5" style="max-width:100%"></textarea>
+										<textarea class="form-control" ng-model="customer.details" rows="5" style="max-width:100%" required></textarea>
 									</div>
 								</div>
 
@@ -97,7 +97,7 @@
 										<label class="control-label">Megjegyzés:</label>
 									</div>
 									<div class="col-md-8">
-										<textarea class="form-control" ng-model="customerComment" rows="3" style="max-width:100%"></textarea>
+										<textarea class="form-control" ng-model="customer.comment" rows="3" style="max-width:100%"></textarea>
 									</div>
 								</div>
 
@@ -106,7 +106,7 @@
 										<button type="button" class="btn btn-primary pull-left" ng-click="backToEventsList()">
 											<span class="glyphicon glyphicon-circle-arrow-left"></span> Vissza
 										</button>
-										<button type="button" class="btn btn-success pull-right" ng-disabled="createReservationForCustomerForm.$invalid" ng-click="">
+										<button type="button" class="btn btn-success pull-right" ng-disabled="createReservationForCustomerForm.$invalid" ng-click="bookForCustomer(customer)">
 											<span class="glyphicon glyphicon-book"></span> Foglalás
 										</button>
 									</div>

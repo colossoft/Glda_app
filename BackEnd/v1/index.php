@@ -630,11 +630,11 @@ $app->post('/reservation/', 'authenticate', function() use($app) {
  * method: POST
  * params: $event_id, $partner_id, $comment
  */
-$app->post('/partnerbook/', 'authenticate', function() use($app) {
+$app->post('/partnerbook', 'authenticate', function() use($app) {
     global $user_id;
     
     // Check for required params
-    verifyRequiredParams(array('event_id', 'partner_id', 'comment'));
+    verifyRequiredParams(array('event_id', 'partner_id'));
     
     $response = array();
     
@@ -659,6 +659,109 @@ $app->post('/partnerbook/', 'authenticate', function() use($app) {
     else if($res == ALREADY_RESERVED) {
         $response["error"] = true;
         $response["message"] = "Erre az eseményre már van foglalva hely a partner számára!";
+        echoResponse(405, $response);
+    }
+});
+
+/**
+ * Checking existing customer
+ * url: /checkcustomer
+ * method: GET
+ * params: $customerName
+ */
+$app->get('/checkcustomer/:name', 'authenticate', function($name) {
+    $response = array();
+    
+    $db = new DbHandler();
+    $res = $db->checkExistingCustomer($name);
+    
+    if($res == 0) {
+        $response["error"] = false;
+        echoResponse(200, $response);
+    }
+    else if($res > 0) {
+        $response["error"] = true;
+        $response["message"] = 'Már van ' . $res . ' ilyen nevű ügyfél a rendszerben! Biztos benne, hogy folytatja a foglalást? (Az új felhasználó rögzítve lesz!)';
+        echoResponse(200, $response);
+    }
+    else {
+        $response["error"] = true;
+        $response["message"] = 'Hiba történt a lekérdezés során!';
+        echoResponse(500, $response);
+    }
+});
+
+/**
+ * Booking for new customer
+ * url: /customerbook/new
+ * method: POST
+ * params: $eventId, $customerName, $customerDetails, $comment
+ */
+$app->post('/customerbook/new', 'authenticate', function() use($app) {
+    global $user_id;
+    
+    // Check for required params
+    verifyRequiredParams(array('eventId', 'customerName', 'customerDetails'));
+    
+    $response = array();
+    
+    // reading post parameters
+    $eventId = $app->request->post('eventId');
+    $customerName = $app->request->post('customerName');
+    $customerDetails = $app->request->post('customerDetails');
+    $comment = $app->request->post('comment');
+    
+    $db = new DbHandler();
+    $res = $db->createReservationForNewCustomer($eventId, $user_id, $customerName, $customerDetails, $comment);
+    
+    if($res == RESERVATION_CREATED_SUCCESSFULLY) {
+        $response["error"] = false;
+        $response["message"] = "Sikeres foglalás!";
+        echoResponse(201, $response);
+    }
+    else if($res == RESERVATION_CREATE_FAILED) {
+        $response["error"] = true;
+        $response["message"] = "Hiba történt a foglalás során. Kérjük próbáld újra!";
+        echoResponse(500, $response);
+    }
+});
+
+/**
+ * Booking for existing customer
+ * url: /customerbook/existing
+ * method: POST
+ * params: $eventId, $customerId, $customerDetails, $comment
+ */
+$app->post('/customerbook/existing', 'authenticate', function() use($app) {
+    global $user_id;
+    
+    // Check for required params
+    verifyRequiredParams(array('eventId', 'customerId', 'customerDetails'));
+    
+    $response = array();
+    
+    // reading post parameters
+    $eventId = $app->request->post('eventId');
+    $customerId = $app->request->post('customerId');
+    $customerDetails = $app->request->post('customerDetails');
+    $comment = $app->request->post('comment');
+    
+    $db = new DbHandler();
+    $res = $db->createReservationForCustomer($eventId, $user_id, $customerId, $customerDetails, $comment);
+    
+    if($res == RESERVATION_CREATED_SUCCESSFULLY) {
+        $response["error"] = false;
+        $response["message"] = "Sikeres foglalás!";
+        echoResponse(201, $response);
+    }
+    else if($res == RESERVATION_CREATE_FAILED) {
+        $response["error"] = true;
+        $response["message"] = "Hiba történt a foglalás során. Kérjük próbáld újra!";
+        echoResponse(500, $response);
+    }
+    else if($res == ALREADY_RESERVED) {
+        $response["error"] = true;
+        $response["message"] = "Erre az eseményre már van foglalva hely az ügyfél számára!";
         echoResponse(405, $response);
     }
 });

@@ -928,16 +928,36 @@ class DbHandler {
         }
     }
 
-    public function createReservationForCustomer($event_id, $user_id, $customer_id, $comment) {
-        if($this->CheckExistingCustomerReservation($event_id, $customer_id)) {
+    public function checkExistingCustomer($customerName) {
+        $queryString = "SELECT * FROM gilda_customer WHERE name=?";
+        $stmt = $this->conn->prepare($queryString);
+        $stmt->bind_param("s", $customerName);
+        
+        $stmt->execute();
+        
+        $stmt->store_result();
+        
+        $num_rows = $stmt->num_rows;
+        
+        $stmt->close();
+        
+        return $num_rows;
+    }
+
+    public function createReservationForCustomer($event_id, $user_id, $customerId, $customerDetails, $comment) {
+        if($this->CheckExistingCustomerReservation($event_id, $customerId)) {
             return ALREADY_RESERVED;
+        }
+
+        if(!$this->updateCustomer($customerId, $customerDetails)) {
+            return RESERVATION_CREATE_FAILED;
         }
 
         $queryString = "INSERT INTO gilda_reservations(user_id, event_id, time, customer_id, comment) VALUES (?, ?, ?, ?, ?)";
         $stmt = $this->conn->prepare($queryString);
 
         $correct_time = $this->get_correct_current_timestamp();
-        $stmt->bind_param("iisis", $user_id, $event_id, $correct_time, $customer_id, $comment);
+        $stmt->bind_param("iisis", $user_id, $event_id, $correct_time, $customerId, $comment);
 
         $result = $stmt->execute();
 
@@ -948,6 +968,63 @@ class DbHandler {
         }
         else {
             return RESERVATION_CREATE_FAILED;
+        }
+    }
+
+    public function updateCustomer($customerId, $customerDetails) {
+        $queryString = "UPDATE gilda_customer SET details=? WHERE id=?";
+        $stmt = $this->conn->prepare($queryString);
+
+        $stmt->bind_param("si", $customerDetails, $customerId);
+
+        $result = $stmt->execute();
+
+        $stmt->close();
+
+        return $result;
+    }
+
+    public function createReservationForNewCustomer($event_id, $user_id, $customerName, $customerDetails, $comment) {
+        $customerId = $this->createNewCustomer($customerName, $customerDetails);
+
+        if(!$customerId) {
+            return RESERVATION_CREATE_FAILED;
+        }
+
+        $queryString = "INSERT INTO gilda_reservations(user_id, event_id, time, customer_id, comment) VALUES (?, ?, ?, ?, ?)";
+        $stmt = $this->conn->prepare($queryString);
+
+        $correct_time = $this->get_correct_current_timestamp();
+        $stmt->bind_param("iisis", $user_id, $event_id, $correct_time, $customerId, $comment);
+
+        $result = $stmt->execute();
+
+        $stmt->close();
+
+        if($result) {
+            return RESERVATION_CREATED_SUCCESSFULLY;
+        }
+        else {
+            return RESERVATION_CREATE_FAILED;
+        }
+    }
+
+    public function createNewCustomer($name, $details) {
+        $queryString = "INSERT INTO gilda_customer(name, details) VALUES (?, ?)";
+        $stmt = $this->conn->prepare($queryString);
+
+        $stmt->bind_param("ss", $name, $details);
+
+        $result = $stmt->execute();
+
+        $insertedId = $stmt->insert_id;
+
+        $stmt->close();
+
+        if($result) {
+            return $insertedId;
+        } else {
+            return false;
         }
     }
 
@@ -974,7 +1051,7 @@ class DbHandler {
     * Check existing customer reservation
     */
     public function CheckExistingCustomerReservation($eventId, $customerId) {
-        $queryString = "SELECT * FROM gilda_reservations WHERE event_id=? AND customer_id=?)";
+        $queryString = "SELECT * FROM gilda_reservations WHERE event_id=? AND customer_id=?";
         $stmt = $this->conn->prepare($queryString);
         $stmt->bind_param("ii", $eventId, $customerId);
         
