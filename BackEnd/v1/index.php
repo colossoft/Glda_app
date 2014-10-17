@@ -229,7 +229,7 @@ $app->post('/register', function() use($app) {
         $response["message"] = "Hiba történt a regisztráció során. Kérjük próbáld újra!";
         echoResponse(500, $response);
     }
-    else if($res["status"] = USER_ALREADY_EXISTED) {
+    else if($res["status"] == USER_ALREADY_EXISTED) {
         $response["error"] = true;
         $response["message"] = "Ezzel az e-mail címmel már regisztráltak!";
         echoResponse(501, $response);
@@ -610,16 +610,55 @@ $app->post('/reservation/', 'authenticate', function() use($app) {
 		$response["free_spots"] = $res['free_spots'];
         echoResponse(500, $response);
     }
-    else if($res['status'] = RESERVATION_CREATE_DEADLINE_EXPIRED) {
+    else if($res['status'] == RESERVATION_CREATE_DEADLINE_EXPIRED) {
         $response["error"] = true;
         $response["message"] = "A foglalás határideje lejárt! Az esemény kezdete előtti 2 órában már nincs mód a foglalásra!";
         $response["free_spots"] = $res['free_spots'];
         echoResponse(405, $response);
     }
-    else if($res['status'] = NO_FREE_SPOTS) {
+    else if($res['status'] == NO_FREE_SPOTS) {
         $response["error"] = true;
         $response["message"] = "Sajnos nincs több szabad hely erre az edzésre!";
 		$response["free_spots"] = $res['free_spots'];
+        echoResponse(405, $response);
+    }
+});
+
+/**
+ * Booking for partner
+ * url: /partnerbook
+ * method: POST
+ * params: $event_id, $partner_id, $comment
+ */
+$app->post('/partnerbook/', 'authenticate', function() use($app) {
+    global $user_id;
+    
+    // Check for required params
+    verifyRequiredParams(array('event_id', 'partner_id', 'comment'));
+    
+    $response = array();
+    
+    // reading post parameters
+    $event_id = $app->request->post('event_id');
+    $partner_id = $app->request->post('partner_id');
+    $comment = $app->request->post('comment');
+    
+    $db = new DbHandler();
+    $res = $db->createReservationForPartner($event_id, $user_id, $partner_id, $comment);
+    
+    if($res == RESERVATION_CREATED_SUCCESSFULLY) {
+        $response["error"] = false;
+        $response["message"] = "Sikeres foglalás!";
+        echoResponse(201, $response);
+    }
+    else if($res == RESERVATION_CREATE_FAILED) {
+        $response["error"] = true;
+        $response["message"] = "Hiba történt a foglalás során. Kérjük próbáld újra!";
+        echoResponse(500, $response);
+    }
+    else if($res == ALREADY_RESERVED) {
+        $response["error"] = true;
+        $response["message"] = "Erre az eseményre már van foglalva hely a partner számára!";
         echoResponse(405, $response);
     }
 });
