@@ -166,6 +166,210 @@ function SendMailToUserForNewPassword($first_name, $last_name, $email_address, $
     }
 }
 
+function sendMailToPartnerForReservation($eventDetails, $userDetails) {
+    global $mail_error_info;
+
+    $mail = new PHPMailer;
+
+    $mail->CharSet = "UTF-8";
+    
+    $mail->From = 'akos@atyin.url.ph';
+    $mail->FromName = 'GildaMAX';
+    $mail->addAddress($userDetails["email"]);
+    
+    $mail->isHTML(true);
+
+    $mail->Subject = 'GildaMAX foglalás';
+    $mail->Body    = 'Kedves ' . $userDetails["lastName"] . ' ' . $userDetails["firstName"] . '!<br /><br />A <b>GildaMAX</b> rögzítette a foglalását a következő eseményre:<br />' . 
+                        'Terem: ' . $eventDetails["locationName"] . ' - ' . $eventDetails["locationAddress"] . '<br />' . 
+                        'Szoba: ' . $eventDetails["roomName"] .  '<br />' . 
+                        'Dátum: ' . $eventDetails["eventDate"] .  '<br />' .
+                        'Óra kezdete: ' . $eventDetails["eventStartTime"] . '<br />' . 
+                        'Óra vége: ' . $eventDetails["eventEndTime"] . '<br />' . 
+                        'Edző neve: ' . $eventDetails["trainerName"] . '<br />' . 
+                        'Edzés típusa: ' . $eventDetails["trainingName"] . '<br /><br />'
+                        . 'Üdvözlettel: GildaMAX';
+
+    if(!$mail->send()) {
+        $mail_error_info = $mail->ErrorInfo;
+        return false;
+    } else {
+        return true;
+    }
+}
+
+function sendMailToPartnerForDeleteReservation($eventDetails, $userDetails) {
+    global $mail_error_info;
+
+    $mail = new PHPMailer;
+
+    $mail->CharSet = "UTF-8";
+    
+    $mail->From = 'akos@atyin.url.ph';
+    $mail->FromName = 'GildaMAX';
+    $mail->addAddress($userDetails["email"]);
+    
+    $mail->isHTML(true);
+
+    $mail->Subject = 'GildaMAX foglalás törlése';
+    $mail->Body    = 'Kedves ' . $userDetails["lastName"] . ' ' . $userDetails["firstName"] . '!<br /><br />A <b>GildaMAX</b> törölte a foglalását a következő eseményről:<br />' . 
+                        'Terem: ' . $eventDetails["locationName"] . ' - ' . $eventDetails["locationAddress"] . '<br />' . 
+                        'Szoba: ' . $eventDetails["roomName"] .  '<br />' . 
+                        'Dátum: ' . $eventDetails["eventDate"] .  '<br />' .
+                        'Óra kezdete: ' . $eventDetails["eventStartTime"] . '<br />' . 
+                        'Óra vége: ' . $eventDetails["eventEndTime"] . '<br />' . 
+                        'Edző neve: ' . $eventDetails["trainerName"] . '<br />' . 
+                        'Edzés típusa: ' . $eventDetails["trainingName"] . '<br /><br />'
+                        . 'Üdvözlettel: GildaMAX';
+
+    if(!$mail->send()) {
+        $mail_error_info = $mail->ErrorInfo;
+        return false;
+    } else {
+        return true;
+    }
+}
+
+function sendMailToUserForPartnerReservation($eventDetails, $userDetails, $partnerDetails) {
+    global $mail_error_info;
+
+    $mail = new PHPMailer;
+
+    $mail->CharSet = "UTF-8";
+    
+    $mail->From = 'akos@atyin.url.ph';
+    $mail->FromName = 'GildaMAX';
+    $mail->addAddress($userDetails["email"]);
+    
+    $mail->isHTML(true);
+
+    $mail->Subject = 'GildaMAX foglalás';
+    $mail->Body    = 'Kedves ' . $userDetails["lastName"] . ' ' . $userDetails["firstName"] . '!<br /><br />A <b>GildaMAX</b> rögzítette a foglalását a következő eseményre:<br />' . 
+                        'Terem: ' . $eventDetails["locationName"] . ' - ' . $eventDetails["locationAddress"] . '<br />' . 
+                        'Szoba: ' . $eventDetails["roomName"] .  '<br />' . 
+                        'Dátum: ' . $eventDetails["eventDate"] .  '<br />' .
+                        'Óra kezdete: ' . $eventDetails["eventStartTime"] . '<br />' . 
+                        'Óra vége: ' . $eventDetails["eventEndTime"] . '<br />' . 
+                        'Edző neve: ' . $eventDetails["trainerName"] . '<br />' . 
+                        'Edzés típusa: ' . $eventDetails["trainingName"] . '<br /><br />' . 
+                        'a következő regisztrált partner számára: ' . '<br />' . 
+                        'Partner neve: ' . $partnerDetails["lastName"] . ' ' . $partnerDetails["firstName"] . '<br />' . 
+                        'Partner e-mail címe: ' . $partnerDetails["email"] . '<br /><br />'
+                        . 'Üdvözlettel: GildaMAX';
+
+    if(!$mail->send()) {
+        $mail_error_info = $mail->ErrorInfo;
+        return false;
+    } else {
+        return true;
+    }
+}
+
+function sendMailToUserForDeletePartnerReservation($eventDetails, $userDetails, $partnerDetails) {
+    global $mail_error_info;
+
+    $mail = new PHPMailer;
+
+    $mail->CharSet = "UTF-8";
+    
+    $mail->From = 'akos@atyin.url.ph';
+    $mail->FromName = 'GildaMAX';
+    $mail->addAddress($userDetails["email"]);
+    
+    $mail->isHTML(true);
+
+    $mail->Subject = 'GildaMAX foglalás törlése';
+    $mail->Body    = 'Kedves ' . $userDetails["lastName"] . ' ' . $userDetails["firstName"] . '!<br /><br />A <b>GildaMAX</b> törölte a foglalását a következő eseményről:<br />' . 
+                        'Terem: ' . $eventDetails["locationName"] . ' - ' . $eventDetails["locationAddress"] . '<br />' . 
+                        'Szoba: ' . $eventDetails["roomName"] .  '<br />' . 
+                        'Dátum: ' . $eventDetails["eventDate"] .  '<br />' .
+                        'Óra kezdete: ' . $eventDetails["eventStartTime"] . '<br />' . 
+                        'Óra vége: ' . $eventDetails["eventEndTime"] . '<br />' . 
+                        'Edző neve: ' . $eventDetails["trainerName"] . '<br />' . 
+                        'Edzés típusa: ' . $eventDetails["trainingName"] . '<br /><br />' . 
+                        'a következő regisztrált partner számára: ' . '<br />' . 
+                        'Partner neve: ' . $partnerDetails["lastName"] . ' ' . $partnerDetails["firstName"] . '<br />' . 
+                        'Partner e-mail címe: ' . $partnerDetails["email"] . '<br /><br />'
+                        . 'Üdvözlettel: GildaMAX';
+
+    if(!$mail->send()) {
+        $mail_error_info = $mail->ErrorInfo;
+        return false;
+    } else {
+        return true;
+    }
+}
+
+function sendMailToUserForCustomerReservation($eventDetails, $userDetails, $customerDetails) {
+    global $mail_error_info;
+
+    $mail = new PHPMailer;
+
+    $mail->CharSet = "UTF-8";
+    
+    $mail->From = 'akos@atyin.url.ph';
+    $mail->FromName = 'GildaMAX';
+    $mail->addAddress($userDetails["email"]);
+    
+    $mail->isHTML(true);
+
+    $mail->Subject = 'GildaMAX foglalás';
+    $mail->Body    = 'Kedves ' . $userDetails["lastName"] . ' ' . $userDetails["firstName"] . '!<br /><br />A <b>GildaMAX</b> rögzítette a foglalását a következő eseményre:<br />' . 
+                        'Terem: ' . $eventDetails["locationName"] . ' - ' . $eventDetails["locationAddress"] . '<br />' . 
+                        'Szoba: ' . $eventDetails["roomName"] .  '<br />' . 
+                        'Dátum: ' . $eventDetails["eventDate"] .  '<br />' .
+                        'Óra kezdete: ' . $eventDetails["eventStartTime"] . '<br />' . 
+                        'Óra vége: ' . $eventDetails["eventEndTime"] . '<br />' . 
+                        'Edző neve: ' . $eventDetails["trainerName"] . '<br />' . 
+                        'Edzés típusa: ' . $eventDetails["trainingName"] . '<br /><br />' . 
+                        'a következő nem regisztrált ügyfél számára: ' . '<br />' . 
+                        'Ügyfél neve: ' . $customerDetails["name"] . '<br />' . 
+                        'Ügyfél adatai: ' . $customerDetails["details"] . '<br /><br />'
+                        . 'Üdvözlettel: GildaMAX';
+
+    if(!$mail->send()) {
+        $mail_error_info = $mail->ErrorInfo;
+        return false;
+    } else {
+        return true;
+    }
+}
+
+function sendMailToUserForDeleteCustomerReservation($eventDetails, $userDetails, $customerDetails) {
+    global $mail_error_info;
+
+    $mail = new PHPMailer;
+
+    $mail->CharSet = "UTF-8";
+    
+    $mail->From = 'akos@atyin.url.ph';
+    $mail->FromName = 'GildaMAX';
+    $mail->addAddress($userDetails["email"]);
+    
+    $mail->isHTML(true);
+
+    $mail->Subject = 'GildaMAX foglalás törlése';
+    $mail->Body    = 'Kedves ' . $userDetails["lastName"] . ' ' . $userDetails["firstName"] . '!<br /><br />A <b>GildaMAX</b> törölte a foglalását a következő eseményről:<br />' . 
+                        'Terem: ' . $eventDetails["locationName"] . ' - ' . $eventDetails["locationAddress"] . '<br />' . 
+                        'Szoba: ' . $eventDetails["roomName"] .  '<br />' . 
+                        'Dátum: ' . $eventDetails["eventDate"] .  '<br />' .
+                        'Óra kezdete: ' . $eventDetails["eventStartTime"] . '<br />' . 
+                        'Óra vége: ' . $eventDetails["eventEndTime"] . '<br />' . 
+                        'Edző neve: ' . $eventDetails["trainerName"] . '<br />' . 
+                        'Edzés típusa: ' . $eventDetails["trainingName"] . '<br /><br />' . 
+                        'a következő nem regisztrált ügyfél számára: ' . '<br />' . 
+                        'Ügyfél neve: ' . $customerDetails["name"] . '<br />' . 
+                        'Ügyfél adatai: ' . $customerDetails["details"] . '<br /><br />'
+                        . 'Üdvözlettel: GildaMAX';
+
+    if(!$mail->send()) {
+        $mail_error_info = $mail->ErrorInfo;
+        return false;
+    } else {
+        return true;
+    }
+}
+
 /*
 *Radom password generator
 */
@@ -599,6 +803,10 @@ $app->post('/reservation/', 'authenticate', function() use($app) {
     $res = $db->createReservation($event_id, $user_id);
     
     if($res['status'] == RESERVATION_CREATED_SUCCESSFULLY) {
+        $eventDetails = $db->getEventDetailsById($event_id);
+        $userDetails = $db->GetUserDetailsById($user_id);
+        sendMailToPartnerForReservation($eventDetails, $userDetails);
+
         $response["error"] = false;
         $response["message"] = "Sikeres foglalás!";
 		$response["free_spots"] = $res['free_spots'];
@@ -647,6 +855,13 @@ $app->post('/partnerbook', 'authenticate', function() use($app) {
     $res = $db->createReservationForPartner($event_id, $user_id, $partner_id, $comment);
     
     if($res == RESERVATION_CREATED_SUCCESSFULLY) {
+        $eventDetails = $db->getEventDetailsById($event_id);
+        $partnerDetails = $db->GetUserDetailsById($partner_id);
+        $userDetails = $db->GetUserDetailsById($user_id);
+
+        sendMailToPartnerForReservation($eventDetails, $partnerDetails);
+        sendMailToUserForPartnerReservation($eventDetails, $userDetails, $partnerDetails);
+
         $response["error"] = false;
         $response["message"] = "Sikeres foglalás!";
         echoResponse(201, $response);
@@ -714,12 +929,18 @@ $app->post('/customerbook/new', 'authenticate', function() use($app) {
     $db = new DbHandler();
     $res = $db->createReservationForNewCustomer($eventId, $user_id, $customerName, $customerDetails, $comment);
     
-    if($res == RESERVATION_CREATED_SUCCESSFULLY) {
+    if($res["status"] == RESERVATION_CREATED_SUCCESSFULLY) {
+        $eventDetails = $db->getEventDetailsById($eventId);
+        $customerDetails = $db->GetCustomerDetailsById($res["customerId"]);
+        $userDetails = $db->GetUserDetailsById($user_id);
+
+        sendMailToUserForCustomerReservation($eventDetails, $userDetails, $customerDetails);
+
         $response["error"] = false;
         $response["message"] = "Sikeres foglalás!";
         echoResponse(201, $response);
     }
-    else if($res == RESERVATION_CREATE_FAILED) {
+    else if($res["status"] == RESERVATION_CREATE_FAILED) {
         $response["error"] = true;
         $response["message"] = "Hiba történt a foglalás során. Kérjük próbáld újra!";
         echoResponse(500, $response);
@@ -750,6 +971,12 @@ $app->post('/customerbook/existing', 'authenticate', function() use($app) {
     $res = $db->createReservationForCustomer($eventId, $user_id, $customerId, $customerDetails, $comment);
     
     if($res == RESERVATION_CREATED_SUCCESSFULLY) {
+        $eventDetails = $db->getEventDetailsById($eventId);
+        $customerDetails = $db->GetCustomerDetailsById($customerId);
+        $userDetails = $db->GetUserDetailsById($user_id);
+
+        sendMailToUserForCustomerReservation($eventDetails, $userDetails, $customerDetails);
+
         $response["error"] = false;
         $response["message"] = "Sikeres foglalás!";
         echoResponse(201, $response);
@@ -782,7 +1009,9 @@ $app->delete('/reservation/:event_id', 'authenticate', function($event_id) use($
     $result = $db->deleteReservation($event_id, $user_id);
     
     if($result['status'] == RESERVATION_DELETED_SUCCESSFULLY) {
-        // Esetleg mail küldés?
+        $eventDetails = $db->getEventDetailsById($event_id);
+        $userDetails = $db->GetUserDetailsById($user_id);
+        sendMailToPartnerForDeleteReservation($eventDetails, $userDetails);
         
         $response["error"] = false;
         $response["message"] = "Sikeresen törölted a foglalást!";
@@ -809,8 +1038,9 @@ $app->delete('/reservation/:event_id', 'authenticate', function($event_id) use($
  * method: DELETE
  * params: $reservation_id, $event_id
  */
-$app->delete('/reservation/user/:reservation_id/:event_id', 'authenticate', function($reservation_id, $event_id) {
-    
+$app->delete('/reservation/user/:reservation_id/:event_id/:client_id/:client_type', 'authenticate', function($reservation_id, $event_id, $client_id, $client_type) use($app) {
+    global $user_id;
+
     $response = array();
     $db = new DbHandler();
 
@@ -818,7 +1048,18 @@ $app->delete('/reservation/user/:reservation_id/:event_id', 'authenticate', func
     $result = $db->deleteReservationByUser($reservation_id, $event_id);
     
     if($result == RESERVATION_DELETED_SUCCESSFULLY) {
-        // Esetleg mail küldés?
+        $eventDetails = $db->getEventDetailsById($event_id);
+        $userDetails = $db->GetUserDetailsById($user_id);
+
+        if($client_type == 1) { // Ez partner
+            $partnerDetails = $db->GetUserDetailsById($client_id);
+            sendMailToPartnerForDeleteReservation($eventDetails, $partnerDetails);
+            sendMailToUserForDeletePartnerReservation($eventDetails, $userDetails, $partnerDetails);
+        }
+        else if($client_type == 2) { // Ez ügyfél
+            $customerDetails = $db->GetCustomerDetailsById($client_id);
+            sendMailToUserForDeleteCustomerReservation($eventDetails, $userDetails, $customerDetails);
+        }
         
         $response["error"] = false;
         $response["message"] = "Sikeresen törölted a foglalást!";

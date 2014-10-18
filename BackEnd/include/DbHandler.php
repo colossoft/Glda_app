@@ -346,6 +346,27 @@ class DbHandler {
         }
     }
 
+    public function GetCustomerDetailsById($customer_id) {
+        $queryString = "SELECT name, details 
+                            FROM gilda_customer WHERE id = ?";
+        $stmt = $this->conn->prepare($queryString);
+        
+        $stmt->bind_param("i", $customer_id);
+        
+        if($stmt->execute()) {
+            $stmt->bind_result($customer["name"], $customer["details"]);
+            
+            $stmt->fetch();
+
+            $stmt->close();
+            
+            return $customer;
+        }
+        else {
+            return NULL;
+        }
+    }
+
     /*
     *Fetching all partners
     */
@@ -644,6 +665,43 @@ class DbHandler {
     }
     
     /* ----------------------- 'gilda_events' table method  ----------------------- */
+
+    /**
+     * Fetching event details by event_id
+     * @param int $event_id id of the event
+     */
+    public function getEventDetailsById($event_id) {
+        $queryString = "SELECT loc.name AS locationName, loc.address AS locationAddress, rm.name AS roomName, 
+                            ev.date AS eventDate, ev.start_time AS eventStartTime, ev.end_time AS eventEndTime, 
+                            CONCAT(tr.last_name, ' ', tr.first_name) AS trainerName, trg.name AS trainingName 
+                        FROM gilda_events AS ev 
+                        LEFT JOIN gilda_trainer AS tr ON ev.trainer = tr.id
+                        LEFT JOIN gilda_training AS trg ON ev.training = trg.id
+                        LEFT JOIN gilda_rooms AS rm ON ev.room_id = rm.id 
+                        LEFT JOIN gilda_locations AS loc ON loc.id = rm.location_id 
+                        WHERE ev.id=?";
+        $stmt = $this->conn->prepare($queryString);
+        $stmt->bind_param("i", $event_id);
+        
+        $stmt->execute();
+        
+        $events = array();
+        
+        $stmt->bind_result($event["locationName"], 
+                           $event["locationAddress"], 
+                           $event["roomName"], 
+                           $event["eventDate"], 
+                           $event["eventStartTime"], 
+                           $event["eventEndTime"], 
+                           $event["trainerName"], 
+                           $event["trainingName"]);
+        
+        $stmt->fetch();
+        
+        $stmt->close();
+        
+        return $event;
+    }
     
     /**
      * Fetching events by room_id
@@ -1002,10 +1060,10 @@ class DbHandler {
         $stmt->close();
 
         if($result) {
-            return RESERVATION_CREATED_SUCCESSFULLY;
+            return array("status" => RESERVATION_CREATED_SUCCESSFULLY, "customerId" => $customerId);
         }
         else {
-            return RESERVATION_CREATE_FAILED;
+            return array("status" => RESERVATION_CREATE_FAILED);
         }
     }
 
@@ -1202,7 +1260,7 @@ class DbHandler {
     * Fetching the reservations of partners
     */
     public function GetPartnerReservationsOfEvent($eventId) {
-        $queryString = "SELECT res.id, res.time AS date, us.first_name AS firstName, us.last_name AS lastName, us.email
+        $queryString = "SELECT res.id, res.time AS date, us.id AS partnerId, us.first_name AS firstName, us.last_name AS lastName, us.email
                         FROM gilda_reservations AS res 
                         LEFT JOIN gilda_events AS ev ON res.event_id = ev.id
                         LEFT JOIN gilda_user AS us ON res.user_id = us.id
@@ -1212,13 +1270,14 @@ class DbHandler {
         
         $stmt->execute();
         
-        $stmt->bind_result($id, $date, $firstName, $lastName, $email);
+        $stmt->bind_result($id, $date, $partnerId, $firstName, $lastName, $email);
         
         $reservations = array();
 
         while($stmt->fetch()) {
             $tmp = array("id" => $id, 
                          "date" => $date,
+                         "partnerId" => $partnerId, 
                          "firstName" => $firstName,
                          "lastName" => $lastName,
                          "email" => $email);
@@ -1235,7 +1294,7 @@ class DbHandler {
     * Fetching the reservations of non-partners
     */
     public function GetCustomReservationsOfEvent($eventId) {
-        $queryString = "SELECT res.id, res.time AS date, us.first_name AS firstName, us.last_name AS lastName, us.email, CONCAT(pn.last_name, ' ', pn.first_name) AS customerName, 
+        $queryString = "SELECT res.id, res.time AS date, us.first_name AS firstName, us.last_name AS lastName, us.email, pn.id AS customerId, CONCAT(pn.last_name, ' ', pn.first_name) AS customerName, 
                             pn.email AS customerEmail, '-' AS customerDetails, res.comment  
                         FROM gilda_reservations AS res 
                         LEFT JOIN gilda_events AS ev ON res.event_id = ev.id
@@ -1243,7 +1302,7 @@ class DbHandler {
                         LEFT JOIN gilda_user AS pn ON res.partner_id = pn.id
                         WHERE ev.id = ? AND res.partner_id IS NOT NULL 
                         UNION 
-                        SELECT res.id, res.time AS date, us.first_name AS firstName, us.last_name AS lastName, us.email, cus.name AS customerName, 
+                        SELECT res.id, res.time AS date, us.first_name AS firstName, us.last_name AS lastName, us.email, cus.id AS customerId, cus.name AS customerName, 
                             '-' AS customerEmail, cus.details AS customerDetails, res.comment  
                         FROM gilda_reservations AS res 
                         LEFT JOIN gilda_events AS ev ON res.event_id = ev.id
@@ -1255,7 +1314,7 @@ class DbHandler {
         
         $stmt->execute();
         
-        $stmt->bind_result($id, $date, $firstName, $lastName, $email, $customerName, $customerEmail, $customerDetails, $comment);
+        $stmt->bind_result($id, $date, $firstName, $lastName, $email, $customerId, $customerName, $customerEmail, $customerDetails, $comment);
         
         $reservations = array();
 
@@ -1265,6 +1324,7 @@ class DbHandler {
                          "firstName" => $firstName,
                          "lastName" => $lastName,
                          "email" => $email, 
+                         "customerId" => $customerId, 
                          "customerName" => $customerName, 
                          "customerEmail" => $customerEmail, 
                          "customerDetails" => $customerDetails, 

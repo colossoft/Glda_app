@@ -27,8 +27,8 @@ gildaApp.controller("eventDetailCtrl", function($scope, $routeParams, $location,
 	}
 
 	// Foglalás törlése
-	function delRes(resId, eventId) {
-		$http.delete(baseUrl + '/reservation/user/' + resId + '/' + eventId)
+	function delRes(resId, eventId, clientId, clientType) {
+		$http.delete(baseUrl + '/reservation/user/' + resId + '/' + eventId + '/' + clientId + '/' + clientType)
 			.success(function(data) {
 				getEventDetails();
 
@@ -36,17 +36,17 @@ gildaApp.controller("eventDetailCtrl", function($scope, $routeParams, $location,
 			})
 			.error(function(data) {
 				if(angular.isUndefined(data.message)) {
-					delRes(resId, eventId);
+					delRes(resId, eventId, clientId, clientType);
 				} else {
 					alert(data.message);	
 				}
 			});
 	}
 
-	$scope.deleteReservation = function(reservationId) {
+	$scope.deleteReservation = function(reservationId, clientId, clientType) {
 		if($scope.eventDetails.event.resDelete) {
 			if(confirm('Valóban törölni akarod a foglalást?')) {
-				delRes(reservationId, $scope.eventId);
+				delRes(reservationId, $scope.eventId, clientId, clientType);
 			}
 		}
 	}

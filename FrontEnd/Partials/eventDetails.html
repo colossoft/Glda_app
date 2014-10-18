@@ -42,7 +42,7 @@
 								<td class="text-center">{{reservation.date}}</td>
 								<td>{{reservation.lastName}} {{reservation.firstName}}</td>
 								<td>{{reservation.email}}</td>
-								<td class="text-center"><span class="glyphicon glyphicon-remove-circle delBook" ng-class="{'delBookCursor': !eventDetails.event.resDelete }" title="Foglalás törlése" ng-click="deleteReservation(eventDetails.partner_reservations[$index].id)"></span></td>
+								<td class="text-center"><span class="glyphicon glyphicon-remove-circle delBook" ng-class="{'delBookCursor': !eventDetails.event.resDelete }" title="Foglalás törlése" ng-click="deleteReservation(eventDetails.partner_reservations[$index].id, eventDetails.partner_reservations[$index].partnerId, 1)"></span></td>
 							</tr>
 						</tbody>
 					</table>
@@ -74,7 +74,7 @@
 								<td>{{reservation.customerEmail}}</td>
 								<td>{{reservation.customerDetails}}</td>
 								<td>{{reservation.comment}}</td>
-								<td class="text-center"><span class="glyphicon glyphicon-remove-circle delBook" ng-class="{'delBookCursor': !eventDetails.event.resDelete }" title="Foglalás törlése" ng-click="deleteReservation(eventDetails.custom_reservations[$index].id)"></span></td>
+								<td class="text-center"><span class="glyphicon glyphicon-remove-circle delBook" ng-class="{'delBookCursor': !eventDetails.event.resDelete }" title="Foglalás törlése" ng-click="deleteReservation(eventDetails.custom_reservations[$index].id, eventDetails.custom_reservations[$index].customerId, eventDetails.custom_reservations[$index].customerEmail == '-' ? 2 : 1)"></span></td>
 							</tr>
 						</tbody>
 					</table>
