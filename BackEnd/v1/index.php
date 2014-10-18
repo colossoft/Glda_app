@@ -803,6 +803,39 @@ $app->delete('/reservation/:event_id', 'authenticate', function($event_id) use($
     }
 });
 
+/**
+ * Delete reservation by user
+ * url: /reservation/user
+ * method: DELETE
+ * params: $reservation_id, $event_id
+ */
+$app->delete('/reservation/user/:reservation_id/:event_id', 'authenticate', function($reservation_id, $event_id) {
+    
+    $response = array();
+    $db = new DbHandler();
+
+    // Delete reservation
+    $result = $db->deleteReservationByUser($reservation_id, $event_id);
+    
+    if($result == RESERVATION_DELETED_SUCCESSFULLY) {
+        // Esetleg mail küldés?
+        
+        $response["error"] = false;
+        $response["message"] = "Sikeresen törölted a foglalást!";
+        echoResponse(200, $response);
+    }
+    else if($result == RESERVATION_DELETE_FAILED) {
+        $response["error"] = true;
+        $response["message"] = "A foglalás törlése sikertelen! Kérjük próbáld újra!";
+        echoResponse(500, $response);
+    }
+    else if($result == RESERVATION_DELETE_DEADLINE_EXPIRED) {
+        $response["error"] = true;
+        $response["message"] = "A foglalás törlésének határideje lejárt!";
+        echoResponse(405, $response);   
+    }
+});
+
 $app->get('/trainings', 'authenticate', function() {
     $response = array();
     $db = new DbHandler();

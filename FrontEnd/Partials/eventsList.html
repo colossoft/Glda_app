@@ -78,7 +78,7 @@
 							<td class="text-center">{{event.reservedSpots}}</td>
 							<td class="text-center">{{event.freeSpots}}</td>
 							<td class="text-center"><span class="glyphicon glyphicon-info-sign" ng-click="openEventDetail($index)" title="Esemény foglalásai"></span></td>
-							<td class="text-center"><span class="glyphicon glyphicon-book" ng-click="openBooking($index)" title="Foglalás"></span></td>
+							<td class="text-center"><span class="glyphicon glyphicon-book" ng-click="openBooking($index)" ng-class="{'delBookCursor': event.past}" title="Foglalás"></span></td>
 						</tr>
 					</tbody>
 				</table>

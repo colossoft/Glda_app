@@ -108,7 +108,6 @@ body {
 .tableEvents.table-hover > tbody > tr:hover > td {
   background-color: #ff4443;
   color: #fff;
-  cursor: pointer;
 }
 
 .tableEvents > thead > tr > th,
@@ -124,9 +123,14 @@ body {
 }
 
 .tableEvents > tbody > tr > td:nth-child(9),
-.tableEvents > tbody > tr > td:nth-child(10)  {
+.tableEvents > tbody > tr > td:nth-child(10) {
     font-size: 1.2em;
     color: #ff4443;
+}
+
+.tableEvents > tbody > tr > td:nth-child(9) span,
+.tableEvents > tbody > tr > td:nth-child(10) span {
+    cursor: pointer;
 }
 
 .tableEvents > thead > tr > th:nth-child(1), 
@@ -145,9 +149,13 @@ body {
 }
 
 .delBook {
-    cursor: not-allowed;
+    cursor: pointer;
     font-size: 1.5em;
     color: #ff4443;
+}
+
+.delBookCursor {
+    cursor: not-allowed !important;
 }
 
 /********* Partnerek - Események listája táblázat **********/

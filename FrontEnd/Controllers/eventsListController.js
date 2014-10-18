@@ -106,7 +106,9 @@ gildaApp.controller("eventsListCtrl", function($scope, $rootScope, $location, $h
 
 	// Foglalás ablak megnyitása
 	$scope.openBooking = function(index) {
-		eventListService.setEventListFilter($scope.eventListFilter);
-		$location.path('/events/book/' + $scope.events[index].id);	
+		if(!$scope.events[index].past) {
+			eventListService.setEventListFilter($scope.eventListFilter);
+			$location.path('/events/book/' + $scope.events[index].id);	
+		}
 	}
 });

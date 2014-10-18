@@ -1103,6 +1103,35 @@ class DbHandler {
     }
 
     /**
+     * Delete reservation by user
+     * @param int $reservation_id id of the reservation
+     */
+    public function deleteReservationByUser($reservation_id, $event_id) {
+        $actual_date = DateTime::createFromFormat('Y-m-d H:i:s', $this->get_correct_current_timestamp());
+        $event_date = $this->getEventStartByEventId($event_id);
+
+        if($actual_date > $event_date) {
+            return RESERVATION_DELETE_DEADLINE_EXPIRED;
+        }
+    
+        $queryString = "DELETE FROM gilda_reservations WHERE id=?";
+        $stmt = $this->conn->prepare($queryString);
+        $stmt->bind_param("i", $reservation_id);
+        $stmt->execute();
+
+        $num_affected_rows = $stmt->affected_rows;
+        
+        $stmt->close();
+        
+        if($num_affected_rows > 0) {
+            return RESERVATION_DELETED_SUCCESSFULLY;
+        }
+        else {
+            return RESERVATION_DELETE_FAILED;
+        }
+    }
+
+    /**
      * Get event start DateTime by eventId
      * @param int $eventId id of the event
      * @return DateTime of the event
@@ -1149,6 +1178,15 @@ class DbHandler {
 
         $stmt->close();
 
+        $actual_date = DateTime::createFromFormat('Y-m-d H:i:s', $this->get_correct_current_timestamp());
+        $event_date = $this->getEventStartByEventId($eventId);
+
+        if($actual_date < $event_date) {
+            $event['resDelete'] = true;
+        } else {
+            $event['resDelete'] = false;
+        }
+
         $result = array();
         
         $result["event"] = $event;
@@ -1164,7 +1202,7 @@ class DbHandler {
     * Fetching the reservations of partners
     */
     public function GetPartnerReservationsOfEvent($eventId) {
-        $queryString = "SELECT res.time AS date, us.first_name AS firstName, us.last_name AS lastName, us.email
+        $queryString = "SELECT res.id, res.time AS date, us.first_name AS firstName, us.last_name AS lastName, us.email
                         FROM gilda_reservations AS res 
                         LEFT JOIN gilda_events AS ev ON res.event_id = ev.id
                         LEFT JOIN gilda_user AS us ON res.user_id = us.id
@@ -1174,12 +1212,13 @@ class DbHandler {
         
         $stmt->execute();
         
-        $stmt->bind_result($date, $firstName, $lastName, $email);
+        $stmt->bind_result($id, $date, $firstName, $lastName, $email);
         
         $reservations = array();
 
         while($stmt->fetch()) {
-            $tmp = array("date" => $date,
+            $tmp = array("id" => $id, 
+                         "date" => $date,
                          "firstName" => $firstName,
                          "lastName" => $lastName,
                          "email" => $email);
@@ -1196,7 +1235,7 @@ class DbHandler {
     * Fetching the reservations of non-partners
     */
     public function GetCustomReservationsOfEvent($eventId) {
-        $queryString = "SELECT res.time AS date, us.first_name AS firstName, us.last_name AS lastName, us.email, CONCAT(pn.last_name, ' ', pn.first_name) AS customerName, 
+        $queryString = "SELECT res.id, res.time AS date, us.first_name AS firstName, us.last_name AS lastName, us.email, CONCAT(pn.last_name, ' ', pn.first_name) AS customerName, 
                             pn.email AS customerEmail, '-' AS customerDetails, res.comment  
                         FROM gilda_reservations AS res 
                         LEFT JOIN gilda_events AS ev ON res.event_id = ev.id
@@ -1204,7 +1243,7 @@ class DbHandler {
                         LEFT JOIN gilda_user AS pn ON res.partner_id = pn.id
                         WHERE ev.id = ? AND res.partner_id IS NOT NULL 
                         UNION 
-                        SELECT res.time AS date, us.first_name AS firstName, us.last_name AS lastName, us.email, cus.name AS customerName, 
+                        SELECT res.id, res.time AS date, us.first_name AS firstName, us.last_name AS lastName, us.email, cus.name AS customerName, 
                             '-' AS customerEmail, cus.details AS customerDetails, res.comment  
                         FROM gilda_reservations AS res 
                         LEFT JOIN gilda_events AS ev ON res.event_id = ev.id
@@ -1216,12 +1255,13 @@ class DbHandler {
         
         $stmt->execute();
         
-        $stmt->bind_result($date, $firstName, $lastName, $email, $customerName, $customerEmail, $customerDetails, $comment);
+        $stmt->bind_result($id, $date, $firstName, $lastName, $email, $customerName, $customerEmail, $customerDetails, $comment);
         
         $reservations = array();
 
         while($stmt->fetch()) {
-            $tmp = array("date" => $date,
+            $tmp = array("id" => $id, 
+                         "date" => $date,
                          "firstName" => $firstName,
                          "lastName" => $lastName,
                          "email" => $email, 
