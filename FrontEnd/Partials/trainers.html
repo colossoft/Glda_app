@@ -2,63 +2,65 @@
 	<div class="row">
 		<div class="col-md-3"></div>
 		<div class="col-md-6">
-	        <tabset justified="true">
-	        	<tab heading="Edzők">
-	        		<table class="table table-bordered table-striped tableTrainers" ng-hide="trainers == null || trainers.length == 0">
-	        			<thead>
-	        				<tr>
-	        					<th>Vezetéknév</th>
-	        					<th>Keresztnév</th>
-	        					<th>E-mail</th>
-	        					<th> </th>
-	        				</tr>
-	        			</thead>
-	        			<tbody>
-	        				<tr ng-repeat="trainer in trainers">
-	        					<td>{{trainer.lastName}}</td>
-	        					<td>{{trainer.firstName}}</td>
-	        					<td>{{trainer.email}}</td>
-	        					<td><span class="glyphicon glyphicon-remove-sign" ng-click="deleteTrainer(trainers[$index].id)"></span></td>
-	        				</tr>
-	        			</tbody>
-	        		</table>
-	        	</tab>
-	        	<tab heading="Edző hozzáadása">
-	        		<ng-form name="createTrainerForm" novalidate>
-	                    <div class="row" ng-class="{'has-error': createTrainerForm.lastName.$invalid && createTrainerForm.lastName.$dirty, 'has-success': createTrainerForm.lastName.$valid && createTrainerForm.lastName.$dirty}">
-							<div class="col-sm-3">
-								<label class="control-label">Vezetéknév:</label>
+			<div class="well">
+		        <tabset justified="true">
+		        	<tab heading="Edzők">
+		        		<table class="table table-bordered table-striped tableTrainers" ng-hide="trainers == null || trainers.length == 0">
+		        			<thead>
+		        				<tr>
+		        					<th>Vezetéknév</th>
+		        					<th>Keresztnév</th>
+		        					<th>E-mail</th>
+		        					<th> </th>
+		        				</tr>
+		        			</thead>
+		        			<tbody>
+		        				<tr ng-repeat="trainer in trainers">
+		        					<td>{{trainer.lastName}}</td>
+		        					<td>{{trainer.firstName}}</td>
+		        					<td>{{trainer.email}}</td>
+		        					<td><span class="glyphicon glyphicon-remove-sign" ng-click="deleteTrainer(trainers[$index].id)"></span></td>
+		        				</tr>
+		        			</tbody>
+		        		</table>
+		        	</tab>
+		        	<tab heading="Edző hozzáadása">
+		        		<ng-form name="createTrainerForm" novalidate>
+		                    <div class="row" ng-class="{'has-error': createTrainerForm.lastName.$invalid && createTrainerForm.lastName.$dirty, 'has-success': createTrainerForm.lastName.$valid && createTrainerForm.lastName.$dirty}">
+								<div class="col-sm-3">
+									<label class="control-label">Vezetéknév:</label>
+								</div>
+								<div class="col-sm-9">
+									<input type="text" class="form-control" name="lastName" ng-model="trainer.lastName" required />
+								</div>
 							</div>
-							<div class="col-sm-9">
-								<input type="text" class="form-control" name="lastName" ng-model="trainer.lastName" required />
+							<div class="row" ng-class="{'has-error': createTrainerForm.firstName.$invalid && createTrainerForm.firstName.$dirty, 'has-success': createTrainerForm.firstName.$valid && createTrainerForm.firstName.$dirty}">
+								<div class="col-sm-3">
+									<label class="control-label">Keresztnév:</label>
+								</div>
+								<div class="col-sm-9">
+									<input type="text" class="form-control" name="firstName" ng-model="trainer.firstName" required />
+								</div>
 							</div>
-						</div>
-						<div class="row" ng-class="{'has-error': createTrainerForm.firstName.$invalid && createTrainerForm.firstName.$dirty, 'has-success': createTrainerForm.firstName.$valid && createTrainerForm.firstName.$dirty}">
-							<div class="col-sm-3">
-								<label class="control-label">Keresztnév:</label>
+							<div class="row" ng-class="{'has-error': createTrainerForm.email.$invalid && createTrainerForm.email.$dirty, 'has-success': createTrainerForm.email.$valid && createTrainerForm.email.$dirty}">
+								<div class="col-sm-3">
+									<label class="control-label">Email:</label>
+								</div>
+								<div class="col-sm-9">
+									<input type="email" class="form-control" name="email" ng-model="trainer.email" required />
+								</div>
 							</div>
-							<div class="col-sm-9">
-								<input type="text" class="form-control" name="firstName" ng-model="trainer.firstName" required />
+							<div class="row">
+								<div class="col-sm-12">
+									<button type="button" class="btn btn-success pull-right" ng-disabled="createTrainerForm.$invalid" ng-click="saveTrainer();">
+										<span class="glyphicon glyphicon-floppy-save"></span> Hozzáadás
+									</button>
+								</div>
 							</div>
-						</div>
-						<div class="row" ng-class="{'has-error': createTrainerForm.email.$invalid && createTrainerForm.email.$dirty, 'has-success': createTrainerForm.email.$valid && createTrainerForm.email.$dirty}">
-							<div class="col-sm-3">
-								<label class="control-label">Email:</label>
-							</div>
-							<div class="col-sm-9">
-								<input type="email" class="form-control" name="email" ng-model="trainer.email" required />
-							</div>
-						</div>
-						<div class="row">
-							<div class="col-sm-12">
-								<button type="button" class="btn btn-success pull-right" ng-disabled="createTrainerForm.$invalid" ng-click="saveTrainer();">
-									<span class="glyphicon glyphicon-floppy-save"></span> Hozzáadás
-								</button>
-							</div>
-						</div>
-	        		</ng-form>
-	        	</tab>
-	        </tabset>
+		        		</ng-form>
+		        	</tab>
+		        </tabset>
+	        </div>
 		</div>
 		<div class="col-md-3"></div>
 	</div>

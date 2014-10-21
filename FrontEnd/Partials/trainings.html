@@ -2,35 +2,37 @@
 	<div class="row">
 		<div class="col-md-3"></div>
 		<div class="col-md-6">
-	        <tabset justified="true">
-	        	<tab heading="Edzéstípusok">
-	        		<ul class="list-group">
-	        			<li class="list-group-item" ng-repeat="training in trainings">
-	        				{{training.name}}
-	        				<span class="glyphicon glyphicon-remove pull-right" ng-click="deleteTraining(trainings[$index].id)"></span>
-	        			</li>
-	        		</ul>
-	        	</tab>
-	        	<tab heading="Új edzéstípus hozzáadása">
-	        		<ng-form name="createTrainingForm">
-	                    <div class="row" ng-class="{'has-error': createTrainingForm.trainingName.$invalid && createTrainingForm.trainingName.$dirty, 'has-success': createTrainingForm.trainingName.$valid && createTrainingForm.trainingName.$dirty}">
-							<div class="col-sm-3">
-								<label class="control-label">Edzés neve:</label>
+			<div class="well">
+		        <tabset justified="true">
+		        	<tab heading="Edzéstípusok">
+		        		<ul class="list-group">
+		        			<li class="list-group-item" ng-repeat="training in trainings">
+		        				{{training.name}}
+		        				<span class="glyphicon glyphicon-remove pull-right" ng-click="deleteTraining(trainings[$index].id)"></span>
+		        			</li>
+		        		</ul>
+		        	</tab>
+		        	<tab heading="Új edzéstípus hozzáadása">
+		        		<ng-form name="createTrainingForm">
+		                    <div class="row" ng-class="{'has-error': createTrainingForm.trainingName.$invalid && createTrainingForm.trainingName.$dirty, 'has-success': createTrainingForm.trainingName.$valid && createTrainingForm.trainingName.$dirty}">
+								<div class="col-sm-3">
+									<label class="control-label">Edzés neve:</label>
+								</div>
+								<div class="col-sm-9">
+									<input type="text" class="form-control" name="trainingName" ng-model="training.name" required />
+								</div>
 							</div>
-							<div class="col-sm-9">
-								<input type="text" class="form-control" name="trainingName" ng-model="training.name" required />
+							<div class="row">
+								<div class="col-sm-12">
+									<button type="button" class="btn btn-success pull-right" ng-disabled="createTrainingForm.$invalid" ng-click="saveTraining()">
+										<span class="glyphicon glyphicon-floppy-save"></span> Hozzáadás
+									</button>
+								</div>
 							</div>
-						</div>
-						<div class="row">
-							<div class="col-sm-12">
-								<button type="button" class="btn btn-success pull-right" ng-disabled="createTrainingForm.$invalid" ng-click="saveTraining()">
-									<span class="glyphicon glyphicon-floppy-save"></span> Hozzáadás
-								</button>
-							</div>
-						</div>
-	        		</ng-form>
-	        	</tab>
-	        </tabset>
+		        		</ng-form>
+		        	</tab>
+		        </tabset>
+	        </div>
 		</div>
 		<div class="col-md-3"></div>
 	</div>

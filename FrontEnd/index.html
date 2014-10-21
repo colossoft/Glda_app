@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title>GildaMax</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="Content/bootstrap.css" rel="stylesheet" />
     <link href="Content/gilda_m.css" rel="stylesheet" />
 </head>
 <body>
@@ -21,7 +21,9 @@
                         <span class="icon-bar"></span>
                     </button>
 
-                    <a class="navbar-brand" href="#">GildaMax</a>
+                    <a class="navbar-brand" href="#">
+                        <img src="Images/nav_logo.png" height="50">
+                    </a>
 
                     <p class="navbar-text"><span class="label label-danger">{{locationName}}</span></p>
 
@@ -56,7 +58,7 @@
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                 <span class="glyphicon glyphicon-user"></span> 
-                                <strong>{{userName}}</strong>
+                                &nbsp;&nbsp;<strong>{{userName}}</strong>&nbsp;
                                 <span class="glyphicon glyphicon-chevron-down"></span>
                             </a>
                             <ul class="dropdown-menu">
@@ -69,8 +71,8 @@
                                                 </p>
                                             </div>
                                             <div class="col-lg-8">
-                                                <p class="text-left"><strong>{{userName}}</strong></p>
-                                                <p class="text-left small">{{userEmail}}</p>
+                                                <p class="text-left"><h5 style="margin:0">{{userName}}</h5></p>
+                                                <p class="text-left">{{userEmail}}</p>
                                                 <p class="text-left">
                                                     <a href="" ng-click="changePassword()" class="btn btn-primary btn-block btn-sm">Jelszó megváltoztatása</a>
                                                 </p>
