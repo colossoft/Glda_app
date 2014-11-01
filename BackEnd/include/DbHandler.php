@@ -590,10 +590,10 @@ class DbHandler {
     /**
     * Check existing room by name
     */
-    public function CheckRoomName($name) {
-        $queryString = "SELECT * FROM gilda_rooms WHERE name=?";
+    public function CheckRoomName($name, $locationId) {
+        $queryString = "SELECT * FROM gilda_rooms WHERE name=? AND location_id=?";
         $stmt = $this->conn->prepare($queryString);
-        $stmt->bind_param("s", $name);
+        $stmt->bind_param("si", $name, $locationId);
         
         $stmt->execute();
         
@@ -607,7 +607,7 @@ class DbHandler {
     }
 
     public function CreateRoom($name, $locationId) {
-        if($this->CheckRoomName($name)) {
+        if($this->CheckRoomName($name, $locationId)) {
             return false;
         }
 
