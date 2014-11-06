@@ -478,7 +478,7 @@ $app->post('/login', 'language',  function() use($app) {
             echoResponse(200, $response);
         } else {
             $response['error'] = true;
-            $response['message'] = $responseStrings["loginErrorUnexpected"];
+            $response['message'] = $responseStrings["ErrorUnexpected"];
             echoResponse(409, $response);
         }
     } else {
@@ -1557,7 +1557,8 @@ $app->put('/passmodify', 'authenticate', function() use($app) {
 /*
 *User forget her/his password
 */
-$app->post('/getnewpassword', function() use($app) {
+$app->post('/getnewpassword', 'language', function() use($app) {
+    global $responseStrings;
     
     // Check for required params
     verifyRequiredParams(array('email'));
@@ -1580,18 +1581,18 @@ $app->post('/getnewpassword', function() use($app) {
 
         if (!is_null($result2) && SendMailToUserForNewPassword($first_name, $last_name, $email, $newPassword)) {
             $response["error"] = true;
-            $response["message"] = "Az új jelszót tartalmazó levelet elküldtük az e-mail címedre!";
+            $response["message"] = $responseStrings["forgotPasswordSuccess"];
             $response["newPassword"] = $newPassword;
             echoResponse(200, $response);
         } else {
             $response["error"] = true;
-            $response["message"] = "Hiba történt, kérjük próbáld meg újra!";
+            $response["message"] = $responseStrings["ErrorUnexpected"];
             echoResponse(500, $response);
         }
 
     } else {
         $response["error"] = true;
-        $response["message"] = "A megadott e-mail cím nincs regisztrálva a rendszerben!";
+        $response["message"] = $responseStrings["forgotPasswordWrongEmail"];
         echoResponse(409, $response);
     }
 });

@@ -2,7 +2,11 @@
 
 $responseLangEn = array();
 
-$responseLangEn["loginErrorUnexpected"] = "Unexpected error occured! Please try again!";
+$responseLangEn["ErrorUnexpected"] = "Unexpected error occured! Please try again!";
+
 $responseLangEn["loginErrorWrongCredentials"] = "Login failed! Wrong e-mail or password!";
+
+$responseLangEn["forgotPasswordSuccess"] = "Az új jelszót tartalmazó levelet elküldtük az e-mail címedre!";
+$responseLangEn["forgotPasswordWrongEmail"] = "A megadott e-mail cím nincs regisztrálva a rendszerben!";
 
 ?>
