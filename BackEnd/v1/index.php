@@ -2,6 +2,9 @@
 
 require_once '../include/DbHandler.php';
 require_once '../include/PassHash.php';
+require_once '../include/LangHuStrings.php';
+require_once '../include/LangEnStrings.php';
+require_once '../include/LangDeStrings.php';
 require '../libs/Slim/Slim.php';
 require '../libs/PHPMailer/PHPMailerAutoload.php';
 
@@ -14,6 +17,7 @@ $app = new \Slim\Slim();
 // Global variables
 $user_id = NULL;
 $mail_error_info = NULL;
+$responseStrings = $responseLangHu;
 
 /**
  * Verifying required params or not
@@ -446,7 +450,9 @@ $app->post('/register', function() use($app) {
  * method: POST
  * params: email, password
  */
-$app->post('/login', function() use($app) {
+$app->post('/login', 'language',  function() use($app) {
+    global $responseStrings;
+
     // Check for required params
     verifyRequiredParams(array('email', 'password'));
     
@@ -472,12 +478,12 @@ $app->post('/login', function() use($app) {
             echoResponse(200, $response);
         } else {
             $response['error'] = true;
-            $response['message'] = 'Váratlan hiba történt! Kérjük próbáld újra';
+            $response['message'] = $responseStrings["loginErrorUnexpected"];
             echoResponse(409, $response);
         }
     } else {
         $response['error'] = true;
-        $response['message'] = 'Sikertelen bejelentkezés! Hibás e-mail vagy jelszó!';
+        $response['message'] = $responseStrings["loginErrorWrongCredentials"];
         echoResponse(409, $response);
     }
 });
@@ -518,6 +524,40 @@ function authenticate(\Slim\Route $route) {
         $response["message"] = "Api key is missing!";
         echoResponse(400, $response);
         $app->stop();
+    }
+}
+
+function language(\Slim\Route $route) {
+    global $responseStrings;
+    global $responseLangHu;
+    global $responseLangDe;
+    global $responseLangEn;
+
+    $headers = apache_request_headers();
+ 
+    // Verifying Authorization Header
+    if (isset($headers['Accept-Language'])) {
+        // get the language
+        $lang = $headers['Accept-Language'];
+        
+        switch ($lang) {
+            case 'hu':
+                $responseStrings = $responseLangHu;
+                break;
+            
+            case 'en':
+                $responseStrings = $responseLangEn;
+                break;
+
+            case 'de':
+                $responseStrings = $responseLangDe;
+                break;
+            default:
+                $responseStrings = $responseLangHu;
+                break;
+        }
+    } else {
+        $responseStrings = $responseLangHu;
     }
 }
 
