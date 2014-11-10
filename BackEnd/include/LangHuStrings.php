@@ -9,4 +9,7 @@ $responseLangHu["loginErrorWrongCredentials"] = "Sikertelen bejelentkezés! Hib�
 $responseLangHu["forgotPasswordSuccess"] = "Az új jelszót tartalmazó levelet elküldtük az e-mail címedre!";
 $responseLangHu["forgotPasswordWrongEmail"] = "A megadott e-mail cím nincs regisztrálva a rendszerben!";
 
+$responseLangHu["changePasswordSuccess"] = "A jelszó megváltozott!";
+$responseLangHu["changePasswordWrongCredentials"] = "Hibásan adta meg a jelszó módosításához szükséges adatokat!";
+
 ?>

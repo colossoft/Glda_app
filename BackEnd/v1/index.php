@@ -1525,8 +1525,9 @@ $app->put('/disengage/:partnerId', 'authenticate', function($partnerId) {
 /*
 *Modify user password
 */
-$app->put('/passmodify', 'authenticate', function() use($app) {
+$app->put('/passmodify', 'authenticate', 'language', function() use($app) {
     global $user_id;
+    global $responseStrings;
     
     // Check for required params
     verifyRequiredParams(array('oldPassword', 'newPassword', 'confirmNewPassword'));
@@ -1545,12 +1546,12 @@ $app->put('/passmodify', 'authenticate', function() use($app) {
 
     if(!is_null($result)) {
         $response["error"] = false;
-        $response["message"] = "A jelszó megváltozott!";
+        $response["message"] = $responseStrings["changePasswordSuccess"];
         echoResponse(200, $response);
     } else {
         $response["error"] = true;
-        $response["message"] = "Hibásan adta meg a jelszó módosításához szükséges adatokat!";
-        echoResponse(500, $response);
+        $response["message"] = $responseStrings["changePasswordWrongCredentials"];
+        echoResponse(409, $response);
     }
 });
 
