@@ -12,4 +12,8 @@ $responseLangHu["forgotPasswordWrongEmail"] = "A megadott e-mail cím nincs regi
 $responseLangHu["changePasswordSuccess"] = "A jelszó megváltozott!";
 $responseLangHu["changePasswordWrongCredentials"] = "Hibásan adta meg a jelszó módosításához szükséges adatokat!";
 
+$responseLangHu["deleteReservationSuccessfully"] = "Sikeresen törölted a foglalást!";
+$responseLangHu["deleteReservationFailed"] = "A foglalás törlése sikertelen! Kérjük próbáld újra!";
+$responseLangHu["deleteReservationExpired"] = "A foglalás törlésének határideje lejárt! Az esemény kezdete előtti 2 órában már nincs mód a foglalás törlésére!";
+
 ?>

@@ -801,8 +801,9 @@ $app->post('/event/', 'authenticate', function() use($app) {
  * url: /reservation
  * method: GET
  */
-$app->get('/reservation', 'authenticate', function() {
+$app->get('/reservation', 'authenticate', 'language', function() {
     global $user_id;
+    global $responseStrings;
 
     $response = array();
     $db = new DbHandler();
@@ -817,7 +818,7 @@ $app->get('/reservation', 'authenticate', function() {
 
     } else {
         $response["error"] = true;
-        $response["message"] = "The requested resource doesn't exists";
+        $response["message"] = $responseStrings["ErrorUnexpected"];
         echoResponse(404, $response);
     }
 });
@@ -1039,8 +1040,9 @@ $app->post('/customerbook/existing', 'authenticate', function() use($app) {
  * method: DELETE
  * params: $event_id
  */
-$app->delete('/reservation/:event_id', 'authenticate', function($event_id) use($app) {
+$app->delete('/reservation/:event_id', 'authenticate', 'language', function($event_id) use($app) {
     global $user_id;
+    global $responseStrings;
     
     $response = array();
     $db = new DbHandler();
@@ -1054,19 +1056,19 @@ $app->delete('/reservation/:event_id', 'authenticate', function($event_id) use($
         sendMailToPartnerForDeleteReservation($eventDetails, $userDetails);
         
         $response["error"] = false;
-        $response["message"] = "Sikeresen törölted a foglalást!";
+        $response["message"] = $responseStrings["deleteReservationSuccessfully"];
         $response["free_spots"] = $result['free_spots'];
         echoResponse(200, $response);
     }
     else if($result['status'] == RESERVATION_DELETE_FAILED) {
         $response["error"] = true;
-        $response["message"] = "A foglalás törlése sikertelen! Kérjük próbáld újra!";
+        $response["message"] = $responseStrings["deleteReservationFailed"];
         $response["free_spots"] = $result['free_spots'];
         echoResponse(500, $response);
     }
     else if($result['status'] == RESERVATION_DELETE_DEADLINE_EXPIRED) {
         $response["error"] = true;
-        $response["message"] = "A foglalás törlésének határideje lejárt! Az esemény kezdete előtti 2 órában már nincs mód a foglalás törlésére!";
+        $response["message"] = $responseStrings["deleteReservationExpired"];
         $response["free_spots"] = $result['free_spots'];
         echoResponse(405, $response);   
     }
