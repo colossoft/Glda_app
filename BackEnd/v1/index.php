@@ -57,10 +57,12 @@ function verifyRequiredParams($required_fields) {
  * Validating e-mail address
  */
 function validateEmail($email) {
+    global $responseStrings;
+
     $app = \Slim\Slim::getInstance();
     if(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $response["error"] = true;
-        $response["message"] = 'Érvénytelen e-mail cím!';
+        $response["message"] = $responseStrings["registrationInvalidEmail"];
         echoResponse(400, $response);
         $app->stop();
     }
@@ -70,21 +72,23 @@ function validateEmail($email) {
  * Validating password
  */
 function validatePassword($password) {
+    global $responseStrings;
+
     $app = \Slim\Slim::getInstance();
 
     $errorList = "";
 
     if(strlen($password) < 8) {
-        $errorList .= "A jelszónak legalább 8 karaktert kell tartalmaznia!\n";
+        $errorList .= $responseStrings["registrationEmailValidMessageCharNum"] . "\n";
     }
     if(!preg_match("#[0-9]+#", $password)) {
-        $errorList .= "A jelszónak legalább egy számot tartalmaznia kell!\n";
+        $errorList .= $responseStrings["registrationEmailValidMessageNumber"] . "\n";
     }
     if(!preg_match("#[A-Z]+#", $password)) {
-        $errorList .= "A jelszónak legalább egy nagybetűt tartalmaznia kell!\n";
+        $errorList .= $responseStrings["registrationEmailValidMessageBigLetter"] . "\n";
     }
     if(!preg_match("#[a-z]+#", $password)) {
-        $errorList .= "A jelszónak legalább egy kisbetűt tartalmaznia kell!";
+        $errorList .= $responseStrings["registrationEmailValidMessageSmallLetter"];
     }
 
     if(strlen($errorList) != 0) {
@@ -395,8 +399,9 @@ function randomPassword() {
  * method: POST
  * params: name, email, password
  */
-$app->post('/register', function() use($app) {
+$app->post('/register', 'language', function() use($app) {
     global $mail_error_info;
+    global $responseStrings;
     
     // Check for required params
     verifyRequiredParams(array('first_name', 'last_name', 'email', 'password'));
@@ -429,17 +434,17 @@ $app->post('/register', function() use($app) {
 	
         $response["error"] = false;
         $response["api_key"] = $res["api_key"];
-        $response["message"] = "Sikeres regisztráció!";
+        $response["message"] = $responseStrings["registrationSuccessfully"];
         echoResponse(201, $response);
     }
     else if($res["status"] == USER_CREATE_FAILED) {
         $response["error"] = true;
-        $response["message"] = "Hiba történt a regisztráció során. Kérjük próbáld újra!";
+        $response["message"] = $responseStrings["registrationFailed"];
         echoResponse(500, $response);
     }
     else if($res["status"] == USER_ALREADY_EXISTED) {
         $response["error"] = true;
-        $response["message"] = "Ezzel az e-mail címmel már regisztráltak!";
+        $response["message"] = $responseStrings["registrationEmailExists"];
         echoResponse(501, $response);
     }
 });
@@ -566,7 +571,9 @@ function language(\Slim\Route $route) {
  * method GET
  * url /locations
  */
-$app->get('/locations', 'authenticate', function() {
+$app->get('/locations', 'authenticate', 'language', function() {
+    global $responseStrings;
+
     $response = array();
     $db = new DbHandler();
 
@@ -579,7 +586,7 @@ $app->get('/locations', 'authenticate', function() {
         echoResponse(200, $response);
     }else {
         $response["error"] = true;
-        $response["message"] = "The requested resource doesn't exists";
+        $response["message"] = $responseStrings["ErrorUnexpected"];
         echoResponse(404, $response);
     }
 });
@@ -589,7 +596,9 @@ $app->get('/locations', 'authenticate', function() {
  * method GET
  * url /rooms/:id
  */
-$app->get('/rooms/:id', 'authenticate', function($location_id) {
+$app->get('/rooms/:id', 'authenticate', 'language', function($location_id) {
+    global $responseStrings;
+
     $response = array();
     $db = new DbHandler();
 
@@ -603,7 +612,7 @@ $app->get('/rooms/:id', 'authenticate', function($location_id) {
 
     } else {
         $response["error"] = true;
-        $response["message"] = "The requested resource doesn't exists";
+        $response["message"] = $responseStrings["ErrorUnexpected"];
         echoResponse(404, $response);
     }
 });
@@ -663,9 +672,10 @@ $app->delete('/rooms/:roomId', 'authenticate', function($roomId) use($app){
  * method GET
  * url /events/:room_id
  */
-$app->get('/events/:room_id', 'authenticate', function($room_id) {
+$app->get('/events/:room_id', 'authenticate', 'language', function($room_id) {
     global $user_id;
-    
+    global $responseStrings;
+
     $response = array();
     $db = new DbHandler();
 
@@ -679,7 +689,7 @@ $app->get('/events/:room_id', 'authenticate', function($room_id) {
 
     } else {
         $response["error"] = true;
-        $response["message"] = "The requested resource doesn't exists";
+        $response["message"] = $responseStrings["ErrorUnexpected"];
         echoResponse(404, $response);
     }
 });
@@ -829,8 +839,9 @@ $app->get('/reservation', 'authenticate', 'language', function() {
  * method: POST
  * params: $event_id
  */
-$app->post('/reservation/', 'authenticate', function() use($app) {
+$app->post('/reservation/', 'authenticate', 'language', function() use($app) {
     global $user_id;
+    global $responseStrings;
     
     // Check for required params
     verifyRequiredParams(array('event_id'));
@@ -849,25 +860,25 @@ $app->post('/reservation/', 'authenticate', function() use($app) {
         sendMailToPartnerForReservation($eventDetails, $userDetails);
 
         $response["error"] = false;
-        $response["message"] = "Sikeres foglalás!";
+        $response["message"] = $responseStrings["makeReservationSuccessfully"];
 		$response["free_spots"] = $res['free_spots'];
         echoResponse(201, $response);
     }
     else if($res['status'] == RESERVATION_CREATE_FAILED) {
         $response["error"] = true;
-        $response["message"] = "Hiba történt a foglalás során. Kérjük próbáld újra!";
+        $response["message"] = $responseStrings["makeReservationError"];
 		$response["free_spots"] = $res['free_spots'];
         echoResponse(500, $response);
     }
     else if($res['status'] == RESERVATION_CREATE_DEADLINE_EXPIRED) {
         $response["error"] = true;
-        $response["message"] = "A foglalás határideje lejárt! Az esemény kezdete előtti 2 órában már nincs mód a foglalásra!";
+        $response["message"] = $responseStrings["makeReservationExpired"];
         $response["free_spots"] = $res['free_spots'];
         echoResponse(405, $response);
     }
     else if($res['status'] == NO_FREE_SPOTS) {
         $response["error"] = true;
-        $response["message"] = "Sajnos nincs több szabad hely erre az edzésre!";
+        $response["message"] = $responseStrings["makeReservationNoFreeSpots"];
 		$response["free_spots"] = $res['free_spots'];
         echoResponse(405, $response);
     }
