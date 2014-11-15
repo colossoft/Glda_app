@@ -6,7 +6,7 @@
 body {
     font-family: myriadProBold, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 1.4em;
-    background: url("../Images/app_background.png") fixed;
+    background: url("../Images/app_background.jpg") fixed;
     background-size: 100% auto;
     padding-top: 80px;
 }
