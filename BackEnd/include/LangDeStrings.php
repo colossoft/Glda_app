@@ -2,32 +2,32 @@
 
 $responseLangDe = array();
 
-$responseLangDe["ErrorUnexpected"] = "Váratlan német hiba!";
+$responseLangDe["ErrorUnexpected"] = "Ein underwarterer Fehler ist aufgetreten! Bitte versuchen Sie es erneut!";
 
-$responseLangDe["loginErrorWrongCredentials"] = "Sikertelen bejelentkezés! Hibás e-mail vagy jelszó! Német!";
+$responseLangDe["loginErrorWrongCredentials"] = "Einloggen gescheitert. Ungültige E-mail Adresse oder Passwort!";
 
-$responseLangDe["forgotPasswordSuccess"] = "Az új jelszót tartalmazó levelet elküldtük az e-mail címedre!";
-$responseLangDe["forgotPasswordWrongEmail"] = "A megadott e-mail cím nincs regisztrálva a rendszerben!";
+$responseLangDe["forgotPasswordSuccess"] = "Ein Brief mit dem neuen Passwort wurde an Ihre E-mail Adresse versenden!";
+$responseLangDe["forgotPasswordWrongEmail"] = "Die angegeben E-mail Adresse ist im System nicht registriert!";
 
-$responseLangDe["changePasswordSuccess"] = "A jelszó megváltozott!";
-$responseLangDe["changePasswordWrongCredentials"] = "Hibásan adta meg a jelszó módosításához szükséges adatokat!";
+$responseLangDe["changePasswordSuccess"] = "Das Passwort wurde geändert!";
+$responseLangDe["changePasswordWrongCredentials"] = "Inkorrekt eingegeben Daten zur Änderung des Passwortes.";
 
-$responseLangDe["deleteReservationSuccessfully"] = "Sikeresen törölted a foglalást!";
-$responseLangDe["deleteReservationFailed"] = "A foglalás törlése sikertelen! Kérjük próbáld újra!";
-$responseLangDe["deleteReservationExpired"] = "A foglalás törlésének határideje lejárt! Az esemény kezdete előtti 2 órában már nincs mód a foglalás törlésére!";
+$responseLangDe["deleteReservationSuccessfully"] = "Buchung erfolgreich storniert!";
+$responseLangDe["deleteReservationFailed"] = "Stornierung gescheitert! Bitte versuchen Sie es erneut!";
+$responseLangDe["deleteReservationExpired"] = "Die Stornofrist ist abgelaufen! Binnen 2 Stunden vor dem Beginn der Veranstaltung ist keine Stornierung möglich!";
 
-$responseLangDe["makeReservationSuccessfully"] = "Sikeres foglalás!";
-$responseLangDe["makeReservationError"] = "Hiba történt a foglalás során. Kérjük próbáld újra!";
-$responseLangDe["makeReservationExpired"] = "A foglalás határideje lejárt! Az esemény kezdete előtti 2 órában már nincs mód a foglalásra!";
-$responseLangDe["makeReservationNoFreeSpots"] = "Sajnos nincs több szabad hely erre az edzésre!";
+$responseLangDe["makeReservationSuccessfully"] = "Buchung erfolgt!";
+$responseLangDe["makeReservationError"] = "Während des Buchungsvorgangs ist ein Fehler aufgetreten! Bitte versuchen Sie es erneut!";
+$responseLangDe["makeReservationExpired"] = "Die Buchungsfrist ist abgelaufen! Binnen 2 Stunden vor dem Beginn der Veranstaltung ist keine Buchung möglich!";
+$responseLangDe["makeReservationNoFreeSpots"] = "Leider gibt es für dieses Training keine Plätze mehr!";
 
-$responseLangDe["registrationInvalidEmail"] = "Érvénytelen e-mail cím!";
-$responseLangDe["registrationEmailValidMessageCharNum"] = "A jelszónak legalább 8 karaktert kell tartalmaznia!";
-$responseLangDe["registrationEmailValidMessageNumber"] = "A jelszónak legalább egy számot tartalmaznia kell!";
-$responseLangDe["registrationEmailValidMessageBigLetter"] = "A jelszónak legalább egy nagybetűt tartalmaznia kell!";
-$responseLangDe["registrationEmailValidMessageSmallLetter"] = "A jelszónak legalább egy kisbetűt tartalmaznia kell!";
-$responseLangDe["registrationSuccessfully"] = "Sikeres regisztráció!";
-$responseLangDe["registrationFailed"] = "Hiba történt a regisztráció során. Kérjük próbáld újra!";
-$responseLangDe["registrationEmailExists"] = "Ezzel az e-mail címmel már regisztráltak!";
+$responseLangDe["registrationInvalidEmail"] = "Ungültige E-mail Adresse!";
+$responseLangDe["registrationEmailValidMessageCharNum"] = "Das Passwort muss mindestens 8 Zeichen enthalten!";
+$responseLangDe["registrationEmailValidMessageNumber"] = "Das Passwort muss mindestens eine Ziffer enthalten!";
+$responseLangDe["registrationEmailValidMessageBigLetter"] = "Das Passwort muss mindestens einen Großbuchstaben enthalten!";
+$responseLangDe["registrationEmailValidMessageSmallLetter"] = "Das Passwort muss mindestens einen Kleinbuchstaben enthalten!";
+$responseLangDe["registrationSuccessfully"] = "Erfolgreicher Registrierung!";
+$responseLangDe["registrationFailed"] = "Bei der Registration ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut!";
+$responseLangDe["registrationEmailExists"] = "Diese E-mail Adresse ist bereits registriert!";
 
 ?>
