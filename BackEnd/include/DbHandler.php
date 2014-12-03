@@ -713,7 +713,7 @@ class DbHandler {
                                 CONCAT(tr.last_name, ' ', tr.first_name) AS trainer, tri.name AS training, ev.spots,
 					    ev.spots - (SELECT COUNT(*) FROM gilda_reservations WHERE event_id=ev.id) AS free_spots, 
                         CASE
-                            WHEN (SELECT COUNT(*) FROM gilda_reservations WHERE event_id=ev.id AND user_id=?) > 0
+                            WHEN (SELECT COUNT(*) FROM gilda_reservations WHERE event_id=ev.id AND (user_id=? OR partner_id=?)) > 0
                             THEN 1
                             ELSE 0
                         END AS is_reserved 
@@ -722,7 +722,7 @@ class DbHandler {
                         LEFT JOIN gilda_training AS tri ON ev.training = tri.id
                         WHERE room_id=? AND date>=CURDATE() AND date<=(CURDATE() + INTERVAL 2 WEEK) ORDER BY date, start_time";
         $stmt = $this->conn->prepare($queryString);
-        $stmt->bind_param("ii", $user_id, $room_id);
+        $stmt->bind_param("iii", $user_id, $user_id, $room_id);
         
         $stmt->execute();
         
@@ -1141,9 +1141,9 @@ class DbHandler {
             return array('status' => RESERVATION_DELETE_DEADLINE_EXPIRED, 'free_spots' => $free_spots);
         }
 	
-        $queryString = "DELETE FROM gilda_reservations WHERE user_id=? AND event_id=?";
+        $queryString = "DELETE FROM gilda_reservations WHERE (user_id=? OR partner_id=?) AND event_id=?";
         $stmt = $this->conn->prepare($queryString);
-        $stmt->bind_param("ii", $user_id, $event_id);
+        $stmt->bind_param("iii", $user_id, $user_id, $event_id);
 
         $stmt->execute();
 
@@ -1346,9 +1346,9 @@ class DbHandler {
                         LEFT JOIN gilda_events AS ev ON ev.id = res.event_id 
                         LEFT JOIN gilda_trainer AS tr ON ev.trainer = tr.id
                         LEFT JOIN gilda_training AS tri ON ev.training = tri.id
-                        WHERE res.user_id=? ORDER BY res.time DESC";
+                        WHERE res.user_id=? OR res.partner_id=? ORDER BY res.time DESC";
         $stmt = $this->conn->prepare($queryString);
-        $stmt->bind_param("i", $user_id);
+        $stmt->bind_param("ii", $user_id, $user_id);
         
         $stmt->execute();
         
